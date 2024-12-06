@@ -16,50 +16,50 @@ public class GlobalBO {
 		return _instance;
 	}
 
-	private GlobalDAO dao = GlobalDAO.getInstance();
+	private GlobalDAO globalDAO = GlobalDAO.getInstance();
 
 	public List<String> search(String table, String column, String condition, int amount) {
-		return dao.search(table, column, condition, amount);
+		return globalDAO.search(table, column, condition, amount);
 	}
 
 	public List<String> sort(String table, String column, String condition, int amount, String isDESC) {
-		return dao.sort(table, column, condition, amount, isDESC);
+		return globalDAO.sort(table, column, condition, amount, isDESC);
 	}
 
 	public int getSizeOf(String table, String condition) {
-		return dao.getSizeOf(table, condition);
+		return globalDAO.getSizeOf(table, condition);
 	}
 
 	public int getLastIDOf(String table) {
-		return dao.getLastIDOf(table);
+		return globalDAO.getLastIDOf(table);
 	}
 
 	public int getFirstIDOf(String table) {
-		return dao.getFirstIDOf(table);
+		return globalDAO.getFirstIDOf(table);
 	}
 
 	public boolean updateNULLForeignKey(String table, String column, String condition) {
-		return dao.updateNULLForeignKey(table, column, condition);
+		return globalDAO.updateNULLForeignKey(table, column, condition);
 	}
 
 	public int getAuto_IncrementOf(String table) {
-		return dao.getAuto_IncrementOf(table);
+		return globalDAO.getAuto_IncrementOf(table);
 	}
 
 	public List<String> getSortNumberOfStudents(String condition, int amount, String isDESC) {
-		return dao.getSortNumberOfStudents(condition, amount, isDESC);
+		return globalDAO.getSortNumberOfStudents(condition, amount, isDESC);
 	}
 
 	public List<String> getSortNumberOfMenu(String condition, int amount, String isDESC) {
-		return dao.getSortNumberOfMenu(condition, amount, isDESC);
+		return globalDAO.getSortNumberOfMenu(condition, amount, isDESC);
 	}
 
 	public List<String> searchMainFoodInMenu(String condition) {
-		return dao.searchMainFoodInMenu(condition);
+		return globalDAO.searchMainFoodInMenu(condition);
 	}
 
 	public List<String> searchSubFoodInMenu(String condition) {
-		return dao.searchSubFoodInMenu(condition);
+		return globalDAO.searchSubFoodInMenu(condition);
 	}
 
 }

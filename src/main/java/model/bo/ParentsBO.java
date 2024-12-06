@@ -17,34 +17,34 @@ public class ParentsBO {
 		return _instance;
 	}
 
-	private ParentsDAO dao = ParentsDAO.getInstance();
+	private ParentsDAO parentsDAO = ParentsDAO.getInstance();
 
 	public boolean insert(Parents t) {
-		return dao.insert(t);
+		return parentsDAO.insert(t);
 	}
 
 	public boolean delete(Parents t) {
-		return dao.delete(t);
+		return parentsDAO.delete(t);
 	}
 
 	public boolean deleteByID(int t) {
-		return dao.deleteByID(t);
+		return parentsDAO.deleteByID(t);
 	}
 
 	public boolean update(Parents t) {
-		return dao.update(t);
+		return parentsDAO.update(t);
 	}
 
 	public List<Parents> selectAll() {
-		return dao.selectAll();
+		return parentsDAO.selectAll();
 	}
 
 	public Parents selectById(Parents t) {
-		return dao.selectById(t);
+		return parentsDAO.selectById(t);
 	}
 
 	public Parents selectById(int t) {
-		return dao.selectById(t);
+		return parentsDAO.selectById(t);
 	}
 
 }

@@ -13,10 +13,10 @@ public class UserBO {
 		return _instance;
 	}
 	
-	private UserDAO dao = UserDAO.getInstance();
+	private UserDAO userDAO = UserDAO.getInstance();
 	
 	public String authenticate(String username, String password) {
-		User user = dao.selectByUserName(username);
+		User user = userDAO.selectByUserName(username);
 		if (user != null && user.getPassword().equals(password)) {
 			return user.getPosition();
 		}

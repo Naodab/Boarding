@@ -17,34 +17,34 @@ public class MenuBO {
 		return _instance;
 	}
 
-	private MenuDAO dao = MenuDAO.getInstance();
+	private MenuDAO menuDAO = MenuDAO.getInstance();
 
 	public boolean insert(Menu t) {
-		return dao.insert(t);
+		return menuDAO.insert(t);
 	}
 
 	public boolean delete(Menu t) {
-		return dao.delete(t);
+		return menuDAO.delete(t);
 	}
 
 	public boolean update(Menu t) {
-		return dao.update(t);
+		return menuDAO.update(t);
 	}
 
 	public boolean updateActive(int menu_id, boolean active) {
-		return dao.updateActive(menu_id, active);
+		return menuDAO.updateActive(menu_id, active);
 	}
 
 	public List<Menu> selectAll() {
-		return dao.selectAll();
+		return menuDAO.selectAll();
 	}
 
 	public Menu selectById(Menu t) {
-		return dao.selectById(t);
+		return menuDAO.selectById(t);
 	}
 
 	public Menu selectById(int t) {
-		return dao.selectById(t);
+		return menuDAO.selectById(t);
 	}
 
 }

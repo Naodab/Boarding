@@ -289,4 +289,34 @@ public class StudentDAO implements DAOInterface<Student> {
 		JDBCUtil.closeConnection(conn);
 		return result;
 	}
+	
+	public List<Student> getPageStudents(int page, int amount) {
+		List<Student> result = new ArrayList<Student>();
+		Connection conn = JDBCUtil.getConnection();
+		try {
+			String sql = "SELECT * FROM student LIMIT ? OFFSET ?";
+			PreparedStatement pps = conn.prepareStatement(sql);
+			pps.setInt(1, amount);
+			pps.setInt(2, page * amount);
+			ResultSet rs = pps.executeQuery();
+			while (rs.next()) {
+				String name = rs.getString("name");
+				Date dateOfBirth = rs.getDate("dateOfBirth");
+				String address = rs.getString("address");
+				Boolean sex = rs.getBoolean("sex");
+				int student_id = rs.getInt("student_id");
+				double weight = rs.getDouble("weight");
+				double height = rs.getDouble("height");
+				int parents_id = rs.getInt("parents_id");
+				int boardingClass_id = rs.getInt("boardingClass_id");
+				boolean subMeal = rs.getBoolean("subMeal");
+				result.add(new Student(name, dateOfBirth, address, sex, student_id, weight, height, parents_id,
+						boardingClass_id, subMeal, null, null));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		JDBCUtil.closeConnection(conn);
+		return result;
+	}
 }
