@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet("/teachers")
+@WebServlet("/teacher")
 public class TeacherController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -30,7 +30,7 @@ public class TeacherController extends HttpServlet {
 	}
 
 	private void teacherHandler(HttpServletRequest request, HttpServletResponse response) {
-
+		
 	}
 
 	private void adminHandler(HttpServletRequest request, HttpServletResponse response) {
