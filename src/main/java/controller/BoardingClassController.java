@@ -1,22 +1,20 @@
 package controller;
 
 import java.io.IOException;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet("/teachers")
-public class TeacherController extends HttpServlet {
+@WebServlet("/boardingClasses")
+public class BoardingClassController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+    public BoardingClassController() {
+        super();
+    }
 
-	public TeacherController() {
-		super();
-	}
-
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		doPost(request, response);
 	}
@@ -33,9 +31,8 @@ public class TeacherController extends HttpServlet {
 		}
 	}
 
-	private void teacherHandler(HttpServletRequest request, HttpServletResponse response) 
-			throws ServletException, IOException {
-		
+	private void teacherHandler(HttpServletRequest request, HttpServletResponse response) {
+
 	}
 
 	private void adminHandler(HttpServletRequest request, HttpServletResponse response) {
@@ -45,4 +42,5 @@ public class TeacherController extends HttpServlet {
 	private void parentsHandler(HttpServletRequest request, HttpServletResponse response) {
 
 	}
+
 }

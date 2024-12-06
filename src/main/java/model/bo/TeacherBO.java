@@ -17,41 +17,45 @@ public class TeacherBO {
 		return _instance;
 	}
 
-	private TeacherDAO dao = TeacherDAO.getInstance();
+	private TeacherDAO teacherDAO = TeacherDAO.getInstance();
 
 	public boolean insert(Teacher t) {
-		return dao.insert(t);
+		return teacherDAO.insert(t);
 	}
 
 	public boolean delete(Teacher t) {
-		return dao.delete(t);
+		return teacherDAO.delete(t);
 	}
 
 	public boolean deleteById(int t) {
-		return dao.deleteById(t);
+		return teacherDAO.deleteById(t);
 	}
 
 	public boolean update(Teacher t) {
-		return dao.update(t);
+		return teacherDAO.update(t);
 	}
 
 	public List<Teacher> selectAll() {
-		return dao.selectAll();
+		return teacherDAO.selectAll();
 	}
 
 	public Teacher selectById(Teacher t) {
-		return dao.selectById(t);
+		return teacherDAO.selectById(t);
 	}
 
 	public Teacher selectById(int t) {
-		return dao.selectById(t);
+		return teacherDAO.selectById(t);
+	}
+	
+	public Teacher selectByUsername(String username) {
+		return teacherDAO.selectByUsername(username);
 	}
 
 	public int selectByBoardingClass_id(int boardingClass_id) {
-		return dao.selectByBoardingClass_id(boardingClass_id);
+		return teacherDAO.selectByBoardingClass_id(boardingClass_id);
 	}
 
 	public List<Teacher> getPageTeacher(int page, int amount) {
-		return dao.selectPage(page, amount);
+		return teacherDAO.selectPage(page, amount);
 	}
 }
