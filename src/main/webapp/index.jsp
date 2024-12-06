@@ -10,6 +10,12 @@
 <link rel="stylesheet" href="css/base.css">
 </head>
 <body>
+	<%
+	Object message = request.getAttribute("message");
+	if (message != null) {
+		out.println("<div style='display: none;' class='error-loggin'>" + (String) message + "</div>");
+	}
+	%>
 	<div id="overlay"></div>
 	<div id="coating"></div>
 	<div id="background"></div>
@@ -18,13 +24,11 @@
 		<div class="sidebar-header">
 			<img alt="Chess.com logo" src="image/primary_icon.jpg" width="150" height="100" />
 			<a href=""><i class="fa-solid fa-house"></i>Trang chủ</a>
-			<a href=""><i class="fa-solid fa-right-to-bracket"></i>Đăng nhập</a>
+			<a href="" id="login-btn"><i class="fa-solid fa-right-to-bracket"></i>Đăng nhập</a>
 		</div>
 		<a class="settings-link" id="about-us-btn">Thông tin</a>
 		</div>
 	</div>
-	<script>
-		
-	</script>
+	<script type="module" src="js/index.js"></script>
 </body>
 </html>

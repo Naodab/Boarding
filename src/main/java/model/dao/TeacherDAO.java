@@ -170,6 +170,35 @@ public class TeacherDAO implements DAOInterface<Teacher> {
 		JDBCUtil.closeConnection(conn);
 		return result;
 	}
+	
+	public List<Teacher> selectPage(int page, int amount) {
+		List<Teacher> result = new ArrayList<Teacher>();
+		Connection conn = JDBCUtil.getConnection();
+		try {
+
+			String sql = "SELECT * FROM teacher LIMIT ? OFFSET ?";
+			PreparedStatement pps = conn.prepareStatement(sql);
+			pps.setInt(1, amount);
+			pps.setInt(2, amount * page);
+			ResultSet rs = pps.executeQuery();
+			while (rs.next()) {
+				String name = rs.getString("name");
+				Date dateOfBirth = rs.getDate("dateOfBirth");
+				String address = rs.getString("address");
+				Boolean sex = rs.getBoolean("sex");
+				int teacher_id = rs.getInt("teacher_id");
+				String phoneNumber = rs.getString("phoneNumber");
+				String email = rs.getString("email");
+				int boardingClass_id = rs.getInt("boardingClass_id");
+				result.add(
+						new Teacher(name, dateOfBirth, address, sex, teacher_id, phoneNumber, email, boardingClass_id));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		JDBCUtil.closeConnection(conn);
+		return result;
+	}
 
 	public Teacher selectById(int t) {
 		Connection conn = JDBCUtil.getConnection();
