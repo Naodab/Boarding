@@ -25,29 +25,34 @@ public class UserController extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		request.setCharacterEncoding("UTF-8");
+		response.setCharacterEncoding("UTF-8");
 		String mode = request.getParameter("mode");
-		String destination = "/"; 
+		String destination = "/index.jsp"; 
 		switch (mode) {
 		case "login":
 			String username = request.getParameter("username");
 			String password = request.getParameter("password");
 			String position = bo.authenticate(username, password);
-			if (position == null)
-				break;
+			if (position == null) {
+				request.setAttribute("message", "Tài khoản hoặc mật khẩu không chính xác!!!");
+				getServletContext().getRequestDispatcher(destination).forward(request, response);
+				return;
+			}
 			request.getSession().setAttribute("username", username);
 			
 			// check it before do anything
 			request.getSession().setAttribute("position", position);
-			if (position.equals("ADMIN")) {
+			if (position.equals("Admin")) {
 				destination = "/admin/students.jsp";
-			} else if (position.equals("TEACHER")) {
+			} else if (position.equals("Teacher")) {
 				
-			} else if (position.equals("PARENTS")) {
+			} else if (position.equals("Parents")) {
 				
 			}
 			break;
 		}
-		getServletContext().getRequestDispatcher(destination).forward(request, response);
+		response.sendRedirect(request.getContextPath() + destination);
+		return;
 	}
-
 }
