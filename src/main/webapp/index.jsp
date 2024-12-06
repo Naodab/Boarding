@@ -24,14 +24,7 @@
 		</div>
 	</div>
 	<script>
-		document.getElementById('btn-login').addEventListener('click',
-				function() {
-					window.location.href = "./login";
-				});
-		document.getElementById('btn-signup').addEventListener('click',
-				function() {
-					window.location.href = "./signup";
-				});
+		
 	</script>
 </body>
 </html>

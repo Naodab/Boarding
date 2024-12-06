@@ -59,7 +59,7 @@ public class UserDAO implements DAOInterface<User> {
 		return result;
 	}
 
-	public boolean delete(String t) {
+	public boolean deleteByUsername(String t) {
 		boolean result = false;
 		Connection conn = JDBCUtil.getConnection();
 		try {
