@@ -46,6 +46,10 @@ public class TeacherBO {
 	public Teacher selectById(int t) {
 		return dao.selectById(t);
 	}
+	
+	public Teacher selectByUsername(String username) {
+		return dao.selectByUsername(username);
+	}
 
 	public int selectByBoardingClass_id(int boardingClass_id) {
 		return dao.selectByBoardingClass_id(boardingClass_id);

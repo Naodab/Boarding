@@ -46,7 +46,7 @@ public class UserController extends HttpServlet {
 			if (position.equals("Admin")) {
 				destination = "/admin/students.jsp";
 			} else if (position.equals("Teacher")) {
-				destination = "/teacher/teacherInfor.jsp";
+				destination = "/teacher/main.jsp";
 			} else if (position.equals("Parents")) {
 				
 			}
