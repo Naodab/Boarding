@@ -26,7 +26,7 @@ public class UserController extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String mode = request.getParameter("mode");
-		String destination = "/";
+		String destination = "/"; 
 		switch (mode) {
 		case "login":
 			String username = request.getParameter("username");
@@ -39,7 +39,7 @@ public class UserController extends HttpServlet {
 			// check it before do anything
 			request.getSession().setAttribute("position", position);
 			if (position.equals("ADMIN")) {
-				
+				destination = "/admin/students.jsp";
 			} else if (position.equals("TEACHER")) {
 				
 			} else if (position.equals("PARENTS")) {
