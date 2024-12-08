@@ -1,5 +1,6 @@
 package controller;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.sql.Date;
@@ -144,7 +145,7 @@ public class StudentController extends HttpServlet {
 	    }
 	    String jsonData = sb.toString();
 	    String student_id = extractValue(jsonData, "studentId");
-	    return StudentBO.getInstance().selectById(Integer.parseInt(student_id));
+	    return studentBO.selectById(Integer.parseInt(student_id));
 	}
 
 	private String jsonStudentResponse(Student student) {
