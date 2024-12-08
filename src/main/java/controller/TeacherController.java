@@ -59,6 +59,9 @@ public class TeacherController extends HttpServlet {
 				rd = getServletContext().getRequestDispatcher(destination);
 				rd.forward(request, response);
 				break;
+			case "updateTeacherInfor":
+				updateTeacherInfor(request, response, teacher);
+				break;
 			case "boardingFee":
 				break;
 			case "studentInfor":
@@ -68,8 +71,14 @@ public class TeacherController extends HttpServlet {
 				rd = getServletContext().getRequestDispatcher(destination);
 				rd.forward(request, response);
 				break;
-			case "updateTeacherInfor":
-				updateTeacherInfor(request, response, teacher);
+			case "eatingDay":
+				break;
+			case "monitorStudents":
+				listStudents = StudentBO.getInstance().selectByBoardingClass_id2(teacher.getBoardingClass_id());
+				request.setAttribute("listStudents", listStudents);
+				destination = "/teachers/monitorStudents.jsp";
+				rd = getServletContext().getRequestDispatcher(destination);
+				rd.forward(request, response);
 				break;
 		}
 	}
