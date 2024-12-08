@@ -67,9 +67,9 @@
 						<tr>
 							<th class="th__first">Mã</th>
 							<th>Họ và tên</th>
+							<th>Giới tính</th>
 							<th>Ngày sinh</th>
 							<th>Địa chỉ</th>
-							<th>Giới tính</th>
 							<th>Phụ huynh</th>
 							<th>Lớp</th>
 							<th class="th__last">Ăn phụ</th>
@@ -79,10 +79,10 @@
 				<div class="pages-container"></div>
 			</div>
 			<div class="content-footer">
-				<div class="btn btn--green footer-item" id="add-btn">Thêm học sinh</div>
+				<div class="btn btn--green footer-item">Thêm học sinh</div>
 			</div>
 		</div>
 	</div>
-	<script type="module" src="/boarding/js/admin/students.js"></script>
+	<script type="module" src="/boarding/js/admin/accounts.js"></script>
 </body>
 </html>

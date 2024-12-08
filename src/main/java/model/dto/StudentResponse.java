@@ -1,18 +1,37 @@
 package model.dto;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
 public class StudentResponse {
 	private int student_id;
 	private String name;
-	private Date dateOfBirth;
+	private LocalDate dateOfBirth;
 	private String address;
 	private String sex;
+	private int parents_id;
 	private String parentName;
+	private int boardingClass_id;
+
+	public int getParents_id() {
+		return parents_id;
+	}
+
+	public void setParents_id(int parents_id) {
+		this.parents_id = parents_id;
+	}
+
+	public int getBoardingClass_id() {
+		return boardingClass_id;
+	}
+
+	public void setBoardingClass_id(int boardingClass_id) {
+		this.boardingClass_id = boardingClass_id;
+	}
+
 	private String boardingClassName;
 	private boolean subMeal;
 
-	public StudentResponse(int student_id, String name, Date dateOfBirth, String address, Boolean sex,
+	public StudentResponse(int student_id, String name, LocalDate dateOfBirth, String address, Boolean sex,
 			String parentName, String boardingClassName, boolean subMeal) {
 		super();
 		this.student_id = student_id;
@@ -24,8 +43,9 @@ public class StudentResponse {
 		this.boardingClassName = boardingClassName;
 		this.subMeal = subMeal;
 	}
-	
-	public StudentResponse(int student_id, String name, Date dateOfBirth, String address, Boolean sex, boolean subMeal) {
+
+	public StudentResponse(int student_id, String name, LocalDate dateOfBirth, String address, Boolean sex,
+			boolean subMeal, int parents_id, int boardingClass_id) {
 		super();
 		this.student_id = student_id;
 		this.name = name;
@@ -33,6 +53,8 @@ public class StudentResponse {
 		this.address = address;
 		this.sex = sex ? "Nam" : "Nữ";
 		this.subMeal = subMeal;
+		this.parents_id = parents_id;
+		this.boardingClass_id = boardingClass_id;
 	}
 
 	public StudentResponse() {
@@ -55,11 +77,11 @@ public class StudentResponse {
 		this.name = name;
 	}
 
-	public Date getDateOfBirth() {
+	public LocalDate getDateOfBirth() {
 		return dateOfBirth;
 	}
 
-	public void setDateOfBirth(Date dateOfBirth) {
+	public void setDateOfBirth(LocalDate dateOfBirth) {
 		this.dateOfBirth = dateOfBirth;
 	}
 

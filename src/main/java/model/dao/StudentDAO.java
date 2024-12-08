@@ -130,6 +130,32 @@ public class StudentDAO implements DAOInterface<Student> {
 		return result;
 	}
 
+	public boolean adminUpdate(Student t) {
+		boolean result = false;
+		Connection conn = JDBCUtil.getConnection();
+		try {
+			String sql = "UPDATE student SET name = ?, dateOfBirth = ?, address = ?, sex = ?, "
+					+ "parents_id = ?, boardingClass_id = ?, subMeal = ? " + "WHERE student_id = ?";
+			PreparedStatement pps = conn.prepareStatement(sql);
+			pps.setString(1, t.getName());
+			pps.setDate(2, t.getDateOfBirth());
+			pps.setString(3, t.getAddress());
+			pps.setBoolean(4, t.getSex());
+			pps.setInt(5, t.getParents_id());
+			pps.setInt(6, t.getBoardingClass_id());
+			pps.setBoolean(7, t.isSubMeal());
+			pps.setInt(8, t.getStudent_id());
+			int check = pps.executeUpdate();
+			if (check > 0) {
+				result = true;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		JDBCUtil.closeConnection(conn);
+		return result;
+	}
+
 	@Override
 	public List<Student> selectAll() {
 		List<Student> result = new ArrayList<Student>();
@@ -289,15 +315,28 @@ public class StudentDAO implements DAOInterface<Student> {
 		JDBCUtil.closeConnection(conn);
 		return result;
 	}
-	
-	public List<Student> getPageStudents(int page, int amount) {
+
+	public List<Student> getPageStudents(int page, int amount, String search, String sortField, String sortType) {
 		List<Student> result = new ArrayList<Student>();
 		Connection conn = JDBCUtil.getConnection();
 		try {
-			String sql = "SELECT * FROM student LIMIT ? OFFSET ?";
+			String sql = "SELECT * FROM student";
+			if (search != null) {
+				search = "%" + search + "%";
+				sql += " WHERE student_id LIKE ? OR name LIKE ?";
+			}
+			if (sortType != null) {
+				sql += " ORDER BY " + sortField + " " + sortType;
+			}
+			sql += " LIMIT ? OFFSET ?";
 			PreparedStatement pps = conn.prepareStatement(sql);
-			pps.setInt(1, amount);
-			pps.setInt(2, page * amount);
+			int index = 1;
+			if (search != null) {
+				pps.setString(index++, search);
+				pps.setString(index++, search);
+			}
+			pps.setInt(index++, amount);
+			pps.setInt(index++, page * amount);
 			ResultSet rs = pps.executeQuery();
 			while (rs.next()) {
 				String name = rs.getString("name");
@@ -312,6 +351,31 @@ public class StudentDAO implements DAOInterface<Student> {
 				boolean subMeal = rs.getBoolean("subMeal");
 				result.add(new Student(name, dateOfBirth, address, sex, student_id, weight, height, parents_id,
 						boardingClass_id, subMeal, null, null));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		JDBCUtil.closeConnection(conn);
+		return result;
+	}
+
+	public int count(String search) {
+		int result = -1;
+		Connection conn = JDBCUtil.getConnection();
+		try {
+			String sql = "SELECT count(*) AS total FROM student";
+			if (search != null) {
+				search = "%" + search + "%";
+				sql += " WHERE student_id LIKE ? OR name LIKE ?";
+			}
+			PreparedStatement pps = conn.prepareStatement(sql);
+			if (search != null) {
+				pps.setString(1, search);
+				pps.setString(2, search);
+			}
+			ResultSet rs = pps.executeQuery();
+			while (rs.next()) {
+				result = rs.getInt("total");
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

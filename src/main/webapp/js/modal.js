@@ -11,38 +11,37 @@ const $ = document.querySelector.bind(document);
 const $$ = document.querySelectorAll.bind(document);
 
 function addEventForEye() {
-    const iconEyes = $$(".password-container i");
-    iconEyes.forEach(icon => {
-        icon.onclick = () => {
-            const pwContainer = icon.closest(".password-container");
-            if (pwContainer && pwContainer.classList.contains("active")) {
-                pwContainer.classList.remove("active");
-                pwContainer.querySelector("input").type = "password";
-            } else if (pwContainer) {
-                pwContainer.classList.add("active");
-                pwContainer.querySelector("input").type = "text";
-            }
-        }
-    });
+	const iconEyes = $$(".password-container i");
+	iconEyes.forEach(icon => {
+		icon.onclick = () => {
+			const pwContainer = icon.closest(".password-container");
+			if (pwContainer && pwContainer.classList.contains("active")) {
+				pwContainer.classList.remove("active");
+				pwContainer.querySelector("input").type = "password";
+			} else if (pwContainer) {
+				pwContainer.classList.add("active");
+				pwContainer.querySelector("input").type = "text";
+			}
+		}
+	});
 }
 
 function turnOnModal(renderFunction, attr) {
 	const overlay = $("#overlay");
-    overlay.style.zIndex = "100";
-    overlay.innerHTML = renderFunction(attr);
-
-    const backBtn = $("#back");
-    if (backBtn) {
-        backBtn.onclick =  function () {
-            turnOffModal();
-        };
-    }
+	overlay.style.zIndex = "100";
+	overlay.innerHTML = renderFunction(attr);
+	const backBtn = $("#back");
+	if (backBtn) {
+		backBtn.onclick = function() {
+			turnOffModal();
+		};
+	}
 }
 
 function turnOffModal() {
 	const overlay = $("#overlay");
-    overlay.innerHTML = "";
-    overlay.style.zIndex = "-10";
+	overlay.innerHTML = "";
+	overlay.style.zIndex = "-10";
 }
 
 function renderLogin(message) {
@@ -55,7 +54,7 @@ function renderLogin(message) {
 				<div class="password-item form-group">
 					<label for="oldPassword" class="modal__label">Tài khoản</label>
 					<div class="password-container">
-						<input type="password" id="username" name="username" class="password__input" placeholder="Tài khoản">
+						<input type="text" id="username" name="username" class="password__input" placeholder="Tài khoản">
 					</div>
 					<div class="form-message"></div>
 				</div>
@@ -73,13 +72,294 @@ function renderLogin(message) {
 					<input type="submit" class="btn btn--green modal__btn" id="confirm-login" value="Đăng nhập">
 				</div>
 			</div>
-		</form>>
+		</form>
     `;
 }
+
+function renderStudentModal(student) {
+	return html`
+		<form class="modal closure active" id="update-student" method="POST" action="students?mode=update">
+			<h1 class="modal__title">Thông tin chi tiết</h1>
+			<i class="fa-solid fa-xmark btn-icon btn-close" id="back"></i>
+			<div class="error-message"></div>
+			<div class="main-modal">
+				<div class="main-header">
+					<div class="data-header">
+						<div class="admin-form-group">
+							<div class="admin-form-group first-column">
+								<label for="id">Mã học sinh:</label>
+								<input type="text" id="id" name="student_id" value="${student.student_id}" readonly>
+							</div>
+							<div class="admin-form-group second-column">
+								<label for="sex">Giới tính:</label>
+								<div class="form-control radio-container">
+									<input type="radio" id="sex-male" name="sex" class="form-control" value="Nam"
+										${student.sex==="Nam" && "checked" } readonly>Nam
+									<input type="radio" id="sex-female" name="sex" class="form-control" value="Nữ"
+										${student.sex==="Nữ" && "checked"} readonly>Nữ
+								</div>
+							</div>
+						</div>
+						<div class="admin-form-group">
+							<label for="name">Họ và tên:</label>
+							<input type="text" id="name" name="name" class="form-control" value="${student.name}"  readonly>
+						</div>
+						<div class="admin-form-group">
+							<label for="dateOfBirth">Ngày sinh:</label>
+							<input type="date" id="dateOfBirth" name="dateOfBirth" class="form-control" value="${student.dateOfBirth}" readonly>
+						</div>
+						<div class="admin-form-group">
+							<div class="admin-form-group">
+								<label for="sex">Ăn phụ:</label>
+								<div class="form-control radio-container">
+									<input type="radio" id="sex-male" name="subMeal" class="form-control" value="true"
+										${student.subMeal && "checked"} readonly>Có
+									<input type="radio" id="sex-female" name="subMeal" class="form-control" value="false"
+										${!student.subMeal && "checked"} readonly>Không
+								</div>
+							</div>
+							<div class="admin-form-group second-column">
+								<label for="class">Lớp:</label>
+								<span class="form-select hide">${student.boardingClassName}</span>
+							</div>
+						</div>
+						<div class="admin-form-group">
+							<label for="address">Địa chỉ</label>
+							<input type="text" id="address" name="address" class="form-control" value="${student.address}"
+								 readonly>
+						</div>
+						<div class="admin-form-group">
+							<label for="class">Phụ huynh:</label>
+							<span class="form-select hide">${student.parentName}</span>
+						</div>
+					</div>
+				</div>
+				<div class="modal__function top--margin">
+					<div class="btn btn--green modal__btn hide" id="update-btn">Cập nhật</div>
+					<div class="btn btn--pink modal__btn hide" id="delete-btn">Xóa</div>
+				</div>
+			</div>
+		</form>>
+	`;
+}
+
+function renderStudentUpdateModal(student, parents, classes) {
+	return html`
+		<form class="modal closure active update" id="update-student" method="POST" action="students?mode=update">
+			<h1 class="modal__title">Thông tin chi tiết</h1>
+			<i class="fa-solid fa-xmark btn-icon btn-close" id="back"></i>
+			<div class="error-message"></div>
+			<div class="main-modal">
+				<div class="main-header">
+					<div class="data-header">
+						<div class="admin-form-group">
+							<div class="admin-form-group first-column">
+								<label for="id">Mã học sinh:</label>
+								<input type="text" id="id" name="student_id" value="${student.student_id}" readonly>
+							</div>
+							<div class="admin-form-group second-column">
+								<label for="sex">Giới tính:</label>
+								<div class="form-control radio-container">
+									<input type="radio" id="sex-male" name="sex" class="form-control" value="Nam"
+										${student.sex==="Nam" && "checked" }>Nam
+									<input type="radio" id="sex-female" name="sex" class="form-control" value="Nữ"
+										${student.sex==="Nữ" && "checked" }>Nữ
+								</div>
+							</div>
+						</div>
+						<div class="admin-form-group">
+							<label for="name">Họ và tên:</label>
+							<input type="text" id="name" name="name" class="form-control" value="${student.name}" >
+						</div>
+						<div class="admin-form-group">
+							<label for="dateOfBirth">Ngày sinh:</label>
+							<input type="date" id="dateOfBirth" name="dateOfBirth" class="form-control" value="${student.dateOfBirth}" >
+						</div>
+						<div class="admin-form-group">
+							<div class="admin-form-group">
+								<label for="sex">Ăn phụ:</label>
+								<div class="form-control radio-container">
+									<input type="radio" id="sex-male" name="subMeal" class="form-control" value="true"
+										${student.subMeal && "checked"}>Có
+									<input type="radio" id="sex-female" name="subMeal" class="form-control" value="false"
+										${!student.subMeal && "checked"}>Không
+								</div>
+							</div>
+							<div class="admin-form-group second-column">
+								<label for="class">Lớp:</label>
+								<span class="form-select hide">${student.boardingClassName}</span>
+								<select class="updatable" name="boardingClass_id">
+									${classes.map(classs => 
+										html`<option value="${classs.id}" ${student.boardingClass_id == classs.id && 'selected'}>
+											${classs.id + ". " + classs.name}
+										</option>`
+									)}
+								</select>
+							</div>
+						</div>
+						<div class="admin-form-group">
+							<label for="address">Địa chỉ</label>
+							<input type="text" id="address" name="address" class="form-control" value="${student.address}">
+						</div>
+						<div class="admin-form-group">
+							<label for="class">Phụ huynh:</label>
+							<span class="form-select hide">${student.parentName}</span>
+							<select name="parents_id" class="updatable">
+								${parents.map(parent => 
+									html`<option value="${parent.id}" ${student.parents_id == parent.id && 'selected'}>
+										${parent.id + ". " + parent.name}
+									</option>`
+								)}
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="modal__function top--margin">
+					<input type="submit" class="btn btn--green modal__btn updatable" value="Xác nhận">
+				</div>
+			</div>
+		</form>>
+	`;
+}
+
+function renderStudentAddModal({nextId, parents, classes}) {
+	return html`
+		<form class="modal closure active update" id="update-student" method="POST" action="students?mode=add">
+			<h1 class="modal__title">Thông tin chi tiết</h1>
+			<i class="fa-solid fa-xmark btn-icon btn-close" id="back"></i>
+			<div class="error-message"></div>
+			<div class="main-modal">
+				<div class="main-header">
+					<div class="data-header">
+						<div class="admin-form-group">
+							<div class="admin-form-group first-column">
+								<label for="id">Mã học sinh:</label>
+								<input type="text" id="id" name="student_id" value="${nextId}" readonly>
+							</div>
+							<div class="admin-form-group second-column">
+								<label for="sex">Giới tính:</label>
+								<div class="form-control radio-container">
+									<input type="radio" id="sex-male" name="sex" class="form-control" value="Nam" checked>Nam
+									<input type="radio" id="sex-female" name="sex" class="form-control" value="Nữ"}>Nữ
+								</div>
+							</div>
+						</div>
+						<div class="admin-form-group">
+							<label for="name">Họ và tên:</label>
+							<input type="text" id="name" name="name" class="form-control">
+						</div>
+						<div class="admin-form-group">
+							<label for="dateOfBirth">Ngày sinh:</label>
+							<input type="date" id="dateOfBirth" name="dateOfBirth" class="form-control" value="${new Date().toISOString().split('T')[0]}">
+						</div>
+						<div class="admin-form-group">
+							<div class="admin-form-group">
+								<label for="sex">Ăn phụ:</label>
+								<div class="form-control radio-container">
+									<input type="radio" id="sex-male" name="subMeal" class="form-control" value="true" checked>Có
+									<input type="radio" id="sex-female" name="subMeal" class="form-control" value="false">Không
+								</div>
+							</div>
+							<div class="admin-form-group second-column">
+								<label for="class">Lớp:</label>
+								<select class="updatable" name="boardingClass_id">
+									${classes.map(classs => 
+										html`<option value="${classs.id}">
+											${classs.id + ". " + classs.name}
+										</option>`
+									)}
+								</select>
+							</div>
+						</div>
+						<div class="admin-form-group">
+							<label for="address">Địa chỉ</label>
+							<input type="text" id="address" name="address" class="form-control">
+						</div>
+						<div class="admin-form-group">
+							<label for="class">Phụ huynh:</label>
+							<select name="parents_id" class="updatable">
+								${parents.map(parent => 
+									html`<option value="${parent.id}" >
+										${parent.id + ". " + parent.name}
+									</option>`
+								)}
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="modal__function top--margin">
+					<div class="btn btn--green modal__btn hide" id="update-btn">Cập nhật</div>
+					<input type="submit" class="btn btn--green modal__btn updatable" value="Xác nhận">
+				</div>
+			</div>
+		</form>>
+	`;
+}
+
+function turnOnUpdateStudent(student, parents, classes) {
+	const overlay = $("#overlay");
+	overlay.style.zIndex = "100";
+	overlay.innerHTML = renderStudentUpdateModal(student, parents, classes);
+
+	const backBtn = $("#back");
+	if (backBtn) {
+		backBtn.onclick = function() {
+			turnOffModal();
+		};
+	}
+}
+
+function renderConfirmModal(message) {
+    return html`
+        <div class="modal closure active" id="update-avatar">
+            <h1 class="modal__title">Thông báo</h1>
+            <i class="fa-solid fa-xmark btn-icon btn-close" id="back"></i>
+            <div class="main-modal">
+                <h3 class="modal__elo modal-item">${message}</h3>
+                <div class="modal__function top--margin">
+                    <div class="btn btn--green modal__btn" id="yes">Có</div>
+                    <div class="btn btn--pink modal__btn" id="no">Không</div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+let confirmResolve;
+function confirm(message) {
+    turnOnModal(renderConfirmModal, message);
+
+    $("#yes").addEventListener("click", function () {
+        resolveConfirm(true);
+    });
+
+    $("#no").addEventListener("click", function () {
+        resolveConfirm(false);
+    });
+
+    $("#back").onclick = function () {
+        resolveConfirm(false);
+    };
+
+    return new Promise(resolve => {
+        confirmResolve = resolve;
+    });
+}
+
+function resolveConfirm(isConfirmed) {
+    turnOffModal();
+    confirmResolve(isConfirmed);
+}
+
 
 export {
 	turnOnModal,
 	turnOffModal,
 	addEventForEye,
-	renderLogin
+	renderLogin,
+	renderStudentModal,
+	turnOnUpdateStudent,
+	renderStudentAddModal,
+	confirm,
+	renderConfirmModal
 }

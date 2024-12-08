@@ -50,8 +50,24 @@ public class ParentsController extends HttpServlet {
 	}
 	}
 
-	private void adminHandler(HttpServletRequest request, HttpServletResponse response) {
-
+	private void adminHandler(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		request.setCharacterEncoding("UTF-8");
+		response.setCharacterEncoding("UTF-8");
+		response.setContentType("application/json");
+		String destination = "/adimn/parents.jsp";
+		String mode = request.getParameter("mode");
+		if (mode != null) {
+			switch(mode) {
+			case "see":
+				String search = request.getParameter("search");
+				String sort = request.getParameter("sort");
+				String sortField = request.getParameter("sortField");
+				int page = Integer.parseInt(request.getParameter("page"));
+				
+			}
+		}
+		getServletContext().getRequestDispatcher(destination).forward(request, response);
 	}
 	
 	private void parentsHandler(HttpServletRequest request, HttpServletResponse response) {

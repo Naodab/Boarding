@@ -144,7 +144,7 @@ public class GlobalDAO {
 		int result = 0;
 		Connection conn = JDBCUtil.getConnection();
 		try {
-			String sql = "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_NAME=? AND TABLE_SCHEMA=\'sample1\'";
+			String sql = "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_NAME=? AND TABLE_SCHEMA=\'boarding\'";
 			PreparedStatement pps = conn.prepareStatement(sql);
 			pps.setString(1, table);
 			ResultSet rs = pps.executeQuery();

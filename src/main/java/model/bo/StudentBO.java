@@ -3,10 +3,13 @@ package model.bo;
 import java.util.ArrayList;
 import java.util.List;
 
+import model.bean.BoardingClass;
+import model.bean.Parents;
 import model.bean.Student;
 import model.dao.BoardingClassDAO;
 import model.dao.ParentsDAO;
 import model.dao.StudentDAO;
+import model.dto.SearchStudentResponse;
 import model.dto.StudentResponse;
 
 public class StudentBO {
@@ -26,8 +29,9 @@ public class StudentBO {
 	private BoardingClassDAO boardingClassDAO = BoardingClassDAO.getInstance();
 
 	private StudentResponse toStudentResponse(Student student) {
-		return new StudentResponse(student.getStudent_id(), student.getName(), student.getDateOfBirth(),
-				student.getAddress(), student.getSex(), student.isSubMeal());
+		return new StudentResponse(student.getStudent_id(), student.getName(), student.getDateOfBirth().toLocalDate(),
+				student.getAddress(), student.getSex(), student.isSubMeal(), student.getParents_id(),
+				student.getBoardingClass_id());
 	}
 
 	public boolean insert(Student t) {
@@ -44,6 +48,10 @@ public class StudentBO {
 
 	public boolean update(Student t) {
 		return studentDAO.update(t);
+	}
+
+	public boolean adminUpdate(Student t) {
+		return studentDAO.adminUpdate(t);
 	}
 
 	public List<Student> selectAll() {
@@ -70,15 +78,27 @@ public class StudentBO {
 		return studentDAO.selectByBoardingClass_id2(boardingClass_id);
 	}
 
-	public List<StudentResponse> getPageStudent(int page, int amount) {
-		List<Student> students = studentDAO.getPageStudents(page, amount);
+	public List<StudentResponse> getPageStudent(int page, int amount, String search, String sortField,
+			String sortType) {
+		List<Student> students = studentDAO.getPageStudents(page, amount, search, sortField, sortType);
 		List<StudentResponse> result = new ArrayList<StudentResponse>();
 		for (Student student : students) {
 			StudentResponse response = toStudentResponse(student);
-			response.setParentName(parentsDAO.selectById(student.getParents_id()).getName());
-			response.setBoardingClassName(boardingClassDAO.selectById(student.getBoardingClass_id()).getName());
+			Parents parents = parentsDAO.selectById(student.getParents_id());
+			if (parents != null)
+				response.setParentName(parents.getName());
+			else System.out.println(student.getParents_id());
+			BoardingClass boardingClass = boardingClassDAO.selectById(student.getBoardingClass_id());
+			if (boardingClass != null)
+				response.setBoardingClassName(boardingClassDAO.selectById(student.getBoardingClass_id()).getName());
 			result.add(response);
 		}
 		return result;
+	}
+
+	public SearchStudentResponse searchStudent(int page, int amount, String search, String sortField, String sortType) {
+		int size = studentDAO.count(search);
+		List<StudentResponse> students = getPageStudent(page, amount, search, sortField, sortType);
+		return new SearchStudentResponse(size, students);
 	}
 }

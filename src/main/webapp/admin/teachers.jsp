@@ -19,7 +19,7 @@
 		<%@ include file="header.jsp"%>
 
 		<div class="content closure">
-			<div class="content-header">Quản lý học sinh</div>
+			<div class="content-header">Quản lý giáo viên</div>
 			<div class="content-body">
 				<div class="content-function">
 					<div class="sort function__sort function-item">
@@ -63,26 +63,25 @@
 					</div>
 				</div>
 				<div class="content-data scrollable-element">
-					<table class="table student-table">
+					<table class="table teacher-table">
 						<tr>
 							<th class="th__first">Mã</th>
 							<th>Họ và tên</th>
+							<th>Giới tính</th>
 							<th>Ngày sinh</th>
 							<th>Địa chỉ</th>
-							<th>Giới tính</th>
-							<th>Phụ huynh</th>
 							<th>Lớp</th>
-							<th class="th__last">Ăn phụ</th>
+							<th class="th__last">Số điện thoại</th>
 						</tr>
 					</table>
 				</div>
 				<div class="pages-container"></div>
 			</div>
 			<div class="content-footer">
-				<div class="btn btn--green footer-item" id="add-btn">Thêm học sinh</div>
+				<div class="btn btn--green footer-item">Thêm giáo viên</div>
 			</div>
 		</div>
 	</div>
-	<script type="module" src="/boarding/js/admin/students.js"></script>
+	<script type="module" src="/boarding/js/admin/teachers.js"></script>
 </body>
 </html>
