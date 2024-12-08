@@ -1,5 +1,6 @@
 package controller;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -7,6 +8,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import model.bean.Parents;
+import model.bo.ParentsBO;
 
 @WebServlet("/parents")
 public class ParentsController extends HttpServlet {
@@ -33,8 +37,17 @@ public class ParentsController extends HttpServlet {
 		}
 	}
 
-	private void teacherHandler(HttpServletRequest request, HttpServletResponse response) {
-
+	private void teacherHandler(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		request.setCharacterEncoding("UTF-8");
+		response.setCharacterEncoding("UTF-8");
+		String mode = (String)request.getParameter("mode");
+		switch(mode) {
+		case "parentInfor":
+			Parents parent = parentInfor(request, response);
+			String responseJson = jsonParentResponse(parent);
+			response.getWriter().write(responseJson);
+			break;
+	}
 	}
 
 	private void adminHandler(HttpServletRequest request, HttpServletResponse response)
@@ -60,4 +73,43 @@ public class ParentsController extends HttpServlet {
 	private void parentsHandler(HttpServletRequest request, HttpServletResponse response) {
 
 	}
+	
+	private Parents parentInfor(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		StringBuilder sb = new StringBuilder();
+	    String line;
+	    try (BufferedReader reader = request.getReader()) {
+	    while ((line = reader.readLine()) != null) {
+	    	sb.append(line);
+	       }
+	    }
+	    String jsonData = sb.toString();
+	    String parent_id = extractValue(jsonData, "parentId");
+	    return ParentsBO.getInstance().selectById(Integer.parseInt(parent_id));
+	}
+	
+	private String jsonParentResponse(Parents parent) {
+		String jsonResponse = String.format("{"
+                + "\"name\":\"%s\","
+                + "\"dateOfBirth\":\"%s\","
+                + "\"address\":\"%s\","
+                + "\"sex\":\"%s\","
+                + "\"parent_id\": %d,"
+                + "\"email\":\"%s\","
+                + "\"phoneNumber\":\"%s\""
+                + "}", 	parent.getName(),
+                		parent.getDateOfBirth().toString(),
+                		parent.getAddress(),
+                		parent.getSex(),
+                		parent.getParents_id(),
+                		parent.getEmail(),
+                		parent.getPhoneNumber());
+		return jsonResponse;
+	}
+	
+	private String extractValue(String json, String key) {
+        String searchKey = "\"" + key + "\":\"";
+        int startIndex = json.indexOf(searchKey) + searchKey.length();
+        int endIndex = json.indexOf("\"", startIndex);
+        return json.substring(startIndex, endIndex);
+    }
 }

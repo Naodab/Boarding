@@ -34,7 +34,7 @@ public class StudentController extends HttpServlet {
 	private ParentsBO parentsBO = ParentsBO.getInstance();
 	private BoardingClassBO boardingClassBO = BoardingClassBO.getInstance();
 	private GlobalBO globalBO = GlobalBO.getInstance();
-	
+
 	public StudentController() {
 		super();
 	}
@@ -56,8 +56,17 @@ public class StudentController extends HttpServlet {
 		}
 	}
 
-	private void teacherHandler(HttpServletRequest request, HttpServletResponse response) {
-
+	private void teacherHandler(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		request.setCharacterEncoding("UTF-8");
+		response.setCharacterEncoding("UTF-8");
+		String mode = (String)request.getParameter("mode");
+		switch(mode) {
+			case "studentInfor":
+				Student student = studentInfor(request, response);
+				String responseJson = jsonStudentResponse(student);
+				response.getWriter().write(responseJson);
+				break;
+		}
 	}
 
 	private void adminHandler(HttpServletRequest request, HttpServletResponse response)
@@ -120,8 +129,47 @@ public class StudentController extends HttpServlet {
 		return new Student(name, dateOfBirth, address, sex, student_id, 0, 0, parents_id, boardingClass_id, subMeal,
 				null, null);
 	}
-
+	
 	private void parentsHandler(HttpServletRequest request, HttpServletResponse response) {
 
 	}
+
+	private Student studentInfor(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		StringBuilder sb = new StringBuilder();
+	    String line;
+	    try (BufferedReader reader = request.getReader()) {
+	    while ((line = reader.readLine()) != null) {
+	    	sb.append(line);
+	       }
+	    }
+	    String jsonData = sb.toString();
+	    String student_id = extractValue(jsonData, "studentId");
+	    return StudentBO.getInstance().selectById(Integer.parseInt(student_id));
+	}
+
+	private String jsonStudentResponse(Student student) {
+		String jsonResponse = String.format("{"
+                + "\"name\":\"%s\","
+                + "\"dateOfBirth\":\"%s\","
+                + "\"address\":\"%s\","
+                + "\"sex\":\"%s\","
+                + "\"student_id\": %d,"
+                + "\"weight\":%f,"
+                + "\"height\":%f"
+                + "}", 	student.getName(),
+                		student.getDateOfBirth().toString(),
+                		student.getAddress(),
+                		student.getSex(),
+                		student.getStudent_id(),
+                		student.getWeight(),
+                		student.getHeight());
+		return jsonResponse;
+	}
+
+	private String extractValue(String json, String key) {
+        String searchKey = "\"" + key + "\":\"";
+        int startIndex = json.indexOf(searchKey) + searchKey.length();
+        int endIndex = json.indexOf("\"", startIndex);
+        return json.substring(startIndex, endIndex);
+    }
 }
