@@ -174,6 +174,48 @@ public class ParentsDAO implements DAOInterface<Parents> {
 		result.setStudent_id(StudentDAO.getInstance().selectByParents_id(result.getParents_id()));
 		return result;
 	}
+	
+	public List<Parents> getPageParents(int page, int amount, String search, 
+			String sortField, String sortType) {
+		List<Parents> result = new ArrayList<Parents>();
+		Connection conn = JDBCUtil.getConnection();
+		try {
+			String sql = "SELECT * FROM parents ";
+			if (search != null) {
+				search = "%" + search + "%";
+				sql += " WHERE parents_id LIKE ? OR name LIKE ?";
+			}
+			if (sortType != null) {
+				sql += " ORDER BY " + sortField + " " + sortType;
+			}
+			sql += " LIMIT ? OFFSET ?";
+			PreparedStatement pps = conn.prepareStatement(sql);
+			int index = 1;
+			if (search != null) {
+				pps.setString(index++, search);
+				pps.setString(index++, search);
+			}
+			pps.setInt(index++, amount);
+			pps.setInt(index++, page * amount);
+			ResultSet rs = pps.executeQuery();
+			while (rs.next()) {
+				String name = rs.getString("name");
+				Date dateOfBirth = rs.getDate("dateOfBirth");
+				String address = rs.getString("address");
+				Boolean sex = rs.getBoolean("sex");
+				int parents_id = rs.getInt("parents_id");
+				String phoneNumber = rs.getString("phoneNumber");
+				String email = rs.getString("email");
+				result.add(new Parents(name, dateOfBirth, address, sex, parents_id, phoneNumber, email, null));
+			}
+			rs.close();
+			pps.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		JDBCUtil.closeConnection(conn);
+		return result;
+	}
 
 	public Parents selectById(int t) {
 		Parents result = null;

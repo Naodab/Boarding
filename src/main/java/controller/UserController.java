@@ -44,7 +44,7 @@ public class UserController extends HttpServlet {
 			// check it before do anything
 			request.getSession().setAttribute("position", position);
 			if (position.equals("Admin")) {
-				destination = "/admin/students.jsp";
+				destination = "/students";
 			} else if (position.equals("Teacher")) {
 				destination = "/teacher/main.jsp";
 			} else if (position.equals("Parents")) {

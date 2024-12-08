@@ -112,4 +112,9 @@ public class Student extends Person {
 		this.invoice_ids = invoice_ids;
 	}
 
+	@Override
+	public String toString() {
+		return "Student [student_id=" + student_id + ", weight=" + weight + ", height=" + height + ", parents_id="
+				+ parents_id + ", boardingClass_id=" + boardingClass_id + ", subMeal=" + subMeal + "]";
+	}
 }
