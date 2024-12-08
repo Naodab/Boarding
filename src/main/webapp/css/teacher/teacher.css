@@ -1,0 +1,202 @@
+@charset "UTF-8";
+
+.content {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+}
+
+.content-header {
+	width: 100%;
+	text-align: center;
+	font-size: 30px;
+	color: var(--text-color);
+	font-weight: bold;
+	margin-bottom: 32px;
+}
+
+.table {
+    margin-top: 8px;
+    width: 100%;
+    color: var(--text-color);
+    border-radius: 8px;
+    overflow: hidden;
+    border-collapse: separate;
+    border-spacing: 2px 4px;
+    padding: 0;
+}
+
+.table tr {
+    height: 35px;
+    width: 100%;
+    cursor: pointer;
+}
+
+.table th {
+    font-size: 16px;
+    background-color: var(--text-color);
+    color: var(--closure-color);
+    cursor: default;
+}
+
+.table .th__first {
+    border-radius: 8px 0 0 0;
+}
+
+.table .th__last {
+    border-radius: 0 8px 0 0;
+}
+
+.table td {
+    font-size: 13px;
+    overflow: auto;
+    vertical-align: middle;
+    height: 30px;
+    padding-left: 4px;
+}
+
+.table td.center {
+    text-align: center;
+    font-weight: bold;
+}
+
+.table td.contain-percent {
+    padding: 2px;
+}
+
+.table td.contain-percent .percent {
+    height: 100%;
+    border-radius: 4px;
+    background-color: #FF9AA2;
+    color: var(--closure-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    font-weight: bold;
+    overflow: hidden;
+}
+
+.table tr:hover {
+    background-color: var(--overlay-color);
+    box-shadow: 0 0 4px white;
+}
+
+.content-body {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	gap: 50px;
+}
+
+.content-avatar {
+	width: 150px; /* Chiều rộng */
+	height: 150px; /* Chiều cao bằng chiều rộng */
+	background-color: var(--overlay-color);
+	border-radius: 50%; /* Làm tròn khung */
+	background-image: url("path/to/avatar-image.png"); /* Đường dẫn ảnh */
+	background-size: cover; /* Giữ tỷ lệ của ảnh */
+	background-position: center; /* Căn giữa ảnh */
+	background-repeat: no-repeat; /* Không lặp ảnh */
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.content-avatar img {
+	width: 100%; /* Chiều rộng đầy đủ của khung */
+	height: 100%; /* Chiều cao đầy đủ của khung */
+	object-fit: cover; /* Giữ tỷ lệ của ảnh */
+	border-radius: 50%; /* Làm tròn khung ảnh */
+}
+
+.content-right {
+	flex: 2;
+	display: flex;
+	justify-content: space-between;
+	gap: 16px;
+	align-items: center;
+	background-color: none;
+	border: 2px solid var(--green-color);
+	border-radius: 10px;
+	padding: 16px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+	color: var(--text-color);
+	font-size: 17px;
+	text-align: center;
+	font-weight: 500;
+}
+
+.column {
+	display: flex;
+	flex-direction: column; /* Các thông tin xếp dọc */
+	gap: 12px; /* Khoảng cách giữa các dòng trong một cột */
+	flex: 1; /* Chia đều không gian giữa các cột */
+}
+
+.info-box {
+	color: var(--text-color); /* Màu chữ */
+}
+
+.label {
+	width: 150px;
+	font-weight: bold; /* Phần nhãn đậm */
+	margin-right: 7px; /* Khoảng cách giữa nhãn và nội dung */
+}
+
+.content-right .left, .content-right .right {
+	text-align: left;
+}
+
+.user-info {
+	display: inline-block;
+	border-bottom: 1px solid var(--text-color); /* Đường gạch chân cho nội dung */
+	padding-bottom: 2px;
+}
+
+.user-info:hover {
+	border-bottom-color: var(--green-color);
+	color: var(--green-color);
+	cursor: pointer;
+}
+
+.content-center {
+    display: flex;
+    flex-direction: column; /* Đặt các trường thành cột */
+    gap: 16px; /* Khoảng cách giữa các trường */
+    width: 100%;
+    padding: 16px;
+    border: 2px solid var(--green-color);
+    border-radius: 10px;
+    margin-top: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    color: var(--text-color);
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+.content-center .info-box {
+    display: flex;
+    width: 98%; /* Đảm bảo các trường rộng toàn bộ không gian */
+}
+
+.content-center .label {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 4px;
+    color: var(--text-color);
+}
+
+.content-center input {
+    width: 100%;
+    padding: 8px;
+    border: none;
+    border-bottom: 2px solid var(--text-color); /* Đường gạch chân */
+    background: transparent;
+    font-size: 16px;
+    color: var(--text-color);
+    outline: none;
+    margin-bottom: 12px; /* Khoảng cách giữa các trường */
+}
+
+.content-center input:hover {
+    border-bottom: 2px solid var(--blue-color); /* Giữ đường gạch chân khi hover */
+}

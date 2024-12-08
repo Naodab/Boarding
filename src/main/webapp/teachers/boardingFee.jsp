@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>[Giáo viên] - Thông tin cá nhân</title>
+<title>[Giáo viên] - Thu học phí học sinh</title>
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 <link rel="stylesheet" href="./css/base.css">
@@ -16,6 +16,7 @@
 	<div id="background"></div>
 	<div id="container">
 		<%@ include file="header.jsp"%>
+		<p>display teacher boarding feee here! </p>
 	</div>
 </body>
 </html>
