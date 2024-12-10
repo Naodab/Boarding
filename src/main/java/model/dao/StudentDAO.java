@@ -316,14 +316,16 @@ public class StudentDAO implements DAOInterface<Student> {
 		return result;
 	}
 
-	public List<Student> getPageStudents(int page, int amount, String search, String sortField, String sortType) {
+	public List<Student> getPageStudents(int page, int amount, String searchField,
+										 String search, String sortField,
+										 String sortType) {
 		List<Student> result = new ArrayList<Student>();
 		Connection conn = JDBCUtil.getConnection();
 		try {
 			String sql = "SELECT * FROM student";
 			if (search != null) {
 				search = "%" + search + "%";
-				sql += " WHERE student_id LIKE ? OR name LIKE ?";
+				sql += " WHERE " + searchField + " LIKE ?";
 			}
 			if (sortType != null) {
 				sql += " ORDER BY " + sortField + " " + sortType;
@@ -332,7 +334,6 @@ public class StudentDAO implements DAOInterface<Student> {
 			PreparedStatement pps = conn.prepareStatement(sql);
 			int index = 1;
 			if (search != null) {
-				pps.setString(index++, search);
 				pps.setString(index++, search);
 			}
 			pps.setInt(index++, amount);
@@ -359,19 +360,18 @@ public class StudentDAO implements DAOInterface<Student> {
 		return result;
 	}
 
-	public int count(String search) {
+	public int count(String searchField, String search) {
 		int result = -1;
 		Connection conn = JDBCUtil.getConnection();
 		try {
 			String sql = "SELECT count(*) AS total FROM student";
 			if (search != null) {
 				search = "%" + search + "%";
-				sql += " WHERE student_id LIKE ? OR name LIKE ?";
+				sql += " WHERE " + searchField + " LIKE ?";
 			}
 			PreparedStatement pps = conn.prepareStatement(sql);
 			if (search != null) {
 				pps.setString(1, search);
-				pps.setString(2, search);
 			}
 			ResultSet rs = pps.executeQuery();
 			while (rs.next()) {

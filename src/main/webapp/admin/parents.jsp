@@ -8,8 +8,8 @@
 <title>Quản lý bán trú</title>
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-<link rel="stylesheet" href="/boarding/css/base.css">
-<link rel="stylesheet" href="/boarding/css/admin/admin.css">
+<link rel="stylesheet" href="<%= request.getContextPath() %>/css/base.css">
+<link rel="stylesheet" href="<%= request.getContextPath() %>/css/admin/admin.css">
 </head>
 <body>
 	<div id="overlay"></div>
@@ -59,30 +59,34 @@
 								</span>
 							</div>
 						</div>
-
+						<select name="sort__field" class="selection search-field">
+							<option value="parents_id">Mã phụ huynh</option>
+							<option value="name">Họ và tên</option>
+							<option value="dateOfBirth">Ngày sinh</option>
+							<option value="address">Địa chỉ</option>
+						</select>
 					</div>
 				</div>
 				<div class="content-data scrollable-element">
-					<table class="table student-table">
+					<table class="table parents-table">
 						<tr>
 							<th class="th__first">Mã</th>
 							<th>Họ và tên</th>
 							<th>Giới tính</th>
 							<th>Ngày sinh</th>
 							<th>Địa chỉ</th>
-							<th>Phụ huynh</th>
-							<th>Lớp</th>
-							<th class="th__last">Ăn phụ</th>
+							<th>Email</th>
+							<th class="th__last">Số điện thoại</th>
 						</tr>
 					</table>
 				</div>
 				<div class="pages-container"></div>
 			</div>
 			<div class="content-footer">
-				<div class="btn btn--green footer-item">Thêm học sinh</div>
+				<div class="btn btn--green footer-item" id="add-btn">Thêm phụ huynh</div>
 			</div>
 		</div>
 	</div>
-	<script type="module" src="/boarding/js/admin/parents.js"></script>
+	<script type="module" src="<%= request.getContextPath() %>/js/admin/parents.js"></script>
 </body>
 </html>

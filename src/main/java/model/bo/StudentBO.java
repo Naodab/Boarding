@@ -9,6 +9,7 @@ import model.bean.Student;
 import model.dao.BoardingClassDAO;
 import model.dao.ParentsDAO;
 import model.dao.StudentDAO;
+import model.dto.NameAndIdResponse;
 import model.dto.SearchStudentResponse;
 import model.dto.StudentResponse;
 
@@ -78,9 +79,9 @@ public class StudentBO {
 		return studentDAO.selectByBoardingClass_id2(boardingClass_id);
 	}
 
-	public List<StudentResponse> getPageStudent(int page, int amount, String search, String sortField,
+	public List<StudentResponse> getPageStudent(int page, int amount, String searchField, String search, String sortField,
 			String sortType) {
-		List<Student> students = studentDAO.getPageStudents(page, amount, search, sortField, sortType);
+		List<Student> students = studentDAO.getPageStudents(page, amount, searchField, search, sortField, sortType);
 		List<StudentResponse> result = new ArrayList<StudentResponse>();
 		for (Student student : students) {
 			StudentResponse response = toStudentResponse(student);
@@ -96,9 +97,16 @@ public class StudentBO {
 		return result;
 	}
 
-	public SearchStudentResponse searchStudent(int page, int amount, String search, String sortField, String sortType) {
-		int size = studentDAO.count(search);
-		List<StudentResponse> students = getPageStudent(page, amount, search, sortField, sortType);
+	public SearchStudentResponse searchStudent(int page, int amount, String searchField, String search, String sortField, String sortType) {
+		int size = studentDAO.count(searchField, search);
+		List<StudentResponse> students = getPageStudent(page, amount, searchField, search, sortField, sortType);
 		return new SearchStudentResponse(size, students);
+	}
+
+	public List<NameAndIdResponse> getNameAndIdByParents_id(int parents_id) {
+		return selectByParents_id(parents_id).stream().map(student -> {
+			Student student1 = studentDAO.selectById(student);
+			return new NameAndIdResponse(student1.getStudent_id(), student1.getName());
+		}).toList();
 	}
 }

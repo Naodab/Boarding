@@ -36,6 +36,20 @@ function turnOnModal(renderFunction, attr) {
 			turnOffModal();
 		};
 	}
+
+	const cancel = $("#cancel");
+	if (cancel) {
+		cancel.onclick = function() {
+			turnOffModal();
+		}
+	}
+
+	const ok = $("#ok");
+	if (ok) {
+		ok.onclick = function() {
+			turnOffModal();
+		}
+	}
 }
 
 function turnOffModal() {
@@ -309,6 +323,213 @@ function turnOnUpdateStudent(student, parents, classes) {
 	}
 }
 
+function renderParentsModal(parents) {
+	return html`
+		<form class="modal closure active" id="update-student" method="POST" action="students?mode=update">
+			<h1 class="modal__title">Thông tin chi tiết</h1>
+			<i class="fa-solid fa-xmark btn-icon btn-close" id="back"></i>
+			<div class="error-message"></div>
+			<div class="main-modal">
+				<div class="main-header">
+					<div class="data-header">
+						<div class="admin-form-group">
+							<div class="admin-form-group first-column">
+								<label for="id">Mã phụ huynh:</label>
+								<input type="text" id="id" name="student_id" value="${parents.parents_id}" readonly>
+							</div>
+							<div class="admin-form-group second-column">
+								<label for="sex">Giới tính:</label>
+								<div class="form-control radio-container">
+									<input type="radio" id="sex-male" name="sex" class="form-control" value="Nam"
+										${parents.sex && "checked" } readonly>Nam
+									<input type="radio" id="sex-female" name="sex" class="form-control" value="Nữ"
+										${!parents.sex && "checked"} readonly>Nữ
+								</div>
+							</div>
+						</div>
+						<div class="admin-form-group">
+							<label for="name">Họ và tên:</label>
+							<input type="text" id="name" name="name" class="form-control" value="${parents.name}"  readonly>
+						</div>
+						<div class="admin-form-group">
+							<label for="dateOfBirth">Ngày sinh:</label>
+							<input type="date" id="dateOfBirth" name="dateOfBirth" class="form-control" value="${parents.dateOfBirth}" readonly>
+						</div>
+						<div class="admin-form-group">
+							<label for="address">Địa chỉ:</label>
+							<input type="text" id="address" name="address" class="form-control" value="${parents.address}"
+								 readonly>
+						</div>
+						<div class="admin-form-group">
+							<label for="email">Email:</label>
+							<input type="email" id="email" name="email" class="form-control" value="${parents.email}"
+								   readonly>
+						</div>
+						<div class="admin-form-group">
+							<label for="phone">Số điện thoại:</label>
+							<input type="number" id="phone" name="phone" value="${parents.phone}" readonly>
+						</div>
+						<div class="admin-form-group">
+							<div class="admin-form-group">
+								<label for="">Các con:</label>
+								<span class="form-select hide">${parents.numberChildren}</span>
+							</div>
+							<span class="second-column detail" id="children-detail">Xem chi tiết</span>
+						</div>
+					</div>
+				</div>
+				<div class="modal__function top--margin">
+					<div class="btn btn--green modal__btn hide" id="update-btn">Cập nhật</div>
+					<div class="btn btn--pink modal__btn hide" id="delete-btn">Xóa</div>
+				</div>
+			</div>
+		</form>>
+	`;
+}
+
+function renderUpdateParentsModal(parents) {
+	return html`
+		<form class="modal closure active" id="update-parents" method="POST" action="parents?mode=update">
+			<h1 class="modal__title">Cập nhật</h1>
+			<i class="fa-solid fa-xmark btn-icon btn-close" id="back"></i>
+			<div class="error-message"></div>
+			<div class="main-modal">
+				<div class="main-header">
+					<div class="data-header">
+						<div class="admin-form-group">
+							<div class="admin-form-group first-column">
+								<label for="id">Mã phụ huynh:</label>
+								<input type="text" id="id" name="student_id" value="${parents.parents_id}" readonly>
+							</div>
+							<div class="admin-form-group second-column">
+								<label for="sex">Giới tính:</label>
+								<div class="form-control radio-container">
+									<input type="radio" id="sex-male" name="sex" class="form-control" value="Nam"
+										${parents.sex && "checked" }>Nam
+									<input type="radio" id="sex-female" name="sex" class="form-control" value="Nữ"
+										${!parents.sex && "checked"}>Nữ
+								</div>
+							</div>
+						</div>
+						<div class="admin-form-group">
+							<label for="name">Họ và tên:</label>
+							<input type="text" id="name" name="name" class="form-control" value="${parents.name}" required>
+						</div>
+						<div class="admin-form-group">
+							<label for="dateOfBirth">Ngày sinh:</label>
+							<input type="date" id="dateOfBirth" name="dateOfBirth" class="form-control" value="${parents.dateOfBirth}" required>
+						</div>
+						<div class="admin-form-group">
+							<label for="address">Địa chỉ:</label>
+							<input type="text" id="address" name="address" class="form-control" value="${parents.address}" required>
+						</div>
+						<div class="admin-form-group">
+							<label for="email">Email:</label>
+							<input type="email" id="email" name="email" class="form-control" value="${parents.email}">
+						</div>
+						<div class="admin-form-group">
+							<label for="phone">Số điện thoại:</label>
+							<input type="number" id="phone" name="phone" value="${parents.phone}" required>
+						</div>
+					</div>
+				</div>
+				<div class="modal__function top--margin">
+					<input type="submit" class="btn btn--green modal__btn" id="confirm-btn" value="Xác nhận">
+					<div class="btn btn--pink modal__btn" id="cancel">Hủy</div>
+				</div>
+			</div>
+		</form>
+	`;
+}
+
+function renderAddParentsModal(id) {
+	return html`
+		<form class="modal closure active" id="add-parents" method="POST" action="parents?mode=add">
+			<h1 class="modal__title">Thêm phụ huynh</h1>
+			<i class="fa-solid fa-xmark btn-icon btn-close" id="back"></i>
+			<div class="error-message"></div>
+			<div class="main-modal">
+				<div class="main-header">
+					<div class="data-header">
+						<div class="admin-form-group">
+							<div class="admin-form-group first-column">
+								<label for="id">Mã phụ huynh:</label>
+								<input type="text" id="id" name="student_id" value="${id}" readonly>
+							</div>
+							<div class="admin-form-group second-column">
+								<label for="sex">Giới tính:</label>
+								<div class="form-control radio-container">
+									<input type="radio" id="sex-male" name="sex" class="form-control" value="Nam">Nam
+									<input type="radio" id="sex-female" name="sex" class="form-control" value="Nữ">Nữ
+								</div>
+							</div>
+						</div>
+						<div class="admin-form-group">
+							<label for="name">Họ và tên:</label>
+							<input type="text" id="name" name="name" class="form-control" required>
+						</div>
+						<div class="admin-form-group">
+							<label for="dateOfBirth">Ngày sinh:</label>
+							<input type="date" id="dateOfBirth" name="dateOfBirth" class="form-control" required>
+						</div>
+						<div class="admin-form-group">
+							<label for="address">Địa chỉ:</label>
+							<input type="text" id="address" name="address" class="form-control" required>
+						</div>
+						<div class="admin-form-group">
+							<label for="email">Email:</label>
+							<input type="email" id="email" name="email" class="form-control">
+						</div>
+						<div class="admin-form-group">
+							<label for="phone">Số điện thoại:</label>
+							<input type="number" id="phone" name="phone" required>
+						</div>
+					</div>
+				</div>
+				<div class="modal__function top--margin">
+					<input type="submit" class="btn btn--green modal__btn" id="confirm-btn" value="Xác nhận">
+					<div class="btn btn--pink modal__btn" id="cancel">Hủy</div>
+				</div>
+			</div>
+		</form>
+	`;
+}
+
+function renderChildrenTableModal(data) {
+	return html`
+		<div class="modal closure active" id="update-avatar">
+			<h1 class="modal__title">Chi tiết</h1>
+			<i class="fa-solid fa-xmark btn-icon btn-close" id="back"></i>
+			<div class="main-modal">
+				<table class="table detail-children">
+					<tr>
+						${data.column && data.column.map((column, index) => 
+							html`
+								<th class="${index === 0 && 'th__first'} ${index === data.column.length - 1 && 'th__last'}">
+									${column}
+								</th>
+							`
+						)}
+					</tr>
+					${
+						data.items.map((item, index) =>
+							html`
+								<tr>
+									<td>${item.id}</td>
+									<td>${item.name}</td>
+								</tr>
+							`
+						)
+					}
+				</table>
+				<div class="modal__function top--margin">
+					<div class="btn btn--green modal__btn" id="cancel">Thoát</div>
+				</div>
+			</div>
+		</div>
+	`;
+}
+
 function renderConfirmModal(message) {
     return html`
         <div class="modal closure active" id="update-avatar">
@@ -319,6 +540,21 @@ function renderConfirmModal(message) {
                 <div class="modal__function top--margin">
                     <div class="btn btn--green modal__btn" id="yes">Có</div>
                     <div class="btn btn--pink modal__btn" id="no">Không</div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function renderAlertModal(message) {
+	return html`
+        <div class="modal closure active" id="update-avatar">
+            <h1 class="modal__title">Thông báo</h1>
+            <i class="fa-solid fa-xmark btn-icon btn-close" id="back"></i>
+            <div class="main-modal">
+                <h3 class="modal__elo modal-item">${message}</h3>
+                <div class="modal__function top--margin">
+                    <div class="btn btn--green modal__btn" id="ok">Ok</div>
                 </div>
             </div>
         </div>
@@ -357,9 +593,14 @@ export {
 	turnOffModal,
 	addEventForEye,
 	renderLogin,
+	renderAlertModal,
 	renderStudentModal,
 	turnOnUpdateStudent,
 	renderStudentAddModal,
+	renderChildrenTableModal,
+	renderUpdateParentsModal,
+	renderAddParentsModal,
 	confirm,
-	renderConfirmModal
+	renderConfirmModal,
+	renderParentsModal
 }

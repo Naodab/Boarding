@@ -175,7 +175,7 @@ public class ParentsDAO implements DAOInterface<Parents> {
 		return result;
 	}
 	
-	public List<Parents> getPageParents(int page, int amount, String search, 
+	public List<Parents> getPageParents(int page, int amount, String searchField, String search,
 			String sortField, String sortType) {
 		List<Parents> result = new ArrayList<Parents>();
 		Connection conn = JDBCUtil.getConnection();
@@ -183,7 +183,9 @@ public class ParentsDAO implements DAOInterface<Parents> {
 			String sql = "SELECT * FROM parents ";
 			if (search != null) {
 				search = "%" + search + "%";
-				sql += " WHERE parents_id LIKE ? OR name LIKE ?";
+				sql += " WHERE " + searchField + " LIKE ? AND parents_id != 0";
+			} else {
+				sql += " WHERE parents_id != 0";
 			}
 			if (sortType != null) {
 				sql += " ORDER BY " + sortField + " " + sortType;
@@ -192,7 +194,6 @@ public class ParentsDAO implements DAOInterface<Parents> {
 			PreparedStatement pps = conn.prepareStatement(sql);
 			int index = 1;
 			if (search != null) {
-				pps.setString(index++, search);
 				pps.setString(index++, search);
 			}
 			pps.setInt(index++, amount);
@@ -243,6 +244,33 @@ public class ParentsDAO implements DAOInterface<Parents> {
 		JDBCUtil.closeConnection(conn);
 		if (result != null)
 			result.setStudent_id(StudentDAO.getInstance().selectByParents_id(result.getParents_id()));
+		return result;
+	}
+
+	public int count(String searchField, String search) {
+		int result = -1;
+		Connection conn = JDBCUtil.getConnection();
+		try {
+			String sql = "SELECT count(*) AS total FROM parents";
+			if (search != null) {
+				search = "%" + search + "%";
+				sql += " WHERE " + searchField + " LIKE ? AND parents_id != 0";
+			} else {
+				sql += " WHERE parents_id != 0";
+			}
+			PreparedStatement pps = conn.prepareStatement(sql);
+			if (search != null) {
+				pps.setString(1, search);
+				pps.setString(2, search);
+			}
+			ResultSet rs = pps.executeQuery();
+			while (rs.next()) {
+				result = rs.getInt("total");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		JDBCUtil.closeConnection(conn);
 		return result;
 	}
 }

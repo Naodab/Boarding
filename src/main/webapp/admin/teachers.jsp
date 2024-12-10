@@ -8,8 +8,8 @@
 <title>Quản lý bán trú</title>
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-<link rel="stylesheet" href="/boarding/css/base.css">
-<link rel="stylesheet" href="/boarding/css/admin/admin.css">
+<link rel="stylesheet" href="<%= request.getContextPath() %>/css/base.css">
+<link rel="stylesheet" href="<%= request.getContextPath() %>/css/admin/admin.css">
 </head>
 <body>
 	<div id="overlay"></div>
@@ -24,7 +24,7 @@
 				<div class="content-function">
 					<div class="sort function__sort function-item">
 						<div class="function__header">Sắp xếp</div>
-						<select name="sort__field" class="selection">
+						<select name="sort__field" class="selection sort-field">
 							<option value="name">Họ và tên</option>
 							<option value="dateOfBirth">Ngày sinh</option>
 						</select>
@@ -59,29 +59,36 @@
 								</span>
 							</div>
 						</div>
-
+						<select name="sort__field" class="selection search-field">
+							<option value="teacher_id">Mã giáo viên</option>
+							<option value="name">Họ và tên</option>
+							<option value="dateOfBirth">Ngày sinh</option>
+							<option value="address">Địa chỉ</option>
+						</select>
 					</div>
+
 				</div>
 				<div class="content-data scrollable-element">
 					<table class="table teacher-table">
 						<tr>
 							<th class="th__first">Mã</th>
 							<th>Họ và tên</th>
-							<th>Giới tính</th>
 							<th>Ngày sinh</th>
 							<th>Địa chỉ</th>
-							<th>Lớp</th>
-							<th class="th__last">Số điện thoại</th>
+							<th>Giới tính</th>
+							<th>Số điện thoại</th>
+							<th>Email</th>
+							<th class="th__last">Lớp quản lý</th>
 						</tr>
 					</table>
 				</div>
 				<div class="pages-container"></div>
 			</div>
 			<div class="content-footer">
-				<div class="btn btn--green footer-item">Thêm giáo viên</div>
+				<div class="btn btn--green footer-item" id="add-btn">Thêm giáo viên</div>
 			</div>
 		</div>
 	</div>
-	<script type="module" src="/boarding/js/admin/teachers.js"></script>
+	<script type="module" src="<%= request.getContextPath() %>/js/admin/teachers.js"></script>
 </body>
 </html>

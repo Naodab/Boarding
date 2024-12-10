@@ -2,6 +2,7 @@ package controller;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
@@ -11,17 +12,25 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import model.bean.Student;
 import model.bean.Teacher;
 import model.bo.BoardingClassBO;
 import model.bo.StudentBO;
 import model.bo.TeacherBO;
+import model.dto.SearchResponse;
+import model.dto.TeacherResponse;
+import util.AdminUtil;
+import util.LocalDateAdapter;
 
 @WebServlet("/teachers")
 public class TeacherController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private final Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
+	private final TeacherBO teacherBO = TeacherBO.getInstance();
 
-	public TeacherController() {
+    public TeacherController() {
 		super();
 	}
 
@@ -74,8 +83,29 @@ public class TeacherController extends HttpServlet {
 		}
 	}
 
-	private void adminHandler(HttpServletRequest request, HttpServletResponse response) {
-
+	private void adminHandler(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		request.setCharacterEncoding("UTF-8");
+		response.setCharacterEncoding("UTF-8");
+		response.setContentType("application/json");
+		String destination = "/admin/teachers.jsp";
+		String mode = request.getParameter("mode");
+		if (mode != null) {
+            int TEACHERS_PER_PAGE = AdminUtil.ITEMS_PER_PAGE;
+            switch (mode) {
+				case "see":
+					String search = request.getParameter("search");
+					String searchField = request.getParameter("searchField");
+					String sort = request.getParameter("sort");
+					String sortField = request.getParameter("sortField");
+					int page = Integer.parseInt(request.getParameter("page"));
+					SearchResponse<TeacherResponse> result = teacherBO.search(page, TEACHERS_PER_PAGE, searchField, search, sortField, sort);
+					response.getWriter().print(gson.toJson(result));
+					return;
+				case "add":
+			}
+		}
+		getServletContext().getRequestDispatcher(destination).forward(request, response);
 	}
 	
 	private void parentsHandler(HttpServletRequest request, HttpServletResponse response) {
