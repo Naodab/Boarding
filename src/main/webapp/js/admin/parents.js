@@ -223,8 +223,5 @@ document.querySelector("#add-btn").onclick = () => {
 		}
 	}).then(resp => resp.json()).then(data => {
 		turnOnModal(renderAddParentsModal, data.nextId);
-		document.querySelector("#confirm-btn").onclick = () => {
-			turnOffModal();
-		}
 	});
 }

@@ -261,7 +261,6 @@ public class ParentsDAO implements DAOInterface<Parents> {
 			PreparedStatement pps = conn.prepareStatement(sql);
 			if (search != null) {
 				pps.setString(1, search);
-				pps.setString(2, search);
 			}
 			ResultSet rs = pps.executeQuery();
 			while (rs.next()) {

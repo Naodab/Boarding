@@ -97,7 +97,7 @@ public class StudentController extends HttpServlet {
 				case "update":
 					Student student = getStudentFromRequest(request);
 					studentBO.adminUpdate(student);
-					return;
+					break;
 				case "preAdd":
 					int nextId = globalBO.getAuto_IncrementOf("student");
 					List<NameAndIdResponse> parentsAdd = parentsBO.getNameAndIds();
@@ -115,8 +115,7 @@ public class StudentController extends HttpServlet {
 					System.out.println(student_id);
 					if (studentBO.deleteByID(student_id))
 						System.out.println("DELETE student " + student_id);
-					;
-					return;
+					break;
 			}
 		}
 		getServletContext().getRequestDispatcher(destination).forward(request, response);

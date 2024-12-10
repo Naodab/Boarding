@@ -325,7 +325,7 @@ function turnOnUpdateStudent(student, parents, classes) {
 
 function renderParentsModal(parents) {
 	return html`
-		<form class="modal closure active" id="update-student" method="POST" action="students?mode=update">
+		<form class="modal closure active" id="update-student" method="POST" action="parents?mode=update">
 			<h1 class="modal__title">Thông tin chi tiết</h1>
 			<i class="fa-solid fa-xmark btn-icon btn-close" id="back"></i>
 			<div class="error-message"></div>
@@ -399,7 +399,7 @@ function renderUpdateParentsModal(parents) {
 						<div class="admin-form-group">
 							<div class="admin-form-group first-column">
 								<label for="id">Mã phụ huynh:</label>
-								<input type="text" id="id" name="student_id" value="${parents.parents_id}" readonly>
+								<input type="text" id="id" name="parents_id" value="${parents.parents_id}" readonly>
 							</div>
 							<div class="admin-form-group second-column">
 								<label for="sex">Giới tính:</label>
@@ -434,7 +434,7 @@ function renderUpdateParentsModal(parents) {
 					</div>
 				</div>
 				<div class="modal__function top--margin">
-					<input type="submit" class="btn btn--green modal__btn" id="confirm-btn" value="Xác nhận">
+					<input type="submit" class="btn btn--green modal__btn" value="Xác nhận">
 					<div class="btn btn--pink modal__btn" id="cancel">Hủy</div>
 				</div>
 			</div>
@@ -454,7 +454,7 @@ function renderAddParentsModal(id) {
 						<div class="admin-form-group">
 							<div class="admin-form-group first-column">
 								<label for="id">Mã phụ huynh:</label>
-								<input type="text" id="id" name="student_id" value="${id}" readonly>
+								<input type="text" id="id" name="parents_id" value="${id}" readonly>
 							</div>
 							<div class="admin-form-group second-column">
 								<label for="sex">Giới tính:</label>
@@ -487,7 +487,7 @@ function renderAddParentsModal(id) {
 					</div>
 				</div>
 				<div class="modal__function top--margin">
-					<input type="submit" class="btn btn--green modal__btn" id="confirm-btn" value="Xác nhận">
+					<input type="submit" name="add" class="btn btn--green modal__btn" id="confirm-btn" value="Xác nhận">
 					<div class="btn btn--pink modal__btn" id="cancel">Hủy</div>
 				</div>
 			</div>
