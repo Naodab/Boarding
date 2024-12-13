@@ -2,6 +2,8 @@ package controller;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -16,9 +18,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import model.bean.Student;
 import model.bean.Teacher;
-import model.bo.BoardingClassBO;
-import model.bo.StudentBO;
-import model.bo.TeacherBO;
+import model.bean.User;
+import model.bo.*;
+import model.dto.NameAndIdResponse;
+import model.dto.PreAddTeacherResponse;
 import model.dto.SearchResponse;
 import model.dto.TeacherResponse;
 import util.AdminUtil;
@@ -29,6 +32,9 @@ public class TeacherController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private final Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
 	private final TeacherBO teacherBO = TeacherBO.getInstance();
+	private final UserBO userBO = UserBO.getInstance();
+	private final GlobalBO globalBO = GlobalBO.getInstance();
+	private final BoardingClassBO boardingClassBO = BoardingClassBO.getInstance();
 
     public TeacherController() {
 		super();
@@ -99,13 +105,64 @@ public class TeacherController extends HttpServlet {
 					String sort = request.getParameter("sort");
 					String sortField = request.getParameter("sortField");
 					int page = Integer.parseInt(request.getParameter("page"));
-					SearchResponse<TeacherResponse> result = teacherBO.search(page, TEACHERS_PER_PAGE, searchField, search, sortField, sort);
+					SearchResponse<TeacherResponse> result = teacherBO.search(page,
+							TEACHERS_PER_PAGE, searchField, search, sortField, sort);
 					response.getWriter().print(gson.toJson(result));
 					return;
 				case "add":
+					Teacher teacherAdd = getTeacherFromRequest(request);
+					userBO.insert(new User(teacherAdd.getPhoneNumber(), null,
+							"Teacher", true, Date.valueOf(LocalDate.now())));
+					teacherBO.insert(teacherAdd);
+					response.sendRedirect(request.getContextPath() + "/teachers");
+					return;
+				case "preAdd":
+					int nextId = globalBO.getAuto_IncrementOf("teacher");
+					List<NameAndIdResponse> classesResponse = boardingClassBO.getNameAndIds();
+					PreAddTeacherResponse responsePreAdd = new PreAddTeacherResponse(nextId,
+							classesResponse);
+					response.getWriter().print(gson.toJson(responsePreAdd));
+					response.flushBuffer();
+					return;
+				case "delete":
+					int teacherIdDelete = Integer.parseInt(request.getParameter("teacher_id"));
+					Teacher teacherDelete = teacherBO.selectById(teacherIdDelete);
+					userBO.deleteByUsername(teacherDelete.getPhoneNumber());
+					teacherBO.deleteById(teacherIdDelete);
+					response.setStatus(HttpServletResponse.SC_OK);
+					return;
+				case "update":
+					Teacher teacherUpdate = getTeacherFromRequest(request);
+					Teacher teacherBefore = teacherBO.selectById(teacherUpdate.getTeacher_id());
+					if (!teacherBefore.getPhoneNumber().equals(teacherUpdate.getPhoneNumber())) {
+						userBO.updateUsername(teacherBefore.getPhoneNumber(),
+								teacherUpdate.getPhoneNumber());
+					}
+					teacherBO.update(teacherUpdate);
+					response.sendRedirect(request.getContextPath() + "/teachers");
+					return;
+				case "preUpdate":
+					List<NameAndIdResponse> preUpdateClasses = boardingClassBO.getNameAndIds();
+					response.getWriter().print(gson.toJson(preUpdateClasses));
+					response.flushBuffer();
+					return;
 			}
 		}
 		getServletContext().getRequestDispatcher(destination).forward(request, response);
+	}
+
+	private Teacher getTeacherFromRequest(HttpServletRequest request)
+			throws UnsupportedEncodingException {
+		int teacher_id = Integer.parseInt(request.getParameter("teacher_id"));
+		String name = request.getParameter("name");
+		String address = request.getParameter("address");
+		String phoneNumber = request.getParameter("phone");
+		String email = request.getParameter("email");
+		boolean sex = request.getParameter("sex").equals("Nam");
+		Date dateOfBirth = Date.valueOf(LocalDate.parse(request.getParameter("dateOfBirth")));
+		int boardingClass_id = Integer.parseInt(request.getParameter("boardingClass_id"));
+		return new Teacher(name, dateOfBirth, address, sex,
+				teacher_id, phoneNumber, email, boardingClass_id);
 	}
 	
 	private void parentsHandler(HttpServletRequest request, HttpServletResponse response) {

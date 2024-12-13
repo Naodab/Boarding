@@ -1,6 +1,5 @@
 package model.bo;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,6 +76,10 @@ public class ParentsBO {
 														  String sortField, String sortType) {
 		return new SearchResponse<>(parentsDAO.count(searchField, search),
 				getPageParents(page, amount, searchField, search, sortField, sortType));
+	}
+
+	public int count(String searchField, String info) {
+		return parentsDAO.count(searchField, info);
 	}
 
 	public ParentsResponse toParentsResponse(Parents t) {

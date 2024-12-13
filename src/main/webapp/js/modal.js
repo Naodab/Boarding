@@ -46,9 +46,9 @@ function turnOnModal(renderFunction, attr) {
 
 	const ok = $("#ok");
 	if (ok) {
-		ok.onclick = function() {
+		ok.addEventListener("click", () => {
 			turnOffModal();
-		}
+		});
 	}
 }
 
@@ -253,8 +253,10 @@ function renderStudentAddModal({nextId, parents, classes}) {
 							<div class="admin-form-group second-column">
 								<label for="sex">Giới tính:</label>
 								<div class="form-control radio-container">
-									<input type="radio" id="sex-male" name="sex" class="form-control" value="Nam" checked>Nam
-									<input type="radio" id="sex-female" name="sex" class="form-control" value="Nữ"}>Nữ
+									<input type="radio" id="sex-male" name="sex" 
+										   class="form-control" value="Nam" checked>Nam
+									<input type="radio" id="sex-female" name="sex" 
+										   class="form-control" value="Nữ"}>Nữ
 								</div>
 							</div>
 						</div>
@@ -264,14 +266,17 @@ function renderStudentAddModal({nextId, parents, classes}) {
 						</div>
 						<div class="admin-form-group">
 							<label for="dateOfBirth">Ngày sinh:</label>
-							<input type="date" id="dateOfBirth" name="dateOfBirth" class="form-control" value="${new Date().toISOString().split('T')[0]}">
+							<input type="date" id="dateOfBirth" name="dateOfBirth" class="form-control" 
+								   value="${new Date().toISOString().split('T')[0]}">
 						</div>
 						<div class="admin-form-group">
 							<div class="admin-form-group">
 								<label for="sex">Ăn phụ:</label>
 								<div class="form-control radio-container">
-									<input type="radio" id="sex-male" name="subMeal" class="form-control" value="true" checked>Có
-									<input type="radio" id="sex-female" name="subMeal" class="form-control" value="false">Không
+									<input type="radio" id="sex-male" name="subMeal" 
+										   class="form-control" value="true" checked>Có
+									<input type="radio" id="sex-female" name="subMeal" 
+										   class="form-control" value="false">Không
 								</div>
 							</div>
 							<div class="admin-form-group second-column">
@@ -400,6 +405,7 @@ function renderUpdateParentsModal(parents) {
 							<div class="admin-form-group first-column">
 								<label for="id">Mã phụ huynh:</label>
 								<input type="text" id="id" name="parents_id" value="${parents.parents_id}" readonly>
+								<span class="form-message"></span>
 							</div>
 							<div class="admin-form-group second-column">
 								<label for="sex">Giới tính:</label>
@@ -408,28 +414,38 @@ function renderUpdateParentsModal(parents) {
 										${parents.sex && "checked" }>Nam
 									<input type="radio" id="sex-female" name="sex" class="form-control" value="Nữ"
 										${!parents.sex && "checked"}>Nữ
+									<span class="form-message"></span>
 								</div>
 							</div>
 						</div>
 						<div class="admin-form-group">
 							<label for="name">Họ và tên:</label>
-							<input type="text" id="name" name="name" class="form-control" value="${parents.name}" required>
+							<input type="text" id="name" name="name" 
+								   class="form-control" value="${parents.name}" required>
+							<span class="form-message"></span>
 						</div>
 						<div class="admin-form-group">
 							<label for="dateOfBirth">Ngày sinh:</label>
-							<input type="date" id="dateOfBirth" name="dateOfBirth" class="form-control" value="${parents.dateOfBirth}" required>
+							<input type="date" id="dateOfBirth" name="dateOfBirth" 
+								   class="form-control" value="${parents.dateOfBirth}" required>
+							<span class="form-message"></span>
 						</div>
 						<div class="admin-form-group">
 							<label for="address">Địa chỉ:</label>
-							<input type="text" id="address" name="address" class="form-control" value="${parents.address}" required>
+							<input type="text" id="address" name="address" 
+								   class="form-control" value="${parents.address}" required>
+							<span class="form-message"></span>
 						</div>
 						<div class="admin-form-group">
 							<label for="email">Email:</label>
-							<input type="email" id="email" name="email" class="form-control" value="${parents.email}">
+							<input type="email" id="email" 
+								   name="email" class="form-control" value="${parents.email}">
+							<span class="form-message"></span>
 						</div>
 						<div class="admin-form-group">
 							<label for="phone">Số điện thoại:</label>
 							<input type="number" id="phone" name="phone" value="${parents.phone}" required>
+							<span class="form-message"></span>
 						</div>
 					</div>
 				</div>
@@ -455,39 +471,50 @@ function renderAddParentsModal(id) {
 							<div class="admin-form-group first-column">
 								<label for="id">Mã phụ huynh:</label>
 								<input type="text" id="id" name="parents_id" value="${id}" readonly>
+								<span class="form-message"></span>
 							</div>
 							<div class="admin-form-group second-column">
 								<label for="sex">Giới tính:</label>
 								<div class="form-control radio-container">
-									<input type="radio" id="sex-male" name="sex" class="form-control" value="Nam">Nam
-									<input type="radio" id="sex-female" name="sex" class="form-control" value="Nữ">Nữ
+									<input type="radio" id="sex-male" 
+										   name="sex" class="form-control" value="Nam" checked>Nam
+									<input type="radio" id="sex-female" name="sex" 
+										   class="form-control" value="Nữ">Nữ
+									<span class="form-message"></span>
 								</div>
 							</div>
 						</div>
 						<div class="admin-form-group">
 							<label for="name">Họ và tên:</label>
 							<input type="text" id="name" name="name" class="form-control" required>
+							<span class="form-message"></span>
 						</div>
 						<div class="admin-form-group">
 							<label for="dateOfBirth">Ngày sinh:</label>
-							<input type="date" id="dateOfBirth" name="dateOfBirth" class="form-control" required>
+							<input type="date" id="dateOfBirth" name="dateOfBirth" class="form-control"
+								   value="${new Date().toISOString().split('T')[0]}" required>
+							<span class="form-message"></span>
 						</div>
 						<div class="admin-form-group">
 							<label for="address">Địa chỉ:</label>
 							<input type="text" id="address" name="address" class="form-control" required>
+							<span class="form-message"></span>
 						</div>
 						<div class="admin-form-group">
 							<label for="email">Email:</label>
 							<input type="email" id="email" name="email" class="form-control">
+							<span class="form-message"></span>
 						</div>
 						<div class="admin-form-group">
 							<label for="phone">Số điện thoại:</label>
 							<input type="number" id="phone" name="phone" required>
+							<span class="form-message"></span>
 						</div>
 					</div>
 				</div>
 				<div class="modal__function top--margin">
-					<input type="submit" name="add" class="btn btn--green modal__btn" id="confirm-btn" value="Xác nhận">
+					<input type="submit" name="add" class="btn btn--green modal__btn" 
+						   id="confirm-btn" value="Xác nhận">
 					<div class="btn btn--pink modal__btn" id="cancel">Hủy</div>
 				</div>
 			</div>
@@ -589,18 +616,18 @@ function resolveConfirm(isConfirmed) {
 
 
 export {
+	confirm,
+	renderLogin,
 	turnOnModal,
 	turnOffModal,
 	addEventForEye,
-	renderLogin,
 	renderAlertModal,
 	renderStudentModal,
+	renderConfirmModal,
+	renderParentsModal,
 	turnOnUpdateStudent,
 	renderStudentAddModal,
+	renderAddParentsModal,
 	renderChildrenTableModal,
 	renderUpdateParentsModal,
-	renderAddParentsModal,
-	confirm,
-	renderConfirmModal,
-	renderParentsModal
 }

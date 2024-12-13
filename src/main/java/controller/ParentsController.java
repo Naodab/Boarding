@@ -74,7 +74,6 @@ public class ParentsController extends HttpServlet {
 		response.setContentType("application/json");
 		String destination = "/admin/parents.jsp";
 		String mode = request.getParameter("mode");
-		System.out.println(mode);
 		if (mode != null) {
             int PARENTS_PER_PAGE = AdminUtil.ITEMS_PER_PAGE;
             switch(mode) {
@@ -104,25 +103,25 @@ public class ParentsController extends HttpServlet {
 				int id = Integer.parseInt(request.getParameter("parents_id"));
 				parentsBO.deleteByID(id);
 				userBO.deleteByUsername(request.getParameter("username"));
+				response.sendRedirect(request.getContextPath() + "/parents");
 				return;
 			case "update":
 				Parents parents = getParentsFromRequest(request);
-				System.out.println("UPDATE " + parents.getName());
 				Parents beforeUpdate = parentsBO.selectById(parents.getParents_id());
 				parentsBO.update(parents);
 				if (!beforeUpdate.getPhoneNumber().equals(parents.getPhoneNumber())) {
-					User userUpdate = userBO.selectByUserName(beforeUpdate.getPhoneNumber());
-					userUpdate.setUsername(parents.getPhoneNumber());
-					userBO.update(userUpdate);
+					userBO.updateUsername(beforeUpdate.getPhoneNumber(),
+							parents.getPhoneNumber());
 				}
-				break;
+				response.sendRedirect(request.getContextPath() + "/parents");
+				return;
 			case "add":
 				Parents addParents = getParentsFromRequest(request);
-				System.out.println("Add" + addParents.getName());
 				if (parentsBO.insert(addParents))
 					System.out.println("Add" + addParents.getName());
 				User newUser = new User(addParents.getPhoneNumber(), null, "Parents", true, Date.valueOf(LocalDate.now()));
 				userBO.insert(newUser);
+				response.sendRedirect(request.getContextPath() + "/parents");
 				return;
 			}
 		}

@@ -56,8 +56,13 @@ public class UserController extends HttpServlet {
 				
 			}
 			break;
+		case "checkExist":
+			if (request.getSession().getAttribute("position") == null) return;
+			String usernameCheck = request.getParameter("username");
+			response.getWriter().write("{\"result\": "+ userBO.existsByUsername(usernameCheck) + "}");
+			response.flushBuffer();
+			return;
 		}
 		response.sendRedirect(request.getContextPath() + destination);
-		return;
 	}
 }

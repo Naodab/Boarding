@@ -79,6 +79,6 @@ public class TeacherBO {
 
 	public TeacherResponse toTeacherResponse(Teacher t) {
 		return new TeacherResponse(t.getTeacher_id(), t.getName(),
-				t.getDateOfBirth().toLocalDate(), t.getAddress(), t.getPhoneNumber(), t.getEmail());
+				t.getDateOfBirth().toLocalDate(), t.getAddress(), t.getPhoneNumber(), t.getEmail(), t.getSex());
 	}
 }

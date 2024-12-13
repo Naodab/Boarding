@@ -68,15 +68,15 @@ function addStudent(student) {
 }
 
 function deleteStudent({student_id}) {
-	const table = document.querySelector(".parents-table tbody");
-	const trs = table.querySelectorAll("tr");
-	trs.forEach((tr, index) => {
-		const td = tr.querySelector("td");
-		console.log(td);
-		if (td.innerText === student_id) {
-			table.removeChild(tr);
+	const trs = document.querySelectorAll("table tbody tr");
+	for (let i = 1; i < trs.length; i++) {
+		const tr = trs[i];
+		const td = tr.querySelectorAll("td")[0];
+		if (td.innerText === String(student_id)) {
+			tr.remove();
+			return;
 		}
-	})
+	}
 }
 
 function deleteStudents() {

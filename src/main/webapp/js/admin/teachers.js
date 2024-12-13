@@ -1,6 +1,23 @@
-import {turnOnModal, turnOffModal, renderStudentModal, turnOnUpdateStudent} from "/boarding/js/modal.js";
+import {
+	turnOnModal,
+	turnOffModal,
+	renderAlertModal,
+	renderConfirmModal
+} from "../modal.js";
 
-document.querySelector("#teachers").classList.add("active");
+import {
+	renderAddTeacherModal,
+	renderDetailTeacherModal,
+	renderUpdateTeacherModal
+} from "./modalTeacher.js";
+
+import Validator from "../validator.js";
+import {checkExistUsername} from "./common.js";
+
+const $ = document.querySelector.bind(document);
+const $$ = document.querySelectorAll.bind(document);
+
+$("#teachers").classList.add("active");
 
 let activePage = 1;
 let size = 1;
@@ -10,7 +27,7 @@ let lookupValue = "";
 
 window.onload = () => displayPage(1);
 
-function addParents(teacher) {
+function addTeacher(teacher) {
 	const tr = document.createElement("tr");
 	tr.innerHTML = `
 		<td>${teacher.teacher_id}</td>
@@ -22,12 +39,92 @@ function addParents(teacher) {
 		<td>${teacher.email}</td>
 		<td>${teacher.boardingClass}</td>
 	`
-	document.querySelector(".teacher-table tbody").appendChild(tr);
+	tr.onclick = () => {
+		turnOnModal(renderDetailTeacherModal, teacher);
+
+		$("#update-btn").onclick = () => {
+			turnOffModal();
+			fetch("./teachers?mode=preUpdate", {
+				method: 'POST',
+				headers: {
+					"Content-Type": "application/json"
+				}
+			}).then(resp => resp.json()).then(classes => {
+				turnOnModal(renderUpdateTeacherModal, {teacher, classes});
+
+				$(".error-message").innerText = "";
+				Validator({
+					form: '#update-teacher',
+					formGroupSelector: ".admin-form-group",
+					errorSelector: '.form-message',
+					rules: [
+						Validator.isRequired('#name'),
+						Validator.isRequired("#address"),
+						Validator.isEmail("#email"),
+						Validator.isRequired("#email"),
+						Validator.isRequired("#phone"),
+						Validator.isRequired("#dateOfBirth"),
+					],
+					onSubmit: data => {
+						if (data.phone === parents.phone) {
+							$("#update-teacher").submit();
+							return;
+						}
+						checkExistUsername(data.phone).then(result => {
+							if (result) {
+								$(".error-message").innerText = "Số điện thoại không hợp lệ";
+							} else {
+								$("#update-teacher").submit();
+							}
+						})
+					}
+				});
+			})
+		}
+
+		$("#delete-btn").onclick = () => {
+			turnOffModal();
+			if (teacher.boardingClass !== "Không có") {
+				turnOffModal();
+				turnOnModal(renderAlertModal, "Hiện giáo viên này đang quản lý lớp học, hãy chuyển công tác cho giáo viên khác trước khi xóa.");
+				return;
+			}
+			turnOnModal(renderConfirmModal, "Bạn chắc chắn muốn xóa giáo viên " + teacher.name + "?");
+			$("#yes").onclick = () => {
+				fetch(`./teachers?mode=delete&teacher_id=${teacher.teacher_id}`, {
+					method: 'POST',
+					headers: {
+						"Content-Type": "application/json"
+					}
+				}).then(() => {
+					turnOffModal();
+					deleteTeacher(teacher);
+				}).catch(() => {
+					turnOffModal();
+					turnOnModal(renderAlertModal, "Xảy ra lỗi.");
+				});
+			}
+			$("#no").onclick = () => turnOffModal();
+		}
+	}
+	$(".teacher-table tbody").appendChild(tr);
+}
+
+function deleteTeacher({teacher_id}) {
+	const trs = $$("table tbody tr");
+	for (let i = 1; i < trs.length; i++) {
+		const tr = trs[i];
+		const td = tr.querySelectorAll("td")[0];
+		if (td.innerText === String(teacher_id)) {
+			tr.remove();
+			return;
+		}
+	}
 }
 
 function deleteTeachers() {
-	const table = document.querySelector(".teacher-table tbody");
-	const trs = document.querySelectorAll(".teacher-table tr");
+	const table = $(".teacher-table tbody");
+	const trs = $$(".teacher-table tr");
 	trs.forEach((tr, index) => {
 		if (index > 0)
 			table.removeChild(tr);
@@ -36,7 +133,7 @@ function deleteTeachers() {
 
 function updatePageNumbers() {
 	const totalPages = Math.ceil(size / itemsPerPage);
-	const pageNumbersDiv = document.querySelector(".pages-container");
+	const pageNumbersDiv = $(".pages-container");
 
 	const visibleRange = 2;
 	const pages = [];
@@ -68,7 +165,7 @@ function updatePageNumbers() {
 		})
 		.join("");
 	
-	const pageDivs = document.querySelectorAll(".page");
+	const pageDivs = $$(".page");
 	pageDivs.forEach(pageDiv => {
 		if (!pageDiv.className.includes('non'))
 			pageDiv.onclick = () => gotToPage(Number(pageDiv.innerText));
@@ -85,16 +182,16 @@ function gotToPage(page) {
 function displayPage(page) {
 	let querySort = sortType ? `&sort=${sortType}` : "";
 	if(querySort) {
-		const sortField = document.querySelector(".selection").value;
+		const sortField = $(".selection").value;
 		querySort += `&sortField=${sortField}`;
 	}
 	let querySearch = lookupValue ? `&search=${lookupValue}` : "";
 	if (querySearch) {
-		const searchField = document.querySelector(".search-field").value;
+		const searchField = $(".search-field").value;
 		querySearch += `&searchField=${searchField}`;
 	}
 
-	fetch(`/boarding/teachers?mode=see&page=${page - 1}${querySort}${querySearch}`, {
+	fetch(`./teachers?mode=see&page=${page - 1}${querySort}${querySearch}`, {
 		method: "GET",
 		headers: {
 			"Content-Type": "application/json"
@@ -106,12 +203,12 @@ function displayPage(page) {
 	}).then(data => {
 		deleteTeachers();
 		size = data.size;
-		data.items.forEach(parents => addParents(parents));
+		data.items.forEach(teacher => addTeacher(teacher));
 		updatePageNumbers();
 	});
 }
 
-const sortItems = document.querySelectorAll('input[name="sort__type"]');
+const sortItems = $$('input[name="sort__type"]');
 sortItems.forEach(item => {
 	item.addEventListener('change', () => {
 		sortType = item.value;
@@ -120,7 +217,7 @@ sortItems.forEach(item => {
 	});
 });
 
-const sortFields = document.querySelectorAll(".selection");
+const sortFields = $$(".selection");
 sortFields.onchange = () => {
 	if (sortType) {
 		activePage = 1;
@@ -142,7 +239,42 @@ const debounceSearch = debounce((search) => {
 	displayPage(1);
 }, 500);
 
-const searchInput = document.querySelector("#search");
+const searchInput = $("#search");
 searchInput.onkeyup = () => {
 	debounceSearch(searchInput.value)
+}
+
+$("#add-btn").onclick = () => {
+	fetch("./teachers?mode=preAdd", {
+		method: 'GET',
+		headers: {
+			"Content-Type": "application/json"
+		}
+	}).then(resp => resp.json()).then(data => {
+		turnOnModal(renderAddTeacherModal, data);
+
+		$(".error-message").innerText = "";
+		Validator({
+			form: '#add-teacher',
+			formGroupSelector: ".admin-form-group",
+			errorSelector: '.form-message',
+			rules: [
+				Validator.isRequired('#name'),
+				Validator.isRequired("#address"),
+				Validator.isEmail("#email"),
+				Validator.isRequired("#email"),
+				Validator.isRequired("#phone"),
+				Validator.isRequired("#dateOfBirth"),
+			],
+			onSubmit: data => {
+				checkExistUsername(data.phone).then(result => {
+					if (result) {
+						$(".error-message").innerText = "Số điện thoại không hợp lệ";
+					} else {
+						$("#add-teacher").submit();
+					}
+				})
+			}
+		});
+	})
 }

@@ -97,7 +97,8 @@ public class StudentController extends HttpServlet {
 				case "update":
 					Student student = getStudentFromRequest(request);
 					studentBO.adminUpdate(student);
-					break;
+					response.sendRedirect(request.getContextPath() + "/students");
+					return;
 				case "preAdd":
 					int nextId = globalBO.getAuto_IncrementOf("student");
 					List<NameAndIdResponse> parentsAdd = parentsBO.getNameAndIds();
@@ -109,13 +110,15 @@ public class StudentController extends HttpServlet {
 					Student addStudent = getStudentFromRequest(request);
 					if (studentBO.insert(addStudent))
 						System.out.println("ADD student " + addStudent.getStudent_id());
+					response.sendRedirect(request.getContextPath() + "/students");
 					return;
 				case "delete":
 					int student_id = Integer.parseInt(request.getParameter("student_id"));
 					System.out.println(student_id);
 					if (studentBO.deleteByID(student_id))
 						System.out.println("DELETE student " + student_id);
-					break;
+					response.sendRedirect(request.getContextPath() + "/students");
+					return;
 			}
 		}
 		getServletContext().getRequestDispatcher(destination).forward(request, response);

@@ -68,4 +68,8 @@ public class UserBO {
 	public boolean updateUsername(String oldUser, String newUser) {
 		return userDAO.updateUsername(oldUser, newUser);
 	}
+
+	public boolean existsByUsername(String username) {
+		return selectByUserName(username) != null;
+	}
 }

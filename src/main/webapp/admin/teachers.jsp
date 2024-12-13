@@ -64,6 +64,7 @@
 							<option value="name">Họ và tên</option>
 							<option value="dateOfBirth">Ngày sinh</option>
 							<option value="address">Địa chỉ</option>
+							<option value="phoneNumber">Số điện thoại</option>
 						</select>
 					</div>
 

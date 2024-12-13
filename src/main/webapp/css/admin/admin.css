@@ -326,3 +326,7 @@
 .admin-form-group .detail:hover {
     text-decoration: underline;
 }
+
+.form-message {
+    display: none;
+}

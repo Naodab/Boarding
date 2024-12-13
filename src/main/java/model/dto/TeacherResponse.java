@@ -10,17 +10,19 @@ public class TeacherResponse {
     private String phone;
     private String email;
     private String boardingClass;
+    private boolean sex;
 
     public TeacherResponse() {}
 
     public TeacherResponse(int teacher_id, String name, LocalDate dateOfBirth,
-                           String address, String phone, String email) {
+                           String address, String phone, String email, boolean sex) {
         this.teacher_id = teacher_id;
         this.name = name;
         this.dateOfBirth = dateOfBirth;
         this.address = address;
         this.phone = phone;
         this.email = email;
+        this.sex = sex;
     }
 
     public int getTeacher_id() {
@@ -77,5 +79,13 @@ public class TeacherResponse {
 
     public void setBoardingClass(String boardingClass) {
         this.boardingClass = boardingClass;
+    }
+
+    public boolean isSex() {
+        return sex;
+    }
+
+    public void setSex(boolean sex) {
+        this.sex = sex;
     }
 }
