@@ -538,16 +538,14 @@ function renderChildrenTableModal(data) {
 							`
 						)}
 					</tr>
-					${
-						data.items.map((item, index) =>
-							html`
-								<tr>
-									<td>${item.id}</td>
-									<td>${item.name}</td>
-								</tr>
-							`
-						)
-					}
+					${data.items.map((item, index) =>
+						html`
+							<tr>
+								<td>${item.id}</td>
+								<td>${item.name}</td>
+							</tr>
+						`
+					)}
 				</table>
 				<div class="modal__function top--margin">
 					<div class="btn btn--green modal__btn" id="cancel">Thoát</div>

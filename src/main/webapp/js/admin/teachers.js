@@ -9,7 +9,7 @@ import {
 	renderAddTeacherModal,
 	renderDetailTeacherModal,
 	renderUpdateTeacherModal
-} from "./modalTeacher.js";
+} from "./modal/modalTeacher.js";
 
 import Validator from "../validator.js";
 import {checkExistUsername} from "./common.js";
