@@ -6,10 +6,11 @@
 <head>
 <meta charset="UTF-8">
 <title>Quản lý bán trú</title>
-<link rel="stylesheet"
-	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-<link rel="stylesheet" href="<%= request.getContextPath() %>/css/base.css">
-<link rel="stylesheet" href="<%= request.getContextPath() %>/css/admin/admin.css">
+	<link rel="stylesheet"
+		href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+	<link rel="stylesheet" href="<%= request.getContextPath() %>/css/base.css">
+	<link rel="stylesheet" href="<%= request.getContextPath() %>/css/admin/admin.css">
+	<link rel="stylesheet" href="<%= request.getContextPath() %>/css/admin/food.css">
 </head>
 <body>
 	<div id="overlay"></div>
@@ -19,12 +20,11 @@
 		<%@ include file="header.jsp"%>
 
 		<div class="content closure">
-			<div class="content-header">Quản lý ngày ăn</div>
+			<div class="content-header">Quản lý món ăn</div>
 			<div class="content-body">
 				<div class="content-function">
 					<div class="sort function__sort function-item">
-						<div class="function__header">Tháng</div>
-						<select name="month__select" class="selection sort-field" id="months-selection"></select>
+						<div class="function__header">Danh sách món ăn</div>
 					</div>
 					<div class="function__lookup function-item">
 						<div class="function__header">Tìm kiếm</div>
@@ -38,27 +38,20 @@
 							</div>
 						</div>
 						<select name="sort__field" class="selection search-field">
-							<option value="eatingHistory_id">Mã ngày ăn</option>
+							<option value="food_id">Mã món ăn</option>
+							<option value="name">Tên món ăn</option>
 						</select>
 					</div>
 
 				</div>
 				<div class="content-data scrollable-element">
-					<table class="table eatingHistory-table">
-						<tr>
-							<th class="th__first">Mã</th>
-							<th>Mã thực đơn</th>
-							<th>Bữa trưa</th>
-							<th>Bữa phụ</th>
-							<th class="th__last">Ngày ăn</th>
-						</tr>
-					</table>
+					<div class="table" id="foods-container"></div>
 				</div>
 				<div class="pages-container"></div>
 			</div>
-			<div class="btn btn--green footer-item special-btn" id="add-btn" hidden="hidden">Phân ngày ăn</div>
+			<div class="btn btn--green footer-item special-btn" id="add-btn">Thêm món ăn</div>
 		</div>
 	</div>
-	<script type="module" src="<%= request.getContextPath() %>/js/admin/eatingHistory.js"></script>
+	<script type="module" src="<%= request.getContextPath() %>/js/admin/food.js"></script>
 </body>
 </html>

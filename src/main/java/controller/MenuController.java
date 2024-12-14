@@ -36,8 +36,28 @@ public class MenuController extends HttpServlet {
 
 	}
 
-	private void adminHandler(HttpServletRequest request, HttpServletResponse response) {
+	private void adminHandler(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		request.setCharacterEncoding("UTF-8");
+		response.setCharacterEncoding("UTF-8");
+		response.setContentType("application/json");
+		String destination = "/admin/menus.jsp";
+		String mode = request.getParameter("mode");
+		if (mode == null) {
+			getServletContext().getRequestDispatcher(destination).forward(request, response);
+			return;
+		}
+		switch (mode) {
+			case "see" -> {
 
+			}
+			case "add" -> {
+
+			}
+			case "update" -> {
+
+			}
+		}
 	}
 	
 	private void parentsHandler(HttpServletRequest request, HttpServletResponse response) {

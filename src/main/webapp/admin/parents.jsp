@@ -83,9 +83,7 @@
 				</div>
 				<div class="pages-container"></div>
 			</div>
-			<div class="content-footer">
-				<div class="btn btn--green footer-item" id="add-btn">Thêm phụ huynh</div>
-			</div>
+			<div class="btn btn--green footer-item special-btn" id="add-btn">Thêm phụ huynh</div>
 		</div>
 	</div>
 	<script type="module" src="<%= request.getContextPath() %>/js/admin/parents.js"></script>
