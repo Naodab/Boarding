@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.sql.Date;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,27 +29,20 @@ import model.dto.SearchResponse;
 import model.dto.TeacherResponse;
 import util.AdminUtil;
 import util.LocalDateAdapter;
-import model.bo.AbsenceBO;
-import model.bo.BoardingClassBO;
-import model.bo.GlobalBO;
-import model.bo.InvoiceBO;
-import model.bo.StudentBO;
-import model.bo.TeacherBO;
-import model.dao.GlobalDAO;
 import model.dto.AbsenceResponse;
 import model.dto.BoardingFeeResponse;
 
 @WebServlet("/teachers")
 public class TeacherController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private final Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
+	private final Gson gson = new GsonBuilder()
+			.registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
 	private final TeacherBO teacherBO = TeacherBO.getInstance();
 	private final UserBO userBO = UserBO.getInstance();
 	private final GlobalBO globalBO = GlobalBO.getInstance();
 	private final BoardingClassBO boardingClassBO = BoardingClassBO.getInstance();
-	private AbsenceBO absenceBO = AbsenceBO.getInstance();
-	private InvoiceBO invoiceBO = InvoiceBO.getInstance();
-	private GlobalBO globalBO = GlobalBO.getInstance();
+	private final AbsenceBO absenceBO = AbsenceBO.getInstance();
+	private final InvoiceBO invoiceBO = InvoiceBO.getInstance();
 
     public TeacherController() {
 		super();
@@ -86,7 +77,8 @@ public class TeacherController extends HttpServlet {
 		switch(mode) {
 			case "teacherInfor":
 				request.setAttribute("teacherInfor", teacher);
-				request.setAttribute("teachClass", BoardingClassBO.getInstance().selectById(teacher.getBoardingClass_id()).getName());
+				request.setAttribute("teachClass", BoardingClassBO.getInstance()
+						.selectById(teacher.getBoardingClass_id()).getName());
 				destination = "/teachers/teacherInfor.jsp";
 				rd = getServletContext().getRequestDispatcher(destination);
 				rd.forward(request, response);
@@ -95,7 +87,8 @@ public class TeacherController extends HttpServlet {
 				updateTeacherInfor(request, response, teacher);
 				break;
 			case "studentInfor":
-				List<Student> listStudents = StudentBO.getInstance().selectByBoardingClass_id2(teacher.getBoardingClass_id());
+				List<Student> listStudents = StudentBO.getInstance()
+						.selectByBoardingClass_id2(teacher.getBoardingClass_id());
 				request.setAttribute("listStudents", listStudents);
 				destination = "/teachers/studentInfor.jsp";
 				rd = getServletContext().getRequestDispatcher(destination);
@@ -130,12 +123,16 @@ public class TeacherController extends HttpServlet {
 				listStudents = StudentBO.getInstance().selectByBoardingClass_id2(teacher.getBoardingClass_id());
 				ArrayList<AbsenceResponse> listAbsences = new ArrayList<AbsenceResponse>();
 				for (int i = 0; i < listStudents.size(); i++) {
-					Absence absence = absenceBO.selectByStudentIdAndAbsenceDate(listStudents.get(i).getStudent_id(), Date.valueOf(LocalDate.now()));
+					Absence absence = absenceBO.selectByStudentIdAndAbsenceDate(listStudents
+							.get(i).getStudent_id(), Date.valueOf(LocalDate.now()));
 					AbsenceResponse absenceInfo = new AbsenceResponse();
 					if (absence != null) {
-						absenceInfo = new AbsenceResponse(listStudents.get(i).getStudent_id(), listStudents.get(i).getName(), true, absence.getDayOfAbsence().toLocalDate(), absence.getAbsence_id());
+						absenceInfo = new AbsenceResponse(listStudents.get(i).getStudent_id(),
+								listStudents.get(i).getName(), true, absence.getDayOfAbsence()
+								.toLocalDate(), absence.getAbsence_id());
 					} else {
-						absenceInfo = new AbsenceResponse(listStudents.get(i).getStudent_id(), listStudents.get(i).getName(), false, null, 0);
+						absenceInfo = new AbsenceResponse(listStudents.get(i).getStudent_id(),
+								listStudents.get(i).getName(), false, null, 0);
 					}
 					listAbsences.add(absenceInfo);
 				}
@@ -227,7 +224,8 @@ public class TeacherController extends HttpServlet {
 
 	}
 	
-	private void updateTeacherInfor(HttpServletRequest request, HttpServletResponse response, Teacher teacher) throws IOException {
+	private void updateTeacherInfor(HttpServletRequest request,
+		 HttpServletResponse response, Teacher teacher) throws IOException {
 		 StringBuilder sb = new StringBuilder();
 	     String line;
 	     try (BufferedReader reader = request.getReader()) {
@@ -245,7 +243,8 @@ public class TeacherController extends HttpServlet {
 	     TeacherBO.getInstance().update(teacher);
 	}
 	
-	private ArrayList<BoardingFeeResponse> boardingFee(HttpServletRequest request, HttpServletResponse response, List<Student> listStudents, int id) {
+	private ArrayList<BoardingFeeResponse> boardingFee(HttpServletRequest request,
+	    HttpServletResponse response, List<Student> listStudents, int id) {
 		ArrayList<BoardingFeeResponse> listBoardingFees = new ArrayList<BoardingFeeResponse>();
 		List<Integer> listInvoices = invoiceBO.selectByBoardingFeeId(id);
 		for (Student std : listStudents) {
@@ -253,7 +252,8 @@ public class TeacherController extends HttpServlet {
 			for (int invoice_id : invoices) {
 				if (listInvoices.contains(invoice_id)) {
 					Invoice invoice = invoiceBO.selectById(invoice_id);
-					BoardingFeeResponse boardingFee = new BoardingFeeResponse(std.getStudent_id(), std.getName(), invoice.getInvoice_id(), invoice.getStatusPayment());
+					BoardingFeeResponse boardingFee = new BoardingFeeResponse(std.getStudent_id(),
+							std.getName(), invoice.getInvoice_id(), invoice.getStatusPayment());
 					listBoardingFees.add(boardingFee);
 				}
 			}
