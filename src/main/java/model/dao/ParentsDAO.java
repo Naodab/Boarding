@@ -247,6 +247,33 @@ public class ParentsDAO implements DAOInterface<Parents> {
 		return result;
 	}
 
+	public Parents selectByUsername(String username) {
+		Parents result = null;
+		Connection conn = JDBCUtil.getConnection();
+		try {
+			String sql = "SELECT * FROM parents WHERE phoneNumber = ?";
+			PreparedStatement pps = conn.prepareStatement(sql);
+			pps.setString(1, username);
+			ResultSet rs = pps.executeQuery();
+			while (rs.next()) {
+				String name = rs.getString("name");
+				Date dateOfBirth = rs.getDate("dateOfBirth");
+				String address = rs.getString("address");
+				Boolean sex = rs.getBoolean("sex");
+				int parents_id = rs.getInt("parents_id");
+				String phoneNumber = rs.getString("phoneNumber");
+				String email = rs.getString("email");
+				result = new Parents(name, dateOfBirth, address, sex, parents_id, phoneNumber, email, null);
+			}
+			rs.close();
+			pps.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		JDBCUtil.closeConnection(conn);
+		return result;
+	}
+
 	public int count(String searchField, String search) {
 		int result = -1;
 		Connection conn = JDBCUtil.getConnection();

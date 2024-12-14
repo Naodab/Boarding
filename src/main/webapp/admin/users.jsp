@@ -19,14 +19,14 @@
 		<%@ include file="header.jsp"%>
 
 		<div class="content closure">
-			<div class="content-header">Quản lý lớp học</div>
+			<div class="content-header">Quản lý tài khoản</div>
 			<div class="content-body">
 				<div class="content-function">
 					<div class="sort function__sort function-item">
 						<div class="function__header">Sắp xếp</div>
 						<select name="sort__field" class="selection sort-field">
-							<option value="boardingClass_id">Mã lớp</option>
-							<option value="name">Tên</option>
+							<option value="username">Tài khoản</option>
+							<option value="lastLogin">Lần cuối đăng nhập</option>
 						</select>
 						<div class="sort__type-container">
 							<div class="sort-group">
@@ -60,30 +60,32 @@
 							</div>
 						</div>
 						<select name="sort__field" class="selection search-field">
-							<option value="boardingClass_id">Mã lớp</option>
-							<option value="name">Tên lớp</option>
+							<option value="username">Tài khoản</option>
+							<option value="lastLogin">Lần cuối đăng nhập</option>
+							<option value="position">Vai trò</option>
 						</select>
 					</div>
+
 				</div>
 				<div class="content-data scrollable-element">
-					<table class="table class-table">
+					<table class="table user-table">
 						<tr>
-							<th class="th__first">Mã</th>
-							<th>Tên</th>
-							<th>Giáo viên quản lý</th>
-							<th>Phòng</th>
-							<th>Số học sinh</th>
-							<th class="th__last">Số chỗ ngủ</th>
+							<th class="th__first">Tài khoản</th>
+							<th>Vai trò</th>
+							<th>Họ và tên</th>
+							<th>Mã</th>
+							<th>Lần cuối đăng nhập</th>
+							<th class="th__last"></th>
 						</tr>
 					</table>
 				</div>
 				<div class="pages-container"></div>
 			</div>
 			<div class="content-footer">
-				<div class="btn btn--green footer-item" id="add-btn">Thêm lớp học</div>
+				<div class="btn btn--green footer-item" id="change-default-btn">Thay đổi mật khẩu mặc định</div>
 			</div>
 		</div>
 	</div>
-	<script type="module" src="<%= request.getContextPath() %>/js/admin/boardingClass.js"></script>
+	<script type="module" src="<%= request.getContextPath() %>/js/admin/users.js"></script>
 </body>
 </html>

@@ -83,8 +83,16 @@ public class BoardingClassBO {
 		return new SearchResponse<>(studentDAO.selectByBoardingClass_id(boardingClassId).size(),
 			studentDAO.getPageStudents(page, amount,
 			"boardingClass_id", boardingClassId + "",
-			null, null).stream().map(student -> {
-			return		new NameAndIdResponse(student.getStudent_id(), student.getName());
-			}).toList());
+			null, null).stream().map(student ->
+				new NameAndIdResponse(student.getStudent_id(), student.getName())
+			).toList());
+	}
+
+	public boolean existsByRoom(String room) {
+		return boardingClassDAO.existByRoom(room);
+	}
+
+	public boolean deleteById(int id) {
+		return boardingClassDAO.deleteById(id);
 	}
 }
