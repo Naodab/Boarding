@@ -53,4 +53,6 @@ public class AbsenceBO {
 	public List<Integer> selectByStudentId(int student_id) {
 		return absenceDAO.selectByStudentId(student_id);
 	}
+
+	public Absence selectByStudentIdAndAbsenceDate(int student_id, Date absence_date) { return absenceDAO.selectByStudentIdAndAbsenceDate(student_id, absence_date); }
 }

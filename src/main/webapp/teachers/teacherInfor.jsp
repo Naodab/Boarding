@@ -75,19 +75,13 @@
 		const email = document.getElementById("email").value.trim();
 		const phoneNumber = document.getElementById("phoneNumber").value.trim();
 	    const formData = { address, email, phoneNumber };
-	
 	    try {
 	        const response = await fetch('teachers?mode=updateTeacherInfor', {
 	            method: 'POST',
-	            headers: {
-	                'Content-Type': 'application/json'
-	            },
+	            headers: {'Content-Type': 'application/json'},
 	            body: JSON.stringify(formData)
 	        });
-	    } catch (err) {
-	        console.error("Lỗi khi gửi dữ liệu:", err);
-	    }
-	    
+	    } catch (err) {console.error("Lỗi khi gửi dữ liệu:", err);}
 	    document.getElementById("address").value = address;
 	    document.getElementById("email").value = email;
 	    document.getElementById("phoneNumber").value = phoneNumber;
