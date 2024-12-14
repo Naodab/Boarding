@@ -23,7 +23,8 @@
 			<div class="content-body">
 				<div class="content-function">
 					<div class="sort function__sort function-item">
-						<div class="function__header">Danh sách ngày ăn</div>
+						<div class="function__header">Tháng</div>
+						<select name="month__select" class="selection sort-field" id="months-selection"></select>
 					</div>
 					<div class="function__lookup function-item">
 						<div class="function__header">Tìm kiếm</div>
@@ -43,7 +44,7 @@
 
 				</div>
 				<div class="content-data scrollable-element">
-					<table class="table teacher-table">
+					<table class="table eatingHistory-table">
 						<tr>
 							<th class="th__first">Mã</th>
 							<th>Mã thực đơn</th>
@@ -56,10 +57,10 @@
 				<div class="pages-container"></div>
 			</div>
 			<div class="content-footer">
-				<div class="btn btn--green footer-item" id="add-btn">Thêm giáo viên</div>
+				<div class="btn btn--green footer-item" id="add-btn" hidden="hidden">Phân ngày ăn</div>
 			</div>
 		</div>
 	</div>
-	<script type="module" src="<%= request.getContextPath() %>/js/admin/teachers.js"></script>
+	<script type="module" src="<%= request.getContextPath() %>/js/admin/eatingHistory.js"></script>
 </body>
 </html>

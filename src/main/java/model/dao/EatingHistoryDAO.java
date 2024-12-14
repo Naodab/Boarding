@@ -182,4 +182,79 @@ public class EatingHistoryDAO implements DAOInterface<EatingHistory> {
 		JDBCUtil.closeConnection(conn);
 		return result;
 	}
+
+	public List<Integer> getMonthsValid() {
+		List<Integer> result = new ArrayList<>();
+		Connection conn = JDBCUtil.getConnection();
+		try {
+			String sql = "SELECT distinct MONTH(eating_day) FROM eatinghistory";
+			PreparedStatement pps = conn.prepareStatement(sql);
+			ResultSet rs = pps.executeQuery();
+			while(rs.next()) {
+				result.add(rs.getInt(1));
+			}
+		} catch (Exception ignored){}
+		JDBCUtil.closeConnection(conn);
+		return result;
+	}
+
+	public List<EatingHistory> getPages(int page, int amount, int month,
+		String searchField, String search) {
+		List<EatingHistory> result = new ArrayList<>();
+		Connection conn = JDBCUtil.getConnection();
+		try {
+			String sql = "SELECT * FROM eatingHistory WHERE Month(eating_day) = ?";
+			if (searchField != null) {
+				search = "%" + searchField + "%";
+				sql = sql + " AND " + searchField + " LIKE ?";
+			}
+			sql += " LIMIT ? OFFSET ?";
+			int index = 1;
+			PreparedStatement pps = conn.prepareStatement(sql);
+			pps.setInt(index++, month);
+			if (search != null) {
+				pps.setString(index++, search);
+			}
+			pps.setInt(index++, amount);
+			pps.setInt(index++, page * amount);
+			ResultSet rs = pps.executeQuery();
+			while(rs.next()) {
+				int eatingHistory_id = rs.getInt("eatingHistory_id");
+				int menu_id = rs.getInt("menu_id");
+				Date eating_day = rs.getDate("eating_day");
+				int boardingFee_id = rs.getInt("boardingFee_id");
+				result.add(new EatingHistory(eatingHistory_id, menu_id, eating_day, boardingFee_id));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		JDBCUtil.closeConnection(conn);
+		return result;
+	}
+
+	public int count(int month, String searchField, String search) {
+		int result = 0;
+		Connection conn = JDBCUtil.getConnection();
+		try {
+			String sql = "SELECT count(*) AS total FROM eatingHistory WHERE MONTH(eating_day) = ?";
+			if (searchField != null) {
+				search = "%" + searchField + "%";
+				sql = sql + " AND " + searchField + " LIKE ?";
+			}
+			int index = 1;
+			PreparedStatement pps = conn.prepareStatement(sql);
+			pps.setInt(index++, month);
+			if (search != null) {
+				pps.setString(index++, search);
+			}
+			ResultSet rs = pps.executeQuery();
+			while (rs.next()) {
+				result = rs.getInt("total");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		JDBCUtil.closeConnection(conn);
+		return result;
+	}
 }
