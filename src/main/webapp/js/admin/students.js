@@ -1,4 +1,10 @@
-import {turnOnModal, turnOffModal, renderStudentModal, turnOnUpdateStudent, renderStudentAddModal, renderConfirmModal } from "/boarding/js/modal.js";
+import { turnOnModal,
+	turnOffModal,
+	renderStudentModal,
+	turnOnUpdateStudent,
+	renderStudentAddModal,
+	renderConfirmModal
+} from "../modal.js";
 
 document.querySelector("#students").classList.add("active");
 
@@ -29,7 +35,7 @@ function addStudent(student) {
 		document.querySelector("#update-btn").onclick = () => {
 			turnOffModal();
 			student.isUpdate = true;
-			fetch(`/boarding/students?mode=preUpdate`, {
+			fetch(`./students?mode=preUpdate`, {
 				method: 'GET',
 				headers: {
 					"Content-Type": "application/json"
@@ -43,13 +49,14 @@ function addStudent(student) {
 			turnOffModal();
 			turnOnModal(renderConfirmModal, `Bạn chắc chắn muốn xóa ${student.name}?`);
 			document.querySelector("#yes").onclick = () => {
-				fetch(`/boarding/students?mode=delete&student_id=${student.student_id}`, {
+				fetch(`./students?mode=delete&student_id=${student.student_id}`, {
 					method: 'POST',
 					headers: {
 						"Content-Type": "application/json"
 					}
 				}).then(() => {
 					turnOffModal();
+					deleteStudent(student);
 				});
 			}
 			document.querySelector("#no").onclick = () => {
@@ -58,6 +65,18 @@ function addStudent(student) {
 		}
 	}
 	document.querySelector(".student-table tbody").appendChild(tr);
+}
+
+function deleteStudent({student_id}) {
+	const trs = document.querySelectorAll("table tbody tr");
+	for (let i = 1; i < trs.length; i++) {
+		const tr = trs[i];
+		const td = tr.querySelectorAll("td")[0];
+		if (td.innerText === String(student_id)) {
+			tr.remove();
+			return;
+		}
+	}
 }
 
 function deleteStudents() {
@@ -120,12 +139,16 @@ function gotToPage(page) {
 function displayPage(page) {
 	let querySort = sortType ? `&sort=${sortType}` : "";
 	if(querySort) {
-		const sortField = document.querySelector(".selection").value;
+		const sortField = document.querySelector(".sort-field").value;
 		querySort += `&sortField=${sortField}`;
 	}
-	const querySearch = lookupValue ? `&search=${lookupValue}` : "";
+	let querySearch = lookupValue ? `&search=${lookupValue}` : "";
+	if (querySearch) {
+		const searchField = document.querySelector(".search-field").value;
+		querySearch += `&searchField=${searchField}`;
+	}
 	
-	fetch(`/boarding/students?mode=see&page=${page - 1}${querySort}${querySearch}`, {
+	fetch(`./students?mode=see&page=${page - 1}${querySort}${querySearch}`, {
 		method: "GET",
 		headers: {
 			"Content-Type": "application/json"
@@ -151,9 +174,17 @@ sortItems.forEach(item => {
 	});
 });
 
-const sortFields = document.querySelector(".selection");
-sortFields.onchange = () => {
+const sortField = document.querySelector(".sort-field");
+sortField.onchange = () => {
 	if (sortType) {
+		activePage = 1;
+		displayPage(1);
+	}
+}
+
+const searchField = document.querySelector(".search-field");
+searchField.onchange = () => {
+	if (lookupValue) {
 		activePage = 1;
 		displayPage(1);
 	}
@@ -168,6 +199,7 @@ function debounce(func, delay) {
 }
 
 const debounceSearch = debounce((search) => {
+	console.log(1);
     lookupValue =  search;
 	activePage = 1;
 	displayPage(1);
@@ -179,8 +211,7 @@ searchInput.onkeyup = () => {
 }
 
 document.querySelector("#add-btn").onclick = () => {
-	console.log(1);
-	fetch("/boarding/students?mode=preAdd", {
+	fetch("./students?mode=preAdd", {
 		method: 'GET',
 		headers: {
 			"Content-Type": "application/json"

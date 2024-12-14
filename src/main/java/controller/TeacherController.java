@@ -2,9 +2,15 @@ package controller;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+<<<<<<< HEAD
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
+=======
+import java.io.UnsupportedEncodingException;
+import java.sql.Date;
+import java.time.LocalDate;
+>>>>>>> 261cbd3b88b40244e642273fc26e65c9ae355727
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
@@ -14,6 +20,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+<<<<<<< HEAD
 import model.bean.Absence;
 import model.bean.Invoice;
 import model.bean.Student;
@@ -27,15 +34,37 @@ import model.bo.TeacherBO;
 import model.dao.GlobalDAO;
 import model.dto.AbsenceResponse;
 import model.dto.BoardingFeeResponse;
+=======
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import model.bean.Student;
+import model.bean.Teacher;
+import model.bean.User;
+import model.bo.*;
+import model.dto.NameAndIdResponse;
+import model.dto.PreAddTeacherResponse;
+import model.dto.SearchResponse;
+import model.dto.TeacherResponse;
+import util.AdminUtil;
+import util.LocalDateAdapter;
+>>>>>>> 261cbd3b88b40244e642273fc26e65c9ae355727
 
 @WebServlet("/teachers")
 public class TeacherController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+<<<<<<< HEAD
 	private AbsenceBO absenceBO = AbsenceBO.getInstance();
 	private InvoiceBO invoiceBO = InvoiceBO.getInstance();
 	private GlobalBO globalBO = GlobalBO.getInstance();
+=======
+	private final Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
+	private final TeacherBO teacherBO = TeacherBO.getInstance();
+	private final UserBO userBO = UserBO.getInstance();
+	private final GlobalBO globalBO = GlobalBO.getInstance();
+	private final BoardingClassBO boardingClassBO = BoardingClassBO.getInstance();
+>>>>>>> 261cbd3b88b40244e642273fc26e65c9ae355727
 
-	public TeacherController() {
+    public TeacherController() {
 		super();
 	}
 
@@ -129,8 +158,80 @@ public class TeacherController extends HttpServlet {
 		}
 	}
 
-	private void adminHandler(HttpServletRequest request, HttpServletResponse response) {
+	private void adminHandler(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		request.setCharacterEncoding("UTF-8");
+		response.setCharacterEncoding("UTF-8");
+		response.setContentType("application/json");
+		String destination = "/admin/teachers.jsp";
+		String mode = request.getParameter("mode");
+		if (mode != null) {
+            int TEACHERS_PER_PAGE = AdminUtil.ITEMS_PER_PAGE;
+            switch (mode) {
+				case "see":
+					String search = request.getParameter("search");
+					String searchField = request.getParameter("searchField");
+					String sort = request.getParameter("sort");
+					String sortField = request.getParameter("sortField");
+					int page = Integer.parseInt(request.getParameter("page"));
+					SearchResponse<TeacherResponse> result = teacherBO.search(page,
+							TEACHERS_PER_PAGE, searchField, search, sortField, sort);
+					response.getWriter().print(gson.toJson(result));
+					return;
+				case "add":
+					Teacher teacherAdd = getTeacherFromRequest(request);
+					userBO.insert(new User(teacherAdd.getPhoneNumber(), null,
+							"Teacher", true, Date.valueOf(LocalDate.now())));
+					teacherBO.insert(teacherAdd);
+					response.sendRedirect(request.getContextPath() + "/teachers");
+					return;
+				case "preAdd":
+					int nextId = globalBO.getAuto_IncrementOf("teacher");
+					List<NameAndIdResponse> classesResponse = boardingClassBO.getNameAndIds();
+					PreAddTeacherResponse responsePreAdd = new PreAddTeacherResponse(nextId,
+							classesResponse);
+					response.getWriter().print(gson.toJson(responsePreAdd));
+					response.flushBuffer();
+					return;
+				case "delete":
+					int teacherIdDelete = Integer.parseInt(request.getParameter("teacher_id"));
+					Teacher teacherDelete = teacherBO.selectById(teacherIdDelete);
+					userBO.deleteByUsername(teacherDelete.getPhoneNumber());
+					teacherBO.deleteById(teacherIdDelete);
+					response.setStatus(HttpServletResponse.SC_OK);
+					return;
+				case "update":
+					Teacher teacherUpdate = getTeacherFromRequest(request);
+					Teacher teacherBefore = teacherBO.selectById(teacherUpdate.getTeacher_id());
+					if (!teacherBefore.getPhoneNumber().equals(teacherUpdate.getPhoneNumber())) {
+						userBO.updateUsername(teacherBefore.getPhoneNumber(),
+								teacherUpdate.getPhoneNumber());
+					}
+					teacherBO.update(teacherUpdate);
+					response.sendRedirect(request.getContextPath() + "/teachers");
+					return;
+				case "preUpdate":
+					List<NameAndIdResponse> preUpdateClasses = boardingClassBO.getNameAndIds();
+					response.getWriter().print(gson.toJson(preUpdateClasses));
+					response.flushBuffer();
+					return;
+			}
+		}
+		getServletContext().getRequestDispatcher(destination).forward(request, response);
+	}
 
+	private Teacher getTeacherFromRequest(HttpServletRequest request)
+			throws UnsupportedEncodingException {
+		int teacher_id = Integer.parseInt(request.getParameter("teacher_id"));
+		String name = request.getParameter("name");
+		String address = request.getParameter("address");
+		String phoneNumber = request.getParameter("phone");
+		String email = request.getParameter("email");
+		boolean sex = request.getParameter("sex").equals("Nam");
+		Date dateOfBirth = Date.valueOf(LocalDate.parse(request.getParameter("dateOfBirth")));
+		int boardingClass_id = Integer.parseInt(request.getParameter("boardingClass_id"));
+		return new Teacher(name, dateOfBirth, address, sex,
+				teacher_id, phoneNumber, email, boardingClass_id);
 	}
 	
 	private void parentsHandler(HttpServletRequest request, HttpServletResponse response) {

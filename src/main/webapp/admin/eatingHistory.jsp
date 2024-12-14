@@ -19,34 +19,11 @@
 		<%@ include file="header.jsp"%>
 
 		<div class="content closure">
-			<div class="content-header">Quản lý giáo viên</div>
+			<div class="content-header">Quản lý ngày ăn</div>
 			<div class="content-body">
 				<div class="content-function">
 					<div class="sort function__sort function-item">
-						<div class="function__header">Sắp xếp</div>
-						<select name="sort__field" class="selection sort-field">
-							<option value="name">Họ và tên</option>
-							<option value="dateOfBirth">Ngày sinh</option>
-						</select>
-						<div class="sort__type-container">
-							<div class="sort-group">
-								<input type="radio" id="sort--up" name="sort__type"
-									class="sort__type-item" value="ASC"> <label
-									for="sort--up"> <i class="fa-solid fa-up-long"></i>
-								</label>
-							</div>
-							<div class="sort-group">
-								<input type="radio" id="sort--down" name="sort__type"
-									class="sort__type-item" value="DESC"> <label
-									for="sort--down"> <i class="fa-solid fa-down-long"></i>
-								</label>
-							</div>
-							<div class="sort-group">
-								<input type="radio" id="sort--none" name="sort__type"
-									class="sort__type-item" value="" checked> <label
-									for="sort--none">Không</label>
-							</div>
-						</div>
+						<div class="function__header">Danh sách ngày ăn</div>
 					</div>
 					<div class="function__lookup function-item">
 						<div class="function__header">Tìm kiếm</div>
@@ -60,11 +37,7 @@
 							</div>
 						</div>
 						<select name="sort__field" class="selection search-field">
-							<option value="teacher_id">Mã giáo viên</option>
-							<option value="name">Họ và tên</option>
-							<option value="dateOfBirth">Ngày sinh</option>
-							<option value="address">Địa chỉ</option>
-							<option value="phoneNumber">Số điện thoại</option>
+							<option value="eatingHistory_id">Mã ngày ăn</option>
 						</select>
 					</div>
 
@@ -73,13 +46,10 @@
 					<table class="table teacher-table">
 						<tr>
 							<th class="th__first">Mã</th>
-							<th>Họ và tên</th>
-							<th>Ngày sinh</th>
-							<th>Địa chỉ</th>
-							<th>Giới tính</th>
-							<th>Số điện thoại</th>
-							<th>Email</th>
-							<th class="th__last">Lớp quản lý</th>
+							<th>Mã thực đơn</th>
+							<th>Bữa trưa</th>
+							<th>Bữa phụ</th>
+							<th class="th__last">Ngày ăn</th>
 						</tr>
 					</table>
 				</div>

@@ -3,7 +3,11 @@ package model.bo;
 import java.util.List;
 
 import model.bean.Teacher;
+import model.dao.BoardingClassDAO;
 import model.dao.TeacherDAO;
+import model.dto.NameAndIdResponse;
+import model.dto.SearchResponse;
+import model.dto.TeacherResponse;
 
 public class TeacherBO {
 	private static TeacherBO _instance;
@@ -17,7 +21,8 @@ public class TeacherBO {
 		return _instance;
 	}
 
-	private TeacherDAO teacherDAO = TeacherDAO.getInstance();
+	private final TeacherDAO teacherDAO = TeacherDAO.getInstance();
+	private final BoardingClassDAO boardingClassDAO = BoardingClassDAO.getInstance();
 
 	public boolean insert(Teacher t) {
 		return teacherDAO.insert(t);
@@ -55,7 +60,34 @@ public class TeacherBO {
 		return teacherDAO.selectByBoardingClass_id(boardingClass_id);
 	}
 
-	public List<Teacher> getPageTeacher(int page, int amount) {
-		return teacherDAO.selectPage(page, amount);
+	public List<TeacherResponse> getPageTeacher(int page, int amount, String searchField,
+												String search, String sortField,
+												String sortType) {
+		return teacherDAO.selectPage(page, amount, searchField, search, sortField, sortType)
+				.stream().map(teacher -> {
+			TeacherResponse response = toTeacherResponse(teacher);
+			response.setBoardingClass(boardingClassDAO.selectById(teacher
+					.getBoardingClass_id()).getName());
+			return response;
+		}).toList();
+	}
+
+	public SearchResponse<TeacherResponse> search(int page, int amount, String searchField,
+												  String search, String sortField,
+												  String sortType) {
+		return new SearchResponse<>(teacherDAO.count(searchField, search),
+				getPageTeacher(page, amount, searchField, search, sortField, sortType));
+	}
+
+	public TeacherResponse toTeacherResponse(Teacher t) {
+		return new TeacherResponse(t.getTeacher_id(), t.getName(),
+				t.getDateOfBirth().toLocalDate(), t.getAddress(),
+				t.getPhoneNumber(), t.getEmail(), t.getSex());
+	}
+
+	public List<NameAndIdResponse> getNameAndIds() {
+		return selectAll().stream().map(
+				teacher -> new NameAndIdResponse(teacher.getTeacher_id(),
+						teacher.getName())).toList();
 	}
 }

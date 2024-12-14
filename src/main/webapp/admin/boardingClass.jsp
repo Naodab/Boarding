@@ -8,8 +8,8 @@
 <title>Quản lý bán trú</title>
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-<link rel="stylesheet" href="/boarding/css/base.css">
-<link rel="stylesheet" href="/boarding/css/admin/admin.css">
+<link rel="stylesheet" href="<%= request.getContextPath() %>/css/base.css">
+<link rel="stylesheet" href="<%= request.getContextPath() %>/css/admin/admin.css">
 </head>
 <body>
 	<div id="overlay"></div>
@@ -19,14 +19,14 @@
 		<%@ include file="header.jsp"%>
 
 		<div class="content closure">
-			<div class="content-header">Quản lý thực đơn</div>
+			<div class="content-header">Quản lý lớp học</div>
 			<div class="content-body">
 				<div class="content-function">
 					<div class="sort function__sort function-item">
 						<div class="function__header">Sắp xếp</div>
-						<select name="sort__field" class="selection">
-							<option value="name">Họ và tên</option>
-							<option value="dateOfBirth">Ngày sinh</option>
+						<select name="sort__field" class="selection sort-field">
+							<option value="boardingClass_id">Mã lớp</option>
+							<option value="name">Tên</option>
 						</select>
 						<div class="sort__type-container">
 							<div class="sort-group">
@@ -53,36 +53,37 @@
 						<div class="function__lookup">
 							<div class="lookup__search-bar">
 								<input type="text" id="search" name="search"
-									placeholder="Nhập id hoặc họ và tên"> <span
+									placeholder="Nhập thông tin"> <span
 									class="lookup__icon"> <i
 									class="fa-solid fa-magnifying-glass"></i>
 								</span>
 							</div>
 						</div>
-
+						<select name="sort__field" class="selection search-field">
+							<option value="boardingClass_id">Mã lớp</option>
+							<option value="name">Tên lớp</option>
+						</select>
 					</div>
 				</div>
 				<div class="content-data scrollable-element">
-					<table class="table student-table">
+					<table class="table class-table">
 						<tr>
 							<th class="th__first">Mã</th>
-							<th>Họ và tên</th>
-							<th>Giới tính</th>
-							<th>Ngày sinh</th>
-							<th>Địa chỉ</th>
-							<th>Phụ huynh</th>
-							<th>Lớp</th>
-							<th class="th__last">Ăn phụ</th>
+							<th>Tên</th>
+							<th>Giáo viên quản lý</th>
+							<th>Phòng</th>
+							<th>Số học sinh</th>
+							<th class="th__last">Số chỗ ngủ</th>
 						</tr>
 					</table>
 				</div>
 				<div class="pages-container"></div>
 			</div>
 			<div class="content-footer">
-				<div class="btn btn--green footer-item">Thêm học sinh</div>
+				<div class="btn btn--green footer-item" id="add-btn">Thêm lớp học</div>
 			</div>
 		</div>
 	</div>
-	<script type="module" src="/boarding/js/admin/menus.js"></script>
+	<script type="module" src="<%= request.getContextPath() %>/js/admin/boardingClass.js"></script>
 </body>
 </html>

@@ -318,3 +318,16 @@
 	max-width: 80px;
 	min-width: 0;
 }
+
+.admin-form-group .detail {
+    margin-left: 16px;
+    cursor: pointer;
+}
+
+.admin-form-group .detail:hover {
+    text-decoration: underline;
+}
+
+.form-message {
+    display: none;
+}

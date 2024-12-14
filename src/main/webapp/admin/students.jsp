@@ -8,8 +8,8 @@
 <title>Quản lý bán trú</title>
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-<link rel="stylesheet" href="/boarding/css/base.css">
-<link rel="stylesheet" href="/boarding/css/admin/admin.css">
+<link rel="stylesheet" href="<%= request.getContextPath() %>/css/base.css">
+<link rel="stylesheet" href="<%= request.getContextPath() %>/css/admin/admin.css">
 </head>
 <body>
 	<div id="overlay"></div>
@@ -24,7 +24,7 @@
 				<div class="content-function">
 					<div class="sort function__sort function-item">
 						<div class="function__header">Sắp xếp</div>
-						<select name="sort__field" class="selection">
+						<select name="sort__field" class="selection sort-field">
 							<option value="name">Họ và tên</option>
 							<option value="dateOfBirth">Ngày sinh</option>
 						</select>
@@ -59,8 +59,14 @@
 								</span>
 							</div>
 						</div>
-
+						<select name="sort__field" class="selection search-field">
+							<option value="student_id">Mã học sinh</option>
+							<option value="name">Họ và tên</option>
+							<option value="dateOfBirth">Ngày sinh</option>
+							<option value="address">Địa chỉ</option>
+						</select>
 					</div>
+
 				</div>
 				<div class="content-data scrollable-element">
 					<table class="table student-table">
@@ -83,6 +89,6 @@
 			</div>
 		</div>
 	</div>
-	<script type="module" src="/boarding/js/admin/students.js"></script>
+	<script type="module" src="<%= request.getContextPath() %>/js/admin/students.js"></script>
 </body>
 </html>

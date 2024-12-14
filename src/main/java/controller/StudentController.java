@@ -26,17 +26,17 @@ import model.bo.StudentBO;
 import model.dto.ListParentsAndClasses;
 import model.dto.NameAndIdResponse;
 import model.dto.SearchStudentResponse;
+import util.AdminUtil;
 import util.LocalDateAdapter;
 
 @WebServlet("/students")
 public class StudentController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private static final int STUDENT_PER_PAGE = 12;
-	private Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
-	private StudentBO studentBO = StudentBO.getInstance();
-	private ParentsBO parentsBO = ParentsBO.getInstance();
-	private BoardingClassBO boardingClassBO = BoardingClassBO.getInstance();
-	private GlobalBO globalBO = GlobalBO.getInstance();
+    private final Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
+	private final StudentBO studentBO = StudentBO.getInstance();
+	private final ParentsBO parentsBO = ParentsBO.getInstance();
+	private final BoardingClassBO boardingClassBO = BoardingClassBO.getInstance();
+	private final GlobalBO globalBO = GlobalBO.getInstance();
 
 	public StudentController() {
 		super();
@@ -50,13 +50,11 @@ public class StudentController extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String position = (String) request.getSession().getAttribute("position");
-		if (position.equals("Teacher")) {
-			teacherHandler(request, response);
-		} else if (position.equals("Admin")) {
-			adminHandler(request, response);
-		} else if (position.equals("Parents")) {
-			parentsHandler(request, response);
-		}
+        switch (position) {
+            case "Teacher" -> teacherHandler(request, response);
+            case "Admin" -> adminHandler(request, response);
+            case "Parents" -> parentsHandler(request, response);
+        }
 	}
 
 	private void teacherHandler(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -80,43 +78,52 @@ public class StudentController extends HttpServlet {
 		response.setContentType("application/json");
 		String mode = request.getParameter("mode");
 		String destination = "/admin/students.jsp";
-		if (mode != null)
+		if (mode != null) {
+			int STUDENT_PER_PAGE = AdminUtil.ITEMS_PER_PAGE;
 			switch (mode) {
-			case "see":
-				String search = request.getParameter("search");
-				String sort = request.getParameter("sort");
-				String sortField = request.getParameter("sortField");
-				int page = Integer.parseInt(request.getParameter("page"));
-				SearchStudentResponse result = studentBO.searchStudent(page, STUDENT_PER_PAGE, search, sortField, sort);
-				String json = gson.toJson(result);
-				response.getWriter().write(json);
-				return;
-			case "preUpdate":
-				List<NameAndIdResponse> parents = parentsBO.getNameAndIds();
-				List<NameAndIdResponse> classes = boardingClassBO.getNameAndIds();
-				ListParentsAndClasses preUpdate = new ListParentsAndClasses(0, parents, classes);
-				response.getWriter().write(gson.toJson(preUpdate));
-				return;
-			case "update":
-				Student student = getStudentFromRequest(request);
-				studentBO.adminUpdate(student);
-				break;
-			case "preAdd":
-				int nextId = globalBO.getAuto_IncrementOf("student");
-				List<NameAndIdResponse> parentsAdd = parentsBO.getNameAndIds();
-				List<NameAndIdResponse> classesAdd = boardingClassBO.getNameAndIds();
-				ListParentsAndClasses preAdd = new ListParentsAndClasses(nextId, parentsAdd, classesAdd);
-				response.getWriter().write(gson.toJson(preAdd));
-				return;
-			case "add":
-				Student addStudent = getStudentFromRequest(request);
-				studentBO.insert(addStudent);
-				break;
-			case "delete":
-				int student_id = Integer.parseInt(request.getParameter("student_id"));
-				studentBO.deleteByID(student_id);
-				return;
+				case "see":
+					String search = request.getParameter("search");
+					String searchField = request.getParameter("searchField");
+					String sort = request.getParameter("sort");
+					String sortField = request.getParameter("sortField");
+					int page = Integer.parseInt(request.getParameter("page"));
+					SearchStudentResponse result = studentBO.searchStudent(page, STUDENT_PER_PAGE, searchField, search, sortField, sort);
+					String json = gson.toJson(result);
+					response.getWriter().write(json);
+					return;
+				case "preUpdate":
+					List<NameAndIdResponse> parents = parentsBO.getNameAndIds();
+					List<NameAndIdResponse> classes = boardingClassBO.getNameAndIds();
+					ListParentsAndClasses preUpdate = new ListParentsAndClasses(0, parents, classes);
+					response.getWriter().write(gson.toJson(preUpdate));
+					return;
+				case "update":
+					Student student = getStudentFromRequest(request);
+					studentBO.adminUpdate(student);
+					response.sendRedirect(request.getContextPath() + "/students");
+					return;
+				case "preAdd":
+					int nextId = globalBO.getAuto_IncrementOf("student");
+					List<NameAndIdResponse> parentsAdd = parentsBO.getNameAndIds();
+					List<NameAndIdResponse> classesAdd = boardingClassBO.getNameAndIds();
+					ListParentsAndClasses preAdd = new ListParentsAndClasses(nextId, parentsAdd, classesAdd);
+					response.getWriter().write(gson.toJson(preAdd));
+					return;
+				case "add":
+					Student addStudent = getStudentFromRequest(request);
+					if (studentBO.insert(addStudent))
+						System.out.println("ADD student " + addStudent.getStudent_id());
+					response.sendRedirect(request.getContextPath() + "/students");
+					return;
+				case "delete":
+					int student_id = Integer.parseInt(request.getParameter("student_id"));
+					System.out.println(student_id);
+					if (studentBO.deleteByID(student_id))
+						System.out.println("DELETE student " + student_id);
+					response.sendRedirect(request.getContextPath() + "/students");
+					return;
 			}
+		}
 		getServletContext().getRequestDispatcher(destination).forward(request, response);
 	}
 

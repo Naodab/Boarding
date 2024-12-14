@@ -198,15 +198,29 @@ public class TeacherDAO implements DAOInterface<Teacher> {
 		return result;
 	}
 	
-	public List<Teacher> selectPage(int page, int amount) {
+	public List<Teacher> selectPage(int page, int amount, String searchField,
+									String search, String sortField, String sortType) {
 		List<Teacher> result = new ArrayList<Teacher>();
 		Connection conn = JDBCUtil.getConnection();
 		try {
-
-			String sql = "SELECT * FROM teacher LIMIT ? OFFSET ?";
+			String sql = "SELECT * FROM teacher ";
+			if (search != null) {
+				search = "%" + search + "%";
+				sql += " WHERE " + searchField + " LIKE ? AND teacher_id != 0";
+			} else {
+				sql += " WHERE teacher_id != 0";
+			}
+			if (sortType != null) {
+				sql += " ORDER BY " + sortField + " " + sortType;
+			}
+			sql += " LIMIT ? OFFSET ?";
 			PreparedStatement pps = conn.prepareStatement(sql);
-			pps.setInt(1, amount);
-			pps.setInt(2, amount * page);
+			int index = 1;
+			if (search != null) {
+				pps.setString(index++, search);
+			}
+			pps.setInt(index++, amount);
+			pps.setInt(index++, page * amount);
 			ResultSet rs = pps.executeQuery();
 			while (rs.next()) {
 				String name = rs.getString("name");
@@ -264,6 +278,32 @@ public class TeacherDAO implements DAOInterface<Teacher> {
 			ResultSet rs = pps.executeQuery();
 			while (rs.next()) {
 				result = rs.getInt("teacher_id");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		JDBCUtil.closeConnection(conn);
+		return result;
+	}
+
+	public int count(String searchField, String search) {
+		int result = -1;
+		Connection conn = JDBCUtil.getConnection();
+		try {
+			String sql = "SELECT count(*) AS total FROM teacher";
+			if (search != null) {
+				search = "%" + search + "%";
+				sql += " WHERE " + searchField + " LIKE ? AND teacher_id != 0";
+			} else {
+				sql += " WHERE teacher_id != 0";
+			}
+			PreparedStatement pps = conn.prepareStatement(sql);
+			if (search != null) {
+				pps.setString(1, search);
+			}
+			ResultSet rs = pps.executeQuery();
+			while (rs.next()) {
+				result = rs.getInt("total");
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
