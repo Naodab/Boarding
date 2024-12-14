@@ -6,7 +6,12 @@ import {
 } from "../modal.js";
 
 import Validator from "../validator.js";
-import {renderDetailBoardingClass, renderStudentsDetailModal} from "./modal/modalBoardingClass.js";
+import {
+    renderAddBoardingClass,
+    renderDetailBoardingClass,
+    renderStudentsDetailModal,
+    renderUpdateBoardingClass
+} from "./modal/modalBoardingClass.js";
 
 const $ = document.querySelector.bind(document);
 const $$ = document.querySelectorAll.bind(document);
@@ -22,6 +27,15 @@ let activeBoardingClassId;
 let activePageDetail = 1;
 
 window.onload = () => displayPage(1);
+
+function checkRoomExist(room) {
+    return fetch(`./boardingClasses?mode=checkRoom&room=${room}`, {
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }).then(res => res.json()).then(data => data.result);
+}
 
 function addBoardingClass(boardingClass) {
     const tr = document.createElement("tr");
@@ -39,20 +53,68 @@ function addBoardingClass(boardingClass) {
         turnOnModal(renderDetailBoardingClass, boardingClass);
 
         $("#student-detail").onclick = () => {
+            turnOffModal();
             activePageDetail = 1;
             turnOnModal(renderStudentsDetailModal);
             displayPageDetail(1);
         }
 
         $("#update-btn").onclick = () => {
-            fetch("./boardingClass?mode=preUpdate", {
+            turnOffModal();
+            fetch("./boardingClasses?mode=preUpdate", {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json"
                 }
-            }).then(resp => resp.json()).then(data => {
-                turnOnModal();
-            })
+            }).then(resp => resp.json()).then(teachers => {
+                turnOnModal(renderUpdateBoardingClass, {boardingClass, teachers});
+
+                Validator({
+                    form: '#update-boardingClass',
+                    formGroupSelector: ".admin-form-group",
+                    errorSelector: '.form-message',
+                    rules: [
+                        Validator.isRequired('#name'),
+                        Validator.isRequired("#room"),
+                        Validator.isRequired("#numberOfBed")
+                    ],
+                    onSubmit: data => {
+                        if (data.room === boardingClass.room) {
+                            $("#update-boardingClass").submit();
+                            return;
+                        }
+                        checkRoomExist(data.room).then(result => {
+                            if (result) {
+                                $(".error-message").innerText = "Phòng hiện tại đã có lớp";
+                            } else {
+                                $("#update-boardingClass").submit();
+                            }
+                        })
+                    }
+                })
+            });
+        }
+
+        $("#delete-btn").onclick = () => {
+            turnOffModal();
+            if (boardingClass.numberStudent > 0) {
+                turnOnModal(renderAlertModal, "Hiện có học sinh trong lớp, không thể xóa");
+                return;
+            }
+            turnOnModal(renderConfirmModal, `Bạn chắc chắn muốn xóa lớp ${boardingClass.name}`);
+
+            $("#yes").onclick = () => {
+                turnOffModal();
+                fetch(`./boardingClasses?mode=delete&boardingClassId=${boardingClass.boardingClassId}`, {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                }).then(() => {
+                    deleteBoardingClass(boardingClass);
+                    turnOnModal(renderAlertModal, "Xóa thành công!");
+                });
+            }
         }
     }
 
@@ -278,5 +340,32 @@ searchInput.onkeyup = () => {
 }
 
 $("#add-btn").onclick = () => {
+    fetch(`./boardingClasses?mode=preAdd`, {
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/json"
+        }
+    }).then(resp => resp.json()).then(data => {
+        turnOnModal(renderAddBoardingClass, data);
 
+        Validator({
+            form: '#add-boardingClass',
+            formGroupSelector: ".admin-form-group",
+            errorSelector: '.form-message',
+            rules: [
+                Validator.isRequired('#name'),
+                Validator.isRequired("#room"),
+                Validator.isRequired("#numberOfBed")
+            ],
+            onSubmit: data => {
+                checkRoomExist(data.room).then(result => {
+                    if (result) {
+                        $(".error-message").innerText = "Phòng hiện tại đã có lớp";
+                    } else {
+                        $("#add-boardingClass").submit();
+                    }
+                })
+            }
+        })
+    })
 }

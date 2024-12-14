@@ -5,6 +5,7 @@ import java.util.List;
 import model.bean.Teacher;
 import model.dao.BoardingClassDAO;
 import model.dao.TeacherDAO;
+import model.dto.NameAndIdResponse;
 import model.dto.SearchResponse;
 import model.dto.TeacherResponse;
 
@@ -65,7 +66,8 @@ public class TeacherBO {
 		return teacherDAO.selectPage(page, amount, searchField, search, sortField, sortType)
 				.stream().map(teacher -> {
 			TeacherResponse response = toTeacherResponse(teacher);
-			response.setBoardingClass(boardingClassDAO.selectById(teacher.getBoardingClass_id()).getName());
+			response.setBoardingClass(boardingClassDAO.selectById(teacher
+					.getBoardingClass_id()).getName());
 			return response;
 		}).toList();
 	}
@@ -79,6 +81,13 @@ public class TeacherBO {
 
 	public TeacherResponse toTeacherResponse(Teacher t) {
 		return new TeacherResponse(t.getTeacher_id(), t.getName(),
-				t.getDateOfBirth().toLocalDate(), t.getAddress(), t.getPhoneNumber(), t.getEmail(), t.getSex());
+				t.getDateOfBirth().toLocalDate(), t.getAddress(),
+				t.getPhoneNumber(), t.getEmail(), t.getSex());
+	}
+
+	public List<NameAndIdResponse> getNameAndIds() {
+		return selectAll().stream().map(
+				teacher -> new NameAndIdResponse(teacher.getTeacher_id(),
+						teacher.getName())).toList();
 	}
 }

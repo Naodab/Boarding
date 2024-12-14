@@ -110,6 +110,22 @@ public class UserDAO implements DAOInterface<User> {
 		return result;
 	}
 
+	public boolean updatePassword(String username, String password) {
+		boolean result = false;
+		Connection conn = JDBCUtil.getConnection();
+		try {
+			String sql = "UPDATE user SET password = ? WHERE username=?";
+			PreparedStatement pps = conn.prepareStatement(sql);
+			pps.setString(1, password);
+			pps.setString(2, username);
+			result = pps.executeUpdate() > 0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		JDBCUtil.closeConnection(conn);
+		return result;
+	}
+
 	@Override
 	public List<User> selectAll() {
 		List<User> result = new ArrayList<User>();
@@ -178,11 +194,11 @@ public class UserDAO implements DAOInterface<User> {
 		return result;
 	}
 
-	public boolean alterDefaultPassword(String passwotd) {
+	public boolean alterDefaultPassword(String password) {
 		boolean result = false;
 		Connection conn = JDBCUtil.getConnection();
 		try {
-			String sql = "ALTER TABLE user CHANGE passowrd password VARCHAR(50) " + "NOT NULL DEFAULT \'" + passwotd
+			String sql = "ALTER TABLE user CHANGE password password VARCHAR(50) " + "NOT NULL DEFAULT \'" + password
 					+ "\'";
 			Statement stmt = conn.createStatement();
 			result = stmt.execute(sql);
@@ -198,7 +214,7 @@ public class UserDAO implements DAOInterface<User> {
 		Connection conn = JDBCUtil.getConnection();
 		try {
 			String sql = "SELECT COLUMN_DEFAULT " + "FROM INFORMATION_SCHEMA.COLUMNS " + "WHERE TABLE_NAME = \'user\' "
-					+ "  AND COLUMN_NAME = \'password\' " + "  AND TABLE_SCHEMA = \'sample1\'";
+					+ "  AND COLUMN_NAME = \'password\' " + "  AND TABLE_SCHEMA = \'boarding\'";
 			PreparedStatement pps = conn.prepareStatement(sql);
 			ResultSet rs = pps.executeQuery();
 			while (rs.next())
@@ -219,6 +235,67 @@ public class UserDAO implements DAOInterface<User> {
 			pps.setString(1, newUser);
 			pps.setString(2, oldUser);
 			result = pps.executeUpdate() > 0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		JDBCUtil.closeConnection(conn);
+		return result;
+	}
+
+	public List<User> getPageUsers(int page, int amount,
+    	String searchField, String search, String sortField, String sortType) {
+		List<User> result = new ArrayList<>();
+		Connection conn = JDBCUtil.getConnection();
+		try {
+			String sql = "SELECT * FROM user ";
+			if (search != null) {
+				search = "%" + search + "%";
+				sql += " WHERE " + searchField + " LIKE ?";
+			}
+			if (sortType != null) {
+				sql += " ORDER BY " + sortField + " " + sortType;
+			}
+			sql += " LIMIT ? OFFSET ?";
+			PreparedStatement pps = conn.prepareStatement(sql);
+			int index = 1;
+			if (search != null) {
+				pps.setString(index++, search);
+			}
+			pps.setInt(index++, amount);
+			pps.setInt(index++, page * amount);
+			ResultSet rs = pps.executeQuery();
+			while (rs.next()) {
+				String username = rs.getString("username");
+				String password = rs.getString("password");
+				String position = rs.getString("position");
+				boolean active = rs.getBoolean("active");
+				Date lastLogin = rs.getDate("lastLogin");
+				result.add(new User(username, password, position, active, lastLogin));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		JDBCUtil.closeConnection(conn);
+		return result;
+	}
+
+	public int count(String searchField, String search) {
+		int result = -1;
+		Connection conn = JDBCUtil.getConnection();
+		try {
+			String sql = "SELECT count(*) AS total FROM user";
+			if (search != null) {
+				search = "%" + search + "%";
+				sql += " WHERE " + searchField + " LIKE ?";
+			}
+			PreparedStatement pps = conn.prepareStatement(sql);
+			if (search != null) {
+				pps.setString(1, search);
+			}
+			ResultSet rs = pps.executeQuery();
+			while (rs.next()) {
+				result = rs.getInt("total");
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

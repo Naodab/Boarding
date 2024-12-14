@@ -44,6 +44,7 @@ public class BoardingClassDAO implements DAOInterface<BoardingClass> {
 		JDBCUtil.closeConnection(conn);
 		if (t.getTeacher_id() != 0) {
 			Teacher tc = TeacherDAO.getInstance().selectById(t.getTeacher_id());
+			System.out.println(t.getBoardingClass_id());
 			tc.setBoardingClass_id(t.getBoardingClass_id());
 			TeacherDAO.getInstance().update(tc);
 		}
@@ -71,6 +72,31 @@ public class BoardingClassDAO implements DAOInterface<BoardingClass> {
 			tc.setBoardingClass_id(0);
 			TeacherDAO.getInstance().update(tc);
 		}
+		return result;
+	}
+
+	public boolean deleteById(int id) {
+		BoardingClass bc = selectById(id);
+		if (bc.getTeacher_id() != 0) {
+			Teacher tc = TeacherDAO.getInstance().selectById(bc.getTeacher_id());
+			tc.setBoardingClass_id(0);
+			TeacherDAO.getInstance().update(tc);
+		}
+
+		boolean result = false;
+		Connection conn = JDBCUtil.getConnection();
+		try {
+			String sql = "DELETE FROM boardingclass WHERE boardingClass_id = ?";
+			PreparedStatement pps = conn.prepareStatement(sql);
+			pps.setInt(1, id);
+			int check = pps.executeUpdate();
+			if (check > 0) {
+				result = true;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		JDBCUtil.closeConnection(conn);
 		return result;
 	}
 
@@ -249,5 +275,21 @@ public class BoardingClassDAO implements DAOInterface<BoardingClass> {
 		}
 		JDBCUtil.closeConnection(conn);
 		return result;
+	}
+
+	public boolean existByRoom(String room) {
+		int result = -1;
+		Connection conn = JDBCUtil.getConnection();
+		try {
+			String sql = "SELECT count(*) AS total FROM boardingClass WHERE room = ?";
+			PreparedStatement pps = conn.prepareStatement(sql);
+			pps.setString(1, room);
+			ResultSet rs = pps.executeQuery();
+			while (rs.next()) {
+				result = rs.getInt("total");
+			}
+		} catch (SQLException ignored) {}
+		JDBCUtil.closeConnection(conn);
+		return result > 0;
 	}
 }

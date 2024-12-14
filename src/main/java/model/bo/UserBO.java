@@ -1,7 +1,13 @@
 package model.bo;
 
+import model.bean.Parents;
+import model.bean.Teacher;
 import model.bean.User;
+import model.dao.ParentsDAO;
+import model.dao.TeacherDAO;
 import model.dao.UserDAO;
+import model.dto.SearchResponse;
+import model.dto.UserResponse;
 
 import java.util.List;
 
@@ -16,6 +22,8 @@ public class UserBO {
 	}
 	
 	private final UserDAO userDAO = UserDAO.getInstance();
+	private final ParentsDAO parentsDAO = ParentsDAO.getInstance();
+	private final TeacherDAO teacherDAO = TeacherDAO.getInstance();
 	
 	public String authenticate(String username, String password) {
 		User user = userDAO.selectByUserName(username);
@@ -62,7 +70,12 @@ public class UserBO {
 	}
 
 	public String getDefaultPassword() {
-		return userDAO.getDefaultPassword();
+		String password = userDAO.getDefaultPassword();
+		return password.substring(1, password.length() - 1);
+	}
+
+	public boolean updatePassword(String username, String password) {
+		return userDAO.updatePassword(username, password);
 	}
 
 	public boolean updateUsername(String oldUser, String newUser) {
@@ -71,5 +84,37 @@ public class UserBO {
 
 	public boolean existsByUsername(String username) {
 		return selectByUserName(username) != null;
+	}
+
+	public SearchResponse<UserResponse> getPageUsers(int page, int amount,
+		String searchField, String search, String sortField, String sortType) {
+		return new SearchResponse<>(userDAO.count(searchField, search),
+			userDAO.getPageUsers(page, amount, searchField,
+					search, sortField, sortType).stream().map(user -> {
+				UserResponse userResponse = toUserResponse(user);
+				if ("Parents".equals(userResponse.getPosition())) {
+					Parents parents = parentsDAO.selectByUsername(user.getUsername());
+					if (parents != null) {
+						userResponse.setUserId(parents.getParents_id());
+						userResponse.setName(parents.getName());
+					}
+				} else if ("Teachers".equals(userResponse.getPosition())) {
+					Teacher teacher = teacherDAO.selectByUsername(user.getUsername());
+					if (teacher != null) {
+						userResponse.setUserId(teacher.getTeacher_id());
+						userResponse.setName(teacher.getName());
+					}
+				}
+				return userResponse;
+			}).toList());
+	}
+
+	private UserResponse toUserResponse(User u) {
+		return new UserResponse(u.isAvtive(), u.getPosition(),
+				u.getUsername(), u.getLastLogin().toLocalDate());
+	}
+
+	public boolean checkPasswordDefault(String password) {
+		return userDAO.getDefaultPassword().equals(password);
 	}
 }

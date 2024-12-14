@@ -9,8 +9,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import model.bean.User;
 import model.bo.UserBO;
+import util.AdminUtil;
+import util.LocalDateAdapter;
 
 @WebServlet("/auth")
 public class UserController extends HttpServlet {
@@ -23,13 +27,14 @@ public class UserController extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
+		doPost(request, response);
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
+		response.setContentType("application/json");
 		String mode = request.getParameter("mode");
 		String destination = "/index.jsp"; 
 		switch (mode) {
