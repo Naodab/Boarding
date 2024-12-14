@@ -59,8 +59,8 @@ public class ParentsController extends HttpServlet {
 		response.setCharacterEncoding("UTF-8");
 		String mode = (String)request.getParameter("mode");
 		switch(mode) {
-		case "parentInfor":
-			Parents parent = parentInfor(request, response);
+		case "parentInfo":
+			Parents parent = parentInfo(request, response);
 			String responseJson = jsonParentResponse(parent);
 			response.getWriter().write(responseJson);
 			break;
@@ -143,7 +143,7 @@ public class ParentsController extends HttpServlet {
 
 	}
 	
-	private Parents parentInfor(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	private Parents parentInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		StringBuilder sb = new StringBuilder();
 	    String line;
 	    try (BufferedReader reader = request.getReader()) {

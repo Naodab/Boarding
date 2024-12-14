@@ -208,4 +208,26 @@ public class AbsenceDAO implements DAOInterface<Absence> {
 		JDBCUtil.closeConnection(conn);
 		return result;
 	}
+
+	public Absence selectByStudentIdAndAbsenceDate(int student_id, Date absence_date) {
+		Absence result = null;
+		Connection conn = JDBCUtil.getConnection();
+		try {
+			String sql = "SELECT absence_id FROM absence WHERE student_id=? AND absence_day=?";
+			PreparedStatement pps = conn.prepareStatement(sql);
+			pps.setInt(1, student_id);
+			pps.setDate(2, absence_date);
+			ResultSet rs = pps.executeQuery();
+			while (rs.next()) {
+				result = new Absence();
+				result.setAbsence_id(rs.getInt("absence_id"));
+				result.setStudent_id(student_id);
+				result.setDayOfAbsence(absence_date);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		JDBCUtil.closeConnection(conn);
+		return result;
+	}
 }
