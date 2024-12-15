@@ -58,6 +58,21 @@ function turnOffModal() {
 	overlay.style.zIndex = "-10";
 }
 
+function renderLoading() {
+	return html`
+        <div class="modal closure active" id="update-avatar">
+            <h1 class="modal__title">Đang tải</h1>
+            <div class="main-modal">
+                <div class="loading-container">
+                    <div class="circle-loading"></div>
+                    <div class="circle-loading"></div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+
 function renderLogin(message) {
 	return html`
 		<form class="modal closure active" id="login" method="POST" action="auth?mode=login">
@@ -612,12 +627,12 @@ function resolveConfirm(isConfirmed) {
     confirmResolve(isConfirmed);
 }
 
-
 export {
 	confirm,
 	renderLogin,
 	turnOnModal,
 	turnOffModal,
+	renderLoading,
 	addEventForEye,
 	renderAlertModal,
 	renderStudentModal,

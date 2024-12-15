@@ -41,8 +41,8 @@
 							<td><%= listStudent.get(i).getStudent_id() %></td>
 							<td><%= listStudent.get(i).getName() %></td>
 							<td><%= listStudent.get(i).getParents_id() %></td>
-							<td><input type="button" value="Xem thông tin học sinh" class="student-infor" data="<%=listStudent.get(i).getStudent_id()%>"></td>
-							<td><input type="button" value="Xem thông tin phụ huynh" class="parent-infor" data="<%=listStudent.get(i).getParents_id()%>"></td>
+							<td><input type="button" value="Xem thông tin học sinh" class="student-info" data="<%=listStudent.get(i).getStudent_id()%>"></td>
+							<td><input type="button" value="Xem thông tin phụ huynh" class="parent-info" data="<%=listStudent.get(i).getParents_id()%>"></td>
 						</tr>
 						<% } %>
 					</table>
@@ -52,16 +52,14 @@
 	</div>
 </body>
 <script type="text/javascript">
-	document.querySelectorAll(".student-infor").forEach(button => {
+	document.querySelectorAll(".student-info").forEach(button => {
 	    button.addEventListener("click", async function () {
 	        const studentId = this.getAttribute("data");
 	        const tableData = {studentId};
 	        try {
-		        const response = await fetch('students?mode=studentInfor&stid=' + studentId, {
+		        const response = await fetch('students?mode=studentInfo&stid=' + studentId, {
 		            method: 'POST',
-		            headers: {
-		                'Content-Type': 'application/json'
-		            },
+		            headers: {'Content-Type': 'application/json'},
 		            body: JSON.stringify(tableData)
 		        });
 		        if (response.ok) {
@@ -70,22 +68,18 @@
 					alert("turn on modal");
 					//turn on modal and set inner text
 				}
-		    } catch (err) {
-		        console.error("Lỗi khi gửi dữ liệu:", err);
-		    }
+		    } catch (err) {console.error("Lỗi khi gửi dữ liệu:", err);}
 	    });
 	});
 	
-	document.querySelectorAll(".parent-infor").forEach(button => {
+	document.querySelectorAll(".parent-info").forEach(button => {
 	    button.addEventListener("click", async function () {
 	        const parentId = this.getAttribute("data");
 	        const tableData = {parentId};
 	        try {
-		        const response = await fetch('parents?mode=parentInfor&prid=' + parentId, {
+		        const response = await fetch('parents?mode=parentInfo&prid=' + parentId, {
 		            method: 'POST',
-		            headers: {
-		                'Content-Type': 'application/json'
-		            },
+		            headers: {'Content-Type': 'application/json'},
 		            body: JSON.stringify(tableData)
 		        });
 		        if (response.ok) {
@@ -94,9 +88,7 @@
 					alert("turn on modal");
 					//turn on modal and set inner text
 				}
-		    } catch (err) {
-		        console.error("Lỗi khi gửi dữ liệu:", err);
-		    }
+		    } catch (err) {console.error("Lỗi khi gửi dữ liệu:", err);}
 	    });
 	});
 </script>

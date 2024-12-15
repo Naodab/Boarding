@@ -3,6 +3,7 @@ package controller;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
@@ -15,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 import model.bean.Student;
 import model.bo.BoardingClassBO;
@@ -58,12 +60,13 @@ public class StudentController extends HttpServlet {
 	private void teacherHandler(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
-		String mode = (String)request.getParameter("mode");
-		switch(mode) {
-			case "studentInfor":
-				Student student = studentInfor(request, response);
-				String responseJson = jsonStudentResponse(student);
-				response.getWriter().write(responseJson);
+		String mode = request.getParameter("mode");
+		switch (mode) {
+			case "studentInfo":
+				studentInfo(request, response);
+				break;
+			case "updatePhysical":
+				updatePhysical(request, response);
 				break;
 		}
 	}
@@ -142,17 +145,23 @@ public class StudentController extends HttpServlet {
 
 	}
 
-	private Student studentInfor(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		StringBuilder sb = new StringBuilder();
-	    String line;
-	    try (BufferedReader reader = request.getReader()) {
-	    while ((line = reader.readLine()) != null) {
-	    	sb.append(line);
-	       }
-	    }
-	    String jsonData = sb.toString();
-	    String student_id = extractValue(jsonData, "studentId");
-	    return studentBO.selectById(Integer.parseInt(student_id));
+	private void updatePhysical(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		String json = request.getReader().lines().reduce("", (accumulator, actual) -> accumulator + actual);
+		Gson gson = new Gson();
+		Type studentListType = new TypeToken<List<Student>>() {}.getType();
+		List<Student> studentLists = gson.fromJson(json.toString(), studentListType);
+		for (int i = 0; i < studentLists.size(); i++) {
+			Student student = studentBO.selectById(studentLists.get(i).getStudent_id());
+			student.setHeight(studentLists.get(i).getHeight());
+			student.setWeight(studentLists.get(i).getWeight());
+			studentBO.update(student);
+		}
+	}
+
+	private void studentInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		String jsonData = request.getReader().lines().reduce("", (accumulator, actual) -> accumulator + actual);
+		Student student =  studentBO.selectById(Integer.parseInt(extractValue(jsonData, "studentId")));
+		response.getWriter().write(jsonStudentResponse(student));
 	}
 
 	private String jsonStudentResponse(Student student) {

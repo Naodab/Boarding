@@ -53,7 +53,7 @@
 						<div class="function__lookup">
 							<div class="lookup__search-bar">
 								<input type="text" id="search" name="search"
-									placeholder="Nhập id hoặc họ và tên"> <span
+									placeholder="Nhập thông tin"> <span
 									class="lookup__icon"> <i
 									class="fa-solid fa-magnifying-glass"></i>
 								</span>
@@ -83,9 +83,7 @@
 				</div>
 				<div class="pages-container"></div>
 			</div>
-			<div class="content-footer">
-				<div class="btn btn--green footer-item" id="add-btn">Thêm phụ huynh</div>
-			</div>
+			<div class="btn btn--green footer-item special-btn" id="add-btn">Thêm phụ huynh</div>
 		</div>
 	</div>
 	<script type="module" src="<%= request.getContextPath() %>/js/admin/parents.js"></script>

@@ -155,6 +155,24 @@ public class FoodDAO implements DAOInterface<Food> {
 		return result;
 	}
 
+	public boolean existByName(String name) {
+		boolean result = false;
+		Connection conn = JDBCUtil.getConnection();
+		try {
+			String sql = "SELECT * FROM food WHERE name=?";
+			PreparedStatement pps = conn.prepareStatement(sql);
+			pps.setString(1, name);
+			ResultSet rs = pps.executeQuery();
+			while (rs.next()) {
+				result = true;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		JDBCUtil.closeConnection(conn);
+		return result;
+	}
+
 	public List<Food> selectByCategory(boolean category) {
 		List<Food> result = new ArrayList<Food>();
 		Connection conn = JDBCUtil.getConnection();
@@ -167,6 +185,61 @@ public class FoodDAO implements DAOInterface<Food> {
 				int food_id = rs.getInt("food_id");
 				String name = rs.getString("name");
 				result.add(new Food(food_id, name, category, null));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		JDBCUtil.closeConnection(conn);
+		return result;
+	}
+
+	public List<Food> getPages(int page, int amount, String searchField, String search) {
+		List<Food> result = new ArrayList<Food>();
+		Connection conn = JDBCUtil.getConnection();
+		try {
+			String sql = "SELECT * FROM food";
+			if (searchField != null) {
+				search = "%" + search + "%";
+				sql += " WHERE " + searchField + " LIKE ?";
+			}
+			sql += " LIMIT ? OFFSET ?";
+			PreparedStatement pps = conn.prepareStatement(sql);
+			int index = 1;
+			if (search != null) {
+				pps.setString(index++, search);
+			}
+			pps.setInt(index++, amount);
+			pps.setInt(index, page * amount);
+			ResultSet rs = pps.executeQuery();
+			while (rs.next()) {
+				int food_id = rs.getInt("food_id");
+				String name = rs.getString("name");
+				boolean category = rs.getBoolean("category");
+				result.add(new Food(food_id, name, category, new ArrayList<Integer>()));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		JDBCUtil.closeConnection(conn);
+		return result;
+	}
+
+	public int count(String searchField, String search) {
+		int result = -1;
+		Connection conn = JDBCUtil.getConnection();
+		try {
+			String sql = "SELECT count(*) AS total FROM food";
+			if (searchField != null) {
+				search = "%" + search + "%";
+				sql += " WHERE " + searchField + " LIKE ?";
+			}
+			PreparedStatement pps = conn.prepareStatement(sql);
+			if (search != null) {
+				pps.setString(1, search);
+			}
+			ResultSet rs = pps.executeQuery();
+			while (rs.next()) {
+				result = rs.getInt("total");
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

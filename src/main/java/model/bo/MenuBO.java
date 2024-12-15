@@ -1,9 +1,14 @@
 package model.bo;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import model.bean.Food;
 import model.bean.Menu;
+import model.dao.FoodDAO;
 import model.dao.MenuDAO;
+import model.dto.MenuAdminResponse;
+import model.dto.SearchResponse;
 
 public class MenuBO {
 	private static MenuBO _instance;
@@ -17,7 +22,8 @@ public class MenuBO {
 		return _instance;
 	}
 
-	private MenuDAO menuDAO = MenuDAO.getInstance();
+	private final MenuDAO menuDAO = MenuDAO.getInstance();
+	private final FoodDAO foodDAO = FoodDAO.getInstance();
 
 	public boolean insert(Menu t) {
 		return menuDAO.insert(t);
@@ -47,4 +53,36 @@ public class MenuBO {
 		return menuDAO.selectById(t);
 	}
 
+	public SearchResponse<MenuAdminResponse> getPage(int page, int amount,
+    	String searchField, String search) {
+		return new SearchResponse<>(menuDAO.count(searchField, search),
+			menuDAO.getPage(page, amount, searchField, search).stream()
+				.map(this::toMenuResponse).toList());
+	}
+
+	public MenuAdminResponse toMenuResponse(Menu t) {
+		MenuAdminResponse response = new MenuAdminResponse(t.getMenu_id(), t.isActive());
+		List<String> mainFoods = new ArrayList<>();
+		String subFood = "";
+		for (int food_id : t.getFood_ids()) {
+			Food food = foodDAO.selectById(food_id);
+			if (food.getCategory()) {
+				mainFoods.add(food.getName());
+			} else {
+				subFood = food.getName();
+			}
+		}
+		response.setMainFoods(mainFoods);
+		response.setSubFood(subFood);
+		return response;
+	}
+
+	public List<Integer> selectAllIds() {
+		List<Integer> ids = new ArrayList<>();
+		List<Menu> menus = menuDAO.selectAll();
+		for (Menu menu : menus) {
+			ids.add(menu.getMenu_id());
+		}
+		return ids;
+	}
 }

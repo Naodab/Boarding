@@ -12,6 +12,12 @@
 <link rel="stylesheet" href="<%= request.getContextPath() %>/css/admin/admin.css">
 </head>
 <body>
+	<%
+		Object messageObj = request.getAttribute("message");
+		if (messageObj != null && "create fee".equals((String) messageObj)) {
+			out.print("<input type='text' id='message' value='" + request.getAttribute("month") + "' hidden>");
+		}
+	%>
 	<div id="overlay"></div>
 	<div id="coating"></div>
 	<div id="background"></div>
@@ -23,14 +29,15 @@
 			<div class="content-body">
 				<div class="content-function">
 					<div class="sort function__sort function-item">
-						<div class="function__header">Danh sách ngày ăn</div>
+						<div class="function__header">Tháng</div>
+						<select name="month__select" class="selection sort-field" id="months-selection"></select>
 					</div>
 					<div class="function__lookup function-item">
 						<div class="function__header">Tìm kiếm</div>
 						<div class="function__lookup">
 							<div class="lookup__search-bar">
 								<input type="text" id="search" name="search"
-									placeholder="Nhập id hoặc họ và tên"> <span
+									placeholder="Nhập id thông tin"> <span
 									class="lookup__icon"> <i
 									class="fa-solid fa-magnifying-glass"></i>
 								</span>
@@ -43,7 +50,7 @@
 
 				</div>
 				<div class="content-data scrollable-element">
-					<table class="table teacher-table">
+					<table class="table eatingHistory-table">
 						<tr>
 							<th class="th__first">Mã</th>
 							<th>Mã thực đơn</th>
@@ -55,11 +62,13 @@
 				</div>
 				<div class="pages-container"></div>
 			</div>
-			<div class="content-footer">
-				<div class="btn btn--green footer-item" id="add-btn">Thêm giáo viên</div>
-			</div>
+			<%
+				if (messageObj != null) {
+					out.print("<div class=\"btn btn--green footer-item special-btn\" id=\"add-btn\" hidden=\"hidden\">Phân ngày ăn</div>");
+				}
+			%>
 		</div>
 	</div>
-	<script type="module" src="<%= request.getContextPath() %>/js/admin/teachers.js"></script>
+	<script type="module" src="<%= request.getContextPath() %>/js/admin/eatingHistory.js"></script>
 </body>
 </html>

@@ -4,6 +4,7 @@
 	display: flex;
 	flex-direction: column;
 	flex: 1;
+    position: relative;
 }
 
 .content-header {
@@ -330,4 +331,16 @@
 
 .form-message {
     display: none;
+}
+
+.special-btn {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    min-width: 200px !important;
+    max-width: 300px !important;
+}
+
+tr.hidden {
+    color: transparent;
 }

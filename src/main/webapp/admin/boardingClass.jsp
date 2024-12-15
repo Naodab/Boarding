@@ -79,9 +79,7 @@
 				</div>
 				<div class="pages-container"></div>
 			</div>
-			<div class="content-footer">
-				<div class="btn btn--green footer-item" id="add-btn">Thêm lớp học</div>
-			</div>
+			<div class="btn btn--green footer-item special-btn" id="add-btn">Thêm lớp học</div>
 		</div>
 	</div>
 	<script type="module" src="<%= request.getContextPath() %>/js/admin/boardingClass.js"></script>

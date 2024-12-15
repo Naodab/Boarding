@@ -360,6 +360,28 @@ public class StudentDAO implements DAOInterface<Student> {
 		return result;
 	}
 
+	public List<Integer> getPageStudentsByBoardingClassId(int page, int amount, int boardingClass_id) {
+		List<Integer> result = new ArrayList<>();
+		Connection conn = JDBCUtil.getConnection();
+		try {
+			String sql = "SELECT * FROM student WHERE boardingClass_id = ?";
+			sql += " LIMIT ? OFFSET ?";
+			PreparedStatement pps = conn.prepareStatement(sql);
+			int index = 1;
+			pps.setInt(index++, boardingClass_id);
+			pps.setInt(index++, amount);
+			pps.setInt(index, page * amount);
+			ResultSet rs = pps.executeQuery();
+			while (rs.next()) {
+				result.add(rs.getInt("student_id"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		JDBCUtil.closeConnection(conn);
+		return result;
+	}
+
 	public int count(String searchField, String search) {
 		int result = -1;
 		Connection conn = JDBCUtil.getConnection();

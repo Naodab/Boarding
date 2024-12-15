@@ -53,7 +53,7 @@ function renderDetailBoardingClass(boardingClass) {
 					<div class="btn btn--pink modal__btn" id="delete-btn">Xóa</div>
 				</div>
 			</div>
-		</form>>
+		</form>
 	`;
 }
 
@@ -110,7 +110,7 @@ function renderUpdateBoardingClass({boardingClass, teachers}) {
 					<div class="btn btn--pink modal__btn" id="delete-btn">Xóa</div>
 				</div>
 			</div>
-		</form>>
+		</form>
 	`;
 }
 
@@ -164,7 +164,7 @@ function renderAddBoardingClass({nextId, teachers}) {
 					<div class="btn btn--pink modal__btn" id="delete-btn">Xóa</div>
 				</div>
 			</div>
-		</form>>
+		</form>
 	`;
 }
 

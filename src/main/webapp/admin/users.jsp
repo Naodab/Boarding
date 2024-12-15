@@ -81,9 +81,7 @@
 				</div>
 				<div class="pages-container"></div>
 			</div>
-			<div class="content-footer">
-				<div class="btn btn--green footer-item" id="change-default-btn">Thay đổi mật khẩu mặc định</div>
-			</div>
+			<div class="btn btn--green footer-item special-btn" id="change-default-btn">Thay đổi mật khẩu mặc định</div>
 		</div>
 	</div>
 	<script type="module" src="<%= request.getContextPath() %>/js/admin/users.js"></script>
