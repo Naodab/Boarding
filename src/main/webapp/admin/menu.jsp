@@ -48,7 +48,7 @@
 				</div>
 				<div class="pages-container"></div>
 			</div>
-			<div class="btn btn--green footer-item special-btn" id="add-btn">Thêm món ăn</div>
+			<div class="btn btn--green footer-item special-btn" id="add-btn">Thêm thực đơn</div>
 		</div>
 	</div>
 	<script type="module" src="<%= request.getContextPath() %>/js/admin/menu.js"></script>

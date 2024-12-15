@@ -107,7 +107,7 @@ public class MenuController extends HttpServlet {
 		List<Integer> mainFoodIds = new ArrayList<>();
 		for (int i = 0; i < 5; i++) {
 			String mainFoodId = request.getParameter("mainFoodId" + i);
-			if (mainFoodId != null) {
+			if (mainFoodId != null && mainFoodId != "") {
 				mainFoodIds.add(Integer.parseInt(mainFoodId));
 			}
 		}

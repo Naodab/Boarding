@@ -2,15 +2,20 @@ package controller;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import model.bean.BoardingFee;
+import model.bean.EatingHistory;
 import model.bo.EatingHistoryBO;
+import model.bo.MenuBO;
+import model.dto.EatingHistoryRequest;
 import model.dto.EatingHistoryResponse;
 import model.dto.SearchResponse;
 import util.AdminUtil;
 import util.LocalDateAdapter;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -22,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 public class EatingHistoryController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private final EatingHistoryBO eatingHistoryBO = EatingHistoryBO.getInstance();
+	private final MenuBO menuBO = MenuBO.getInstance();
 	private final static int EATING_HISTORIES_PER_PAGE = AdminUtil.ITEMS_PER_PAGE;
 	private final Gson gson = new GsonBuilder()
 			.registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
@@ -77,6 +83,35 @@ public class EatingHistoryController extends HttpServlet {
 			case "months" -> {
 				List<Integer> months = eatingHistoryBO.getMonthsValid();
 				response.getWriter().write(gson.toJson(months));
+				response.flushBuffer();
+			}
+			case "createFee" -> {
+				BoardingFee boardingFee = (BoardingFee) request.getSession().getAttribute("boardingFee");
+				SearchResponse<EatingHistoryResponse> result = eatingHistoryBO.createFee(boardingFee);
+				response.getWriter().print(gson.toJson(result));
+				response.flushBuffer();
+			}
+			case "menu" -> {
+				response.getWriter().write(gson.toJson(menuBO.selectAllIds()));
+				response.flushBuffer();
+			}
+			case "detailMenu" -> {
+				int menuId = Integer.parseInt(request.getParameter("menuId"));
+				response.getWriter().write(gson.toJson(menuBO
+						.toMenuResponse(menuBO.selectById(menuId))));
+				response.flushBuffer();
+			}
+			case "add" -> {
+				StringBuilder jsonBuilder = new StringBuilder();
+				BufferedReader reader = request.getReader();
+				String line;
+				while ((line = reader.readLine()) != null) {
+					jsonBuilder.append(line);
+				}
+				BoardingFee boardingFee = (BoardingFee) request.getSession().getAttribute("boardingFee");
+				String jsonData = jsonBuilder.toString();
+				EatingHistoryRequest[] eatingHistories = gson.fromJson(jsonData, EatingHistoryRequest[].class);
+				eatingHistoryBO.fee(boardingFee, Arrays.stream(eatingHistories).toList());
 				response.flushBuffer();
 			}
 		}

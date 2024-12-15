@@ -26,9 +26,11 @@ public class MenuDAO implements DAOInterface<Menu>{
 		boolean result = false;
 		Connection conn = JDBCUtil.getConnection();
 		try {
-			String sql = "INSERT INTO menu (active) VALUES (?)";
+			String sql = "INSERT INTO menu (menu_id, active) VALUES (?, ?)";
 			PreparedStatement pps = conn.prepareStatement(sql);
-			pps.setBoolean(1, t.isActive());
+			pps.setInt(1, t.getMenu_id());
+			pps.setBoolean(2, t.isActive());
+			System.out.println(pps.toString());
 			int check = pps.executeUpdate();
 			if (check > 0) result = true;
 		} catch (SQLException e) {

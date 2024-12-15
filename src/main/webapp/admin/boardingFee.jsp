@@ -70,8 +70,8 @@
 			<div class="content-body-invoice">
 				<div class="content-function">
 					<div class="sort function__sort function-item">
-						<div class="function__header">Tháng</div>
-						<select name="month__select" class="selection sort-field" id="months-selection"></select>
+						<div class="function__header">Đợt thu tiền</div>
+						<select name="month__select" class="selection sort-field" id="fees-selection"></select>
 					</div>
 					<div class="function__lookup function-item">
 						<div class="function__header">Tìm kiếm</div>
@@ -85,14 +85,14 @@
 							</div>
 						</div>
 						<select name="sort__field" class="selection search-field">
-							<option value="teacher_id">Mã hóa đơn</option>
+							<option value="invoice_id">Mã hóa đơn</option>
 							<option value="student_id">Mã học sinh</option>
 						</select>
 					</div>
 
 				</div>
 				<div class="content-data-invoice scrollable-element">
-					<table class="table teacher-table">
+					<table class="table invoice-table">
 						<tr>
 							<th class="th__first">Mã hóa đơn</th>
 							<th>Mã học sinh</th>

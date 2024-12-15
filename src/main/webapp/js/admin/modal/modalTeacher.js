@@ -135,7 +135,7 @@ function renderAddTeacherModal({nextId, classes}) {
                     <div class="btn btn--pink modal__btn" id="cancel">Hủy</div>
 				</div>
 			</div>
-		</form>>
+		</form>
 	`;
 }
 

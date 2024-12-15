@@ -141,6 +141,7 @@ a {
     right: 0;
     bottom: 0;
     display: flex;
+    padding: 16px;
     transition: all .6s ease-in-out;
 }
 

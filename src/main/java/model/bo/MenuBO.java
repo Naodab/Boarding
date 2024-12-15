@@ -57,25 +57,32 @@ public class MenuBO {
     	String searchField, String search) {
 		return new SearchResponse<>(menuDAO.count(searchField, search),
 			menuDAO.getPage(page, amount, searchField, search).stream()
-				.map(menu -> {
-					MenuAdminResponse response = toMenuResponse(menu);
-					List<String> mainFoods = new ArrayList<>();
-					String subFood = "";
-					for (int food_id : menu.getFood_ids()) {
-						Food food = foodDAO.selectById(food_id);
-						if (food.getCategory()) {
-							mainFoods.add(food.getName());
-						} else {
-							subFood = food.getName();
-						}
-					}
-					response.setMainFoods(mainFoods);
-					response.setSubFood(subFood);
-					return response;
-				}).toList());
+				.map(this::toMenuResponse).toList());
 	}
 
-	private MenuAdminResponse toMenuResponse(Menu t) {
-		return new MenuAdminResponse(t.getMenu_id(), t.isActive());
+	public MenuAdminResponse toMenuResponse(Menu t) {
+		MenuAdminResponse response = new MenuAdminResponse(t.getMenu_id(), t.isActive());
+		List<String> mainFoods = new ArrayList<>();
+		String subFood = "";
+		for (int food_id : t.getFood_ids()) {
+			Food food = foodDAO.selectById(food_id);
+			if (food.getCategory()) {
+				mainFoods.add(food.getName());
+			} else {
+				subFood = food.getName();
+			}
+		}
+		response.setMainFoods(mainFoods);
+		response.setSubFood(subFood);
+		return response;
+	}
+
+	public List<Integer> selectAllIds() {
+		List<Integer> ids = new ArrayList<>();
+		List<Menu> menus = menuDAO.selectAll();
+		for (Menu menu : menus) {
+			ids.add(menu.getMenu_id());
+		}
+		return ids;
 	}
 }

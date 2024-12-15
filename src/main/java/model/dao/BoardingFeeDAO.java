@@ -173,4 +173,32 @@ public class BoardingFeeDAO implements DAOInterface<BoardingFee> {
 		}
 		return result;
 	}
+
+	public BoardingFee selectByEndMonth(int t) {
+		BoardingFee result = null;
+		Connection conn = JDBCUtil.getConnection();
+		try {
+			String sql = "SELECT * FROM boardingfee where Month(end_day)=?";
+			PreparedStatement pps = conn.prepareStatement(sql);
+			pps.setInt(1, t);
+			ResultSet rs = pps.executeQuery();
+			while (rs.next()) {
+				int boardingFee_id = rs.getInt("boardingFee_id");
+				long mainCosts = rs.getLong("mainCosts");
+				long subCosts = rs.getLong("subCosts");
+				int numberDays = rs.getInt("numberDays");
+				Date start_day = rs.getDate("start_day");
+				Date end_day = rs.getDate("end_day");
+				result = new BoardingFee(boardingFee_id, mainCosts, subCosts, numberDays, start_day, end_day, null, null);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		JDBCUtil.closeConnection(conn);
+		if (result != null) {
+			result.setEatingHistory_ids(EatingHistoryDAO.getInstance().selectByBoardingFee_id(t));
+			result.setInvoice_ids(InvoiceDAO.getInstance().selectByBoardingFeeId(t));
+		}
+		return result;
+	}
 }

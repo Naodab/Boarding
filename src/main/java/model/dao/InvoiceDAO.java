@@ -291,6 +291,27 @@ public class InvoiceDAO implements DAOInterface<Invoice>{
 		JDBCUtil.closeConnection(conn);
 		return result;
 	}
+
+	public boolean updateStatusPaymentOfBoardingFeeId(int boardingFee_id) {
+		boolean result = false;
+		Connection conn = JDBCUtil.getConnection();
+		try {
+			String sql = "UPDATE invoice SET statusPayment = ? "
+					+ "WHERE statusPayment = ? and boardingFee_id = ?";
+			PreparedStatement pps = conn.prepareStatement(sql);
+			pps.setByte(1, (byte) 3);
+			pps.setByte(2, (byte) 2);
+			pps.setInt(3, boardingFee_id);
+			int check = pps.executeUpdate();
+			if (check > 0) {
+				result = true;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		JDBCUtil.closeConnection(conn);
+		return result;
+	}
 	
 	public long getTotalMoneyOfBoardingFee(int boardingFee_id) {
 		long result = 0;
@@ -334,7 +355,8 @@ public class InvoiceDAO implements DAOInterface<Invoice>{
 		int result = 0;
 		Connection conn = JDBCUtil.getConnection();
 		try {
-			String sql = "SELECT COUNT(student_id) FROM invoice WHERE boardingFee_id=? AND (statusPayment=? OR statusPayment=?)";
+			String sql = "SELECT COUNT(student_id) FROM invoice WHERE boardingFee_id=? " +
+					"AND (statusPayment=? OR statusPayment=?)";
 			PreparedStatement pps = conn.prepareStatement(sql);
 			pps.setInt(1, boardingFee_id);
 			pps.setByte(2, (byte)2);
@@ -346,6 +368,86 @@ public class InvoiceDAO implements DAOInterface<Invoice>{
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		JDBCUtil.closeConnection(conn);
+		return result;
+	}
+
+	public int getNonPrintedInvoicesByBoardingFeeId(int boardingFee_id) {
+		int result = 0;
+		Connection conn = JDBCUtil.getConnection();
+		try {
+			String sql = "SELECT COUNT(student_id) FROM invoice WHERE boardingFee_id=? " +
+					"AND statusPayment=?";
+			PreparedStatement pps = conn.prepareStatement(sql);
+			pps.setInt(1, boardingFee_id);
+			pps.setByte(2, (byte)2);
+			ResultSet rs = pps.executeQuery();
+			while (rs.next()) {
+				result = rs.getInt(1);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		JDBCUtil.closeConnection(conn);
+		return result;
+	}
+
+	public List<Invoice> getPageInvoice(int page, int amount,
+		int boardingFeeId, String searchField, String search) {
+		List<Invoice> result = new ArrayList<>();
+		Connection conn = JDBCUtil.getConnection();
+		try {
+			String sql = "SELECT * FROM invoice WHERE boardingFee_id = ?";
+			if (search != null) {
+				search = "%" + search + "%";
+				sql += " AND " + searchField + " LIKE?";
+			}
+			sql += " LIMIT ? OFFSET ?";
+			PreparedStatement pps = conn.prepareStatement(sql);
+			int index = 1;
+			pps.setInt(index++, boardingFeeId);
+			if (search != null) {
+				pps.setString(index++, search);
+			}
+			pps.setInt(index++, amount);
+			pps.setInt(index, page * amount);
+			ResultSet rs = pps.executeQuery();
+			while (rs.next()) {
+				int invoice_id = rs.getInt("invoice_id");
+				Date payment_day = rs.getDate("payment_day");
+				int student_id = rs.getInt("student_id");
+				int boardingFee_id = rs.getInt("boardingFee_id");
+				byte statusPayment = rs.getByte("statusPayment");
+				long returnMoney = rs.getLong("returnMoney");
+				long money = rs.getLong("money");
+				result.add(new Invoice(invoice_id, payment_day, student_id,
+						boardingFee_id, statusPayment, returnMoney, money));
+			}
+		} catch (Exception ignored) {}
+		JDBCUtil.closeConnection(conn);
+		return result;
+	}
+
+	public int count(int boardingFeeId, String searchField, String search) {
+		int result = 0;
+		Connection conn = JDBCUtil.getConnection();
+		try {
+			String sql = "SELECT COUNT(invoice_id) FROM invoice WHERE boardingFee_id = ?";
+			if (search != null) {
+				search = "%" + search + "%";
+				sql += " AND " + searchField + " LIKE?";
+			}
+			PreparedStatement pps = conn.prepareStatement(sql);
+			int index = 1;
+			pps.setInt(index++, boardingFeeId);
+			if (search != null) {
+				pps.setString(index, search);
+			}
+			ResultSet rs = pps.executeQuery();
+			while (rs.next()) {
+				result = rs.getInt(1);
+			}
+		} catch (Exception ignored) {}
 		JDBCUtil.closeConnection(conn);
 		return result;
 	}

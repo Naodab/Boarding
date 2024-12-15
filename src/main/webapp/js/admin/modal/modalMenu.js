@@ -3,7 +3,7 @@ import {html} from "../common.js";
 function renderAddMenu({nextId, mainFoods, subFoods}) {
     return html`
         <form class="modal closure active update" id="add-food"
-              method="POST" action="menus?mode=update">
+              method="POST" action="menus?mode=add">
             <h1 class="modal__title">Thêm thực đơn</h1>
             <i class="fa-solid fa-xmark btn-icon btn-close" id="back"></i>
             <div class="error-message"></div>
@@ -13,7 +13,7 @@ function renderAddMenu({nextId, mainFoods, subFoods}) {
                         <div class="admin-form-group">
                             <div class="admin-form-group first-column">
                                 <label for="id">Mã thực đơn:</label>
-                                <input type="text" id="id" name="foodId" value="${nextId}" readonly>
+                                <input type="text" id="id" name="menuId" value="${nextId}" readonly>
                             </div>
                         </div>
                         <div class="admin-form-group">
@@ -22,6 +22,7 @@ function renderAddMenu({nextId, mainFoods, subFoods}) {
                         <div class="admin-form-group">
                             <label for="name"></label>  
                             <select name="mainFoodId0" class="selection">
+                                <option value="">Không có</option>
                                 ${mainFoods.map(food => html`<option value="${food.id}">${food.name}</option>`)}
                             </select>
                             <span class="form-message"></span>
@@ -29,6 +30,7 @@ function renderAddMenu({nextId, mainFoods, subFoods}) {
                         <div class="admin-form-group">
                             <label for="name"></label>
                             <select name="mainFood1Id" class="selection">
+                                <option value="">Không có</option>
                                 ${mainFoods.map(food => html`<option value="${food.id}">${food.name}</option>`)}
                             </select>
                             <span class="form-message"></span>
@@ -36,6 +38,7 @@ function renderAddMenu({nextId, mainFoods, subFoods}) {
                         <div class="admin-form-group">
                             <label for="name"></label>
                             <select name="mainFoodId2" class="selection">
+                                <option value="">Không có</option>
                                 ${mainFoods.map(food => html`<option value="${food.id}">${food.name}</option>`)}
                             </select>
                             <span class="form-message"></span>
@@ -43,6 +46,7 @@ function renderAddMenu({nextId, mainFoods, subFoods}) {
                         <div class="admin-form-group">
                             <label for="name"></label>
                             <select name="mainFoodId3" class="selection">
+                                <option value="">Không có</option>
                                 ${mainFoods.map(food => html`<option value="${food.id}">${food.name}</option>`)}
                             </select>
                             <span class="form-message"></span>
@@ -50,6 +54,7 @@ function renderAddMenu({nextId, mainFoods, subFoods}) {
                         <div class="admin-form-group">
                             <label for="name"></label>
                             <select name="mainFoodId4" class="selection">
+                                <option value="">Không có</option>
                                 ${mainFoods.map(food => html`<option value="${food.id}">${food.name}</option>`)}
                             </select>
                             <span class="form-message"></span>

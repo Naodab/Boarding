@@ -340,3 +340,7 @@
     min-width: 200px !important;
     max-width: 300px !important;
 }
+
+tr.hidden {
+    color: transparent;
+}

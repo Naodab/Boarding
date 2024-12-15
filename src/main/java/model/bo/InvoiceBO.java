@@ -1,9 +1,18 @@
 package model.bo;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import model.bean.BoardingClass;
+import model.bean.BoardingFee;
 import model.bean.Invoice;
+import model.bean.Student;
+import model.dao.BoardingClassDAO;
+import model.dao.BoardingFeeDAO;
 import model.dao.InvoiceDAO;
+import model.dao.StudentDAO;
+import model.dto.InvoiceAdminResponse;
+import model.dto.SearchResponse;
 
 public class InvoiceBO {
 	private static InvoiceBO _instance;
@@ -15,7 +24,10 @@ public class InvoiceBO {
 		return _instance;
 	}
 	
-	private InvoiceDAO invoiceDAO = InvoiceDAO.getInstance();
+	private final InvoiceDAO invoiceDAO = InvoiceDAO.getInstance();
+	private final BoardingFeeDAO boardingFeeDAO = BoardingFeeDAO.getInstance();
+	private final StudentDAO studentDAO = StudentDAO.getInstance();
+	private final BoardingClassDAO boardingClassDAO = BoardingClassDAO.getInstance();
 	
 	public boolean insert(Invoice t) {
 		return invoiceDAO.insert(t);
@@ -75,5 +87,45 @@ public class InvoiceBO {
 
 	public int getPayedStudentOfBoardingFee(int boardingFee_id) {
 		return invoiceDAO.getPayedStudentOfBoardingFee(boardingFee_id);
+	}
+
+	public SearchResponse<InvoiceAdminResponse> getPage(int page, int amount, int boardingFeeId,
+		String searchField, String search) {
+		return new SearchResponse<>(invoiceDAO.count(boardingFeeId, searchField, search),
+				invoiceDAO.getPageInvoice(page, amount, boardingFeeId, searchField, search)
+						.stream().map(this::toInvoiceAdminResponse).toList());
+	}
+
+	public SearchResponse<InvoiceAdminResponse> getPageByClass(int page, int amount,
+   		int boardingFeeId, int boardingClassId) {
+		List<InvoiceAdminResponse> result = new ArrayList<>();
+		List<Integer> studentIds = studentDAO.getPageStudentsByBoardingClassId(page, amount, boardingClassId);
+		int count = studentDAO.selectByBoardingClass_id(boardingClassId).size();
+		for (int studentId : studentIds) {
+			Invoice invoice = invoiceDAO.selectByBoardingFeeIdandStudentID(boardingFeeId, studentId);
+			result.add(toInvoiceAdminResponse(invoice));
+		}
+		return new SearchResponse<>(count, result);
+	}
+
+	private InvoiceAdminResponse toInvoiceAdminResponse(Invoice t) {
+		InvoiceAdminResponse response = new InvoiceAdminResponse(t.getInvoice_id(), t.getStudent_id(),
+				t.getPayment_date().toLocalDate(), t.getMoney());
+		Student student = studentDAO.selectById(t.getStudent_id());
+		response.setStudentName(student.getName());
+		response.setStudentClass(boardingClassDAO
+				.selectById(student.getBoardingClass_id()).getName());
+		response.setStatus(t.getStatusPayment() == 1
+				? "Chưa nộp"
+				: (t.getStatusPayment() == 2 ? "Chưa in" : "Đã in"));
+		response.setReturnMoney(t.getReturnMoney());
+		BoardingFee boardingFee = boardingFeeDAO.selectById(t.getBoardingFee_id());
+		response.setSubCosts(student.isSubMeal() ? boardingFee.getSubCosts() : 0);
+		response.setMainCosts(boardingFee.getMainCosts());
+		return response;
+	}
+
+	public void updateStatus(int boardingFeeId) {
+		invoiceDAO.updateStatusPaymentOfBoardingFeeId(boardingFeeId);
 	}
 }

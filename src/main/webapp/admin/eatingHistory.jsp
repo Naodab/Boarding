@@ -12,6 +12,12 @@
 <link rel="stylesheet" href="<%= request.getContextPath() %>/css/admin/admin.css">
 </head>
 <body>
+	<%
+		Object messageObj = request.getAttribute("message");
+		if (messageObj != null && "create fee".equals((String) messageObj)) {
+			out.print("<input type='text' id='message' value='" + request.getAttribute("month") + "' hidden>");
+		}
+	%>
 	<div id="overlay"></div>
 	<div id="coating"></div>
 	<div id="background"></div>
@@ -56,7 +62,11 @@
 				</div>
 				<div class="pages-container"></div>
 			</div>
-			<div class="btn btn--green footer-item special-btn" id="add-btn" hidden="hidden">Phân ngày ăn</div>
+			<%
+				if (messageObj != null) {
+					out.print("<div class=\"btn btn--green footer-item special-btn\" id=\"add-btn\" hidden=\"hidden\">Phân ngày ăn</div>");
+				}
+			%>
 		</div>
 	</div>
 	<script type="module" src="<%= request.getContextPath() %>/js/admin/eatingHistory.js"></script>
