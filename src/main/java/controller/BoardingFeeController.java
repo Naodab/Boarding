@@ -1,6 +1,7 @@
 package controller;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -36,8 +37,16 @@ public class BoardingFeeController extends HttpServlet {
 
 	}
 
-	private void adminHandler(HttpServletRequest request, HttpServletResponse response) {
-
+	private void adminHandler(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+		request.setCharacterEncoding("UTF-8");
+		response.setCharacterEncoding("UTF-8");
+		response.setContentType("application/json");
+		String destination = "/admin/boardingFee.jsp";
+		String mode = request.getParameter("mode");
+		if (mode == null) {
+			getServletContext().getRequestDispatcher(destination).forward(request, response);
+			return;
+		}
 	}
 	
 	private void parentsHandler(HttpServletRequest request, HttpServletResponse response) {

@@ -31,7 +31,7 @@
 						<div class="function__lookup">
 							<div class="lookup__search-bar">
 								<input type="text" id="search" name="search"
-									placeholder="Nhập id hoặc họ và tên"> <span
+									placeholder="Nhập id thông tin"> <span
 									class="lookup__icon"> <i
 									class="fa-solid fa-magnifying-glass"></i>
 								</span>

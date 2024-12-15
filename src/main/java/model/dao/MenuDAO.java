@@ -157,8 +157,68 @@ public class MenuDAO implements DAOInterface<Menu>{
 			e.printStackTrace();
 		}
 		JDBCUtil.closeConnection(conn);
-		result.setEatingHistory_ids(EatingHistoryDAO.getInstance().selectByMenu_id(t));
-		result.setFood_ids(Food_MenuDAO.getInstance().selectByMenuId(t));
+		if (result != null) {
+			result.setEatingHistory_ids(EatingHistoryDAO.getInstance().selectByMenu_id(t));
+			result.setFood_ids(Food_MenuDAO.getInstance().selectByMenuId(t));
+		}
+		return result;
+	}
+
+	public List<Menu> getPage(int page, int amount, String searchField, String search) {
+		List<Menu> result = new ArrayList<>();
+		Connection conn = JDBCUtil.getConnection();
+		try {
+			String sql = "SELECT * FROM menu";
+			if (searchField != null) {
+				search = "%" + search + "%";
+				sql += " WHERE " + searchField + " LIKE ?";
+			}
+			sql += " LIMIT ? OFFSET ?";
+			PreparedStatement pps = conn.prepareStatement(sql);
+			int index = 1;
+			if (search != null) {
+				pps.setString(index++, search);
+			}
+			pps.setInt(index++, amount);
+			pps.setInt(index, page * amount);
+			ResultSet rs = pps.executeQuery();
+			while (rs.next()) {
+				int menu_id = rs.getInt("menu_id");
+				boolean active = rs.getBoolean("active");
+				result.add(new Menu(menu_id, active, null, null));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		JDBCUtil.closeConnection(conn);
+		for (Menu menu : result) {
+			menu.setEatingHistory_ids(EatingHistoryDAO.getInstance().selectByMenu_id(menu.getMenu_id()));
+			menu.setFood_ids(Food_MenuDAO.getInstance().selectByMenuId(menu.getMenu_id()));
+		}
+		return result;
+	}
+
+	public int count(String searchField, String search) {
+		int result = -1;
+		Connection conn = JDBCUtil.getConnection();
+		try {
+			String sql = "SELECT count(*) AS total FROM menu";
+			if (searchField != null) {
+				search = "%" + search + "%";
+				sql += " WHERE " + searchField + " LIKE ?";
+			}
+			PreparedStatement pps = conn.prepareStatement(sql);
+			if (search != null) {
+				pps.setString(1, search);
+			}
+			ResultSet rs = pps.executeQuery();
+			while (rs.next()) {
+				result = rs.getInt("total");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		JDBCUtil.closeConnection(conn);
 		return result;
 	}
 }

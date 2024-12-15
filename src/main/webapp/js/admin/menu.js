@@ -1,73 +1,52 @@
 import {renderAlertModal, renderConfirmModal, turnOffModal, turnOnModal} from "../modal.js";
-import {renderAddFood, renderDetailFood, renderUpdateFood} from "./modal/modalFood.js";
+import {renderAddMenu, renderDetailMenu} from "./modal/modalMenu.js";
+import {html} from "./common.js";
 
-import Validator from "../validator.js";
 
 const $ = document.querySelector.bind(document);
 const $$ = document.querySelectorAll.bind(document);
-$("#foods").classList.add("active");
+$("#menus").classList.add("active");
 
 const colorClosure = ["closure--pink", "closure--yellow", "closure--green", "closure--blue"];
 
 let activePage = 1;
 let size = 1;
-let itemsPerPage = 16;
+let itemsPerPage = 10;
 let lookupValue = "";
 
 window.onload = () => displayPage(1);
 
-function checkBeforeSave(name) {
-    return fetch(`./foods?mode=checkExist&name=${name}`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        }
-    }).then(resp => resp.json()).then(data => data.result);
-}
-
-function addFood(food) {
+function addMenu(menu) {
     const div = document.createElement('div');
-    div.classList.add('data-item');
+    div.classList.add('data-item__column');
     div.classList.add('closure');
     div.classList.add(colorClosure[Math.floor(Math.random() * colorClosure.length)]);
     div.innerHTML = `
-        <div class="data-item__content">
-            <div class="data-item__number">${ food.food_id + ". " + food.name }</div>
-            <div class="data-item__description">
-                ${ food.category ? "Món chính" : "Món phụ" }
-            </div>
-        </div>
-        <div class="data-item__icon">
-            <i class="fa-solid fa-utensils"></i>
-        </div>
+        <div class="data-item__column__title">Mã: ${menu.menuId}</div>
+        <div class="data-item__column__label">Bữa trưa:</div>
+        ${html`
+            ${menu.mainFoods.map(item => html`
+                <div class="data-item__column__content">${item}</div>
+            `)}
+        `}
+        <div class="data-item__column__label top--margin">Bữa phụ:</div>
+        ${html`
+            <div class="data-item__column__content">${menu.subFood}</div>
+        `}
     `;
     div.onclick = () => {
-        turnOnModal(renderDetailFood, food);
+        turnOnModal(renderDetailMenu, menu);
 
         $("#update-btn").onclick = () => {
-            turnOnModal(renderUpdateFood, food);
-
-        }
-
-        const deleteBtn = $("#delete-btn");
-        if (deleteBtn) {
-            deleteBtn.onclick = () => {
-                turnOnModal(renderConfirmModal, `Bạn chắc chắn muốn xóa ${food.name}?`);
-                $("#yes").onclick = () => {
-                    fetch(`./foods?mode=delete&name=${name}`, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        }
-                    }).then(resp => resp.ok).then(result => {
-                        if (result) {
-                            turnOnModal(renderAlertModal, "Xóa thành công");
-                        } else {
-                            turnOnModal(renderAlertModal, "Xảy ra lỗi");
-                        }
-                    })
+            fetch(`./menus?mode=changeActive&menuId=${menu.menuId}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json"
                 }
-            }
+            }).then(resp => resp.ok).then(() => {
+                turnOnModal(renderAlertModal, "Cập nhật thành công");
+                displayPage(activePage);
+            })
         }
     }
     $("#foods-container").appendChild(div);
@@ -129,7 +108,7 @@ function displayPage(page) {
         querySearch += `&searchField=${searchField}`;
     }
 
-    fetch(`./foods?mode=see&page=${page - 1}${querySearch}`, {
+    fetch(`./menus?mode=see&page=${page - 1}${querySearch}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json"
@@ -139,14 +118,14 @@ function displayPage(page) {
             return resp.json();
         }
     }).then(data => {
-        deleteFoods();
+        deleteMenus();
         size = data.size;
-        data.items.forEach(food => addFood(food));
+        data.items.forEach(food => addMenu(food));
         updatePageNumbers();
     });
 }
 
-function deleteFoods() {
+function deleteMenus() {
     $("#foods-container").innerHTML = "";
 }
 
@@ -170,32 +149,12 @@ searchInput.onkeyup = () => {
 }
 
 $("#add-btn").onclick = () => {
-    fetch("./foods?mode=preAdd", {
+    fetch("./menus?mode=preAdd", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         }
     }).then(resp => resp.json()).then(data => {
-        turnOnModal(renderAddFood, data.nextId);
-
-        Validator({
-            form: '#add-food',
-            formGroupSelector: ".admin-form-group",
-            errorSelector: '.form-message',
-            rules: [
-                Validator.isRequired('#name')
-            ],
-            onSubmit: data => {
-                const errorMessage = $(".error-message");
-                errorMessage.innerText = "";
-                checkBeforeSave(data.name).then(result => {
-                    if (result) {
-                        errorMessage.innerText = "Món ăn đã tồn tại";
-                    } else {
-                        $("#add-food").submit();
-                    }
-                })
-            }
-        })
+        turnOnModal(renderAddMenu, data);
     })
 }

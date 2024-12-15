@@ -5,6 +5,7 @@ import java.util.List;
 import model.bean.Food;
 import model.dao.FoodDAO;
 import model.dto.FoodAdminResponse;
+import model.dto.NameAndIdResponse;
 import model.dto.SearchResponse;
 
 public class FoodBO {
@@ -63,7 +64,20 @@ public class FoodBO {
 		return foodDAO.existByName(name);
 	}
 
+	public List<NameAndIdResponse> getNameAndIds() {
+		return foodDAO.selectAll().stream().map(food ->
+				new NameAndIdResponse(food.getFood_id(),
+						food.getName())).toList();
+	}
+
+	public List<NameAndIdResponse> getNameAndIdOfCategory(boolean category) {
+		return foodDAO.selectByCategory(category).stream().map(food ->
+				new NameAndIdResponse(food.getFood_id(),
+						food.getName())).toList();
+	}
+
 	private FoodAdminResponse toFoodResponse(Food food) {
-		return new FoodAdminResponse(food.getFood_id(), food.getName(), food.getCategory(), food.getMenu_ids().isEmpty());
+		return new FoodAdminResponse(food.getFood_id(), food.getName(),
+				food.getCategory(), food.getMenu_ids().isEmpty());
 	}
 }

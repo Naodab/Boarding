@@ -20,11 +20,11 @@
 		<%@ include file="header.jsp"%>
 
 		<div class="content closure">
-			<div class="content-header">Quản lý món ăn</div>
+			<div class="content-header">Quản lý thực đơn</div>
 			<div class="content-body">
 				<div class="content-function">
 					<div class="sort function__sort function-item">
-						<div class="function__header">Danh sách món ăn</div>
+						<div class="function__header">Danh sách thực đơn</div>
 					</div>
 					<div class="function__lookup function-item">
 						<div class="function__header">Tìm kiếm</div>
@@ -38,8 +38,7 @@
 							</div>
 						</div>
 						<select name="sort__field" class="selection search-field">
-							<option value="food_id">Mã món ăn</option>
-							<option value="name">Tên món ăn</option>
+							<option value="menu_id">Mã thực đơn</option>
 						</select>
 					</div>
 
@@ -52,6 +51,6 @@
 			<div class="btn btn--green footer-item special-btn" id="add-btn">Thêm món ăn</div>
 		</div>
 	</div>
-	<script type="module" src="<%= request.getContextPath() %>/js/admin/food.js"></script>
+	<script type="module" src="<%= request.getContextPath() %>/js/admin/menu.js"></script>
 </body>
 </html>
