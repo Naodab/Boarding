@@ -12,6 +12,7 @@
 	<link rel="stylesheet"
 		href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 	<link rel="stylesheet" href="./css/base.css">
+	<link rel="stylesheet" href="./css/admin/admin.css">
 	<link rel="stylesheet" href="./css/teacher/eatingDay.css">
 </head>
 <body>
@@ -84,7 +85,6 @@
 <script type="text/javascript">
 	document.getElementById("boardingFee").addEventListener("change", function () {
 		const boardingFeeId = this.value;
-		console.log(boardingFeeId);
 	    if (boardingFeeId) {
 	    	window.location.href = "eatingHistories?mode=eatingDay&boardingFeeId=" + boardingFeeId;
 	    }

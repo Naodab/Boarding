@@ -11,6 +11,7 @@
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <link rel="stylesheet" href="./css/base.css">
+    <link rel="stylesheet" href="./css/admin/admin.css">
     <link rel="stylesheet" href="./css/teacher/absentStudents.css">
 </head>
 <body>
@@ -55,27 +56,6 @@
             </div>
         </div>
     </div>
+    <script type="module" src="<%= request.getContextPath() %>/js/teacher/absentStudents.js"></script>
 </body>
-<script type="text/javascript">
-    document.getElementById("changeToPhysical").addEventListener("click", async function () {
-        window.location.href = "teachers?mode=changeToPhysical";
-    });
-    document.getElementById("saveChanges").addEventListener("click", async function () {
-        const selectedCheckboxes = document.querySelectorAll(".absent-checkbox:checked");
-        const studentIds = Array.from(selectedCheckboxes).map(checkbox => checkbox.getAttribute("data-student_id"));
-        console.log(studentIds);
-        if (studentIds.length > 0) {
-            const update = {studentIds};
-            const response = await fetch("./absences?mode=updateAbsent", {
-                method: "POST",
-                headers: {"Content-type": "application/json"},
-                body: JSON.stringify(update)
-            });
-            if (response.ok) {
-                alert("Cập nhập thành công!");
-                location.reload();
-            } else {alert("Không thể cập nhật thông tin!");}
-        }
-    });
-</script>
 </html>

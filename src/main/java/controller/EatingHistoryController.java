@@ -18,7 +18,6 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -27,13 +26,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import model.bean.EatingHistory;
 import model.bean.Food;
 import model.bean.Menu;
-import model.bo.EatingHistoryBO;
 import model.bo.FoodBO;
 import model.bo.GlobalBO;
-import model.bo.MenuBO;
 import model.dto.EatingDayResponse;
 
 @WebServlet("/eatingHistories")
@@ -45,9 +41,6 @@ public class EatingHistoryController extends HttpServlet {
 	private final Gson gson = new GsonBuilder()
 			.registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
 
-	public EatingHistoryController() {
-	private final EatingHistoryBO eatingHistoryBO = EatingHistoryBO.getInstance();
-	private final MenuBO menuBO = MenuBO.getInstance();
 	private final FoodBO foodBO = FoodBO.getInstance();
 	private final GlobalBO globalBO = GlobalBO.getInstance();
 

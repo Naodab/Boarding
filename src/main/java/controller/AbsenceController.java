@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 public class AbsenceController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private AbsenceBO absenceBO = AbsenceBO.getInstance();
-       
+
     public AbsenceController() {
         super();
     }
@@ -72,7 +72,6 @@ public class AbsenceController extends HttpServlet {
 		List<String> studentIdList = new ArrayList<>();
 		studentIdsArray.forEach(jsonElement -> studentIdList.add(jsonElement.getAsString()));
 		LocalDate absentDate = LocalDate.now();
-		System.out.println(studentIdList.size());
 		for (int i = 0; i < studentIdList.size(); i++) {
 			System.out.println("bwts đầu vonng for!");
 			int studentId = Integer.parseInt(studentIdList.get(i));

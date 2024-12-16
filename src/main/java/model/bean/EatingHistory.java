@@ -52,4 +52,27 @@ public class EatingHistory {
 	public void setBoardingFee_id(int boardingFee_id) {
 		this.boardingFee_id = boardingFee_id;
 	}
+
+	public static int getDaysOfWeek(DayOfWeek dow) {
+		int result = 0;
+		switch (dow) {
+			case MONDAY:
+				result = 1;
+				break;
+			case TUESDAY:
+				result = 2;
+				break;
+			case WEDNESDAY:
+				result = 3;
+				break;
+			case THURSDAY:
+				result = 4;
+				break;
+			case FRIDAY:
+				result = 5;
+			default:
+				break;
+		}
+		return result;
+	}
 }

@@ -10,6 +10,7 @@
 	<link rel="stylesheet"
 		href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 	<link rel="stylesheet" href="./css/base.css">
+	<link rel="stylesheet" href="./css/admin/admin.css">
 	<link rel="stylesheet" href="./css/teacher/boardingFee.css">
 </head>
 <body>
@@ -27,7 +28,7 @@
 						boardingFeeId = (Integer) request.getAttribute("boardingFeeId");
 				    int numberOfItems = (Integer) request.getAttribute("numberOfItems");
 				%>
-				<select name="boardingFee" id="boardingFee">
+				<select name="boardingFee" id="boardingFee" class="selection">
 				    <option>--Chọn đợt thu tiền--</option>
 				    <% 
 				        for (int i = 1; i <= numberOfItems; i++) { 
@@ -93,43 +94,7 @@
             </div>
         </div>
 	</div>
+
+	<script type="module" src="<%= request.getContextPath() %>/js/teacher/boardingFee.js"></script>
 </body>
-<script type="text/javascript">
-	document.getElementById("boardingFee").addEventListener("change", function () {
-		const boardingFeeId = this.value;
-		console.log(boardingFeeId);
-	    if (boardingFeeId) {
-	    	window.location.href = "teachers?mode=boardingFee&boardingFeeId=" + boardingFeeId;
-	    }
-	});
-	
-	document.getElementById("saveChanges").addEventListener("click", async function () {
-		const rows = document.querySelectorAll("#table tr");
-		const data = [];
-		rows.forEach((row, index) => {
-			if (index === 0) return;
-			const studentId = row.querySelector("input[type='radio']").name;
-			const selectedStatus = row.querySelector("input[type='radio']:checked").value;
-			const invoiceId = row.querySelector(".invoiceId").textContent;
-			data.push({
-				boardingFeeId: document.getElementById("boardingFee").value,
-				invoiceId: invoiceId,
-				studentId: studentId,
-				status: selectedStatus
-			});
-		});
-		console.log(data);
-		if (data.length > 0) {
-            const response = await fetch("./boardingFees?mode=updateBoardingFee", {
-                method: "POST",
-                headers: {"Content-type": "application/json"},
-                body: JSON.stringify(data)
-            });
-            if (response.ok) {
-                alert("Cập nhập thành công!");
-                location.reload();
-            } else {alert("Không thể cập nhật thông tin!");}
-        }
-	});
-</script>
 </html>
