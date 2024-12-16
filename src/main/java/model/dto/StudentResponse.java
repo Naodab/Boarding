@@ -76,6 +76,18 @@ public class StudentResponse {
 		this.weight = weight;
 		this.numberOfAbsences = numberOfAbsences;
 	}
+	
+	public StudentResponse(int student_id, String name, LocalDate dateOfBirth, String address, Boolean sex,
+			int boardingClass_id, double height, double weight) {
+		super();
+		this.student_id = student_id;
+		this.name = name;
+		this.dateOfBirth = dateOfBirth;
+		this.address = address;
+		this.sex = sex ? "Nam" : "Nữ";
+		this.height = height;
+		this.weight = weight;
+	}
 
 	public StudentResponse() {
 		super();

@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -25,6 +26,7 @@ import model.bo.StudentBO;
 import model.dto.ListParentsAndClasses;
 import model.dto.NameAndIdResponse;
 import model.dto.SearchStudentResponse;
+import model.dto.StudentResponse;
 import util.AdminUtil;
 import util.LocalDateAdapter;
 
@@ -160,26 +162,13 @@ public class StudentController extends HttpServlet {
 	private void studentInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		String jsonData = request.getReader().lines().reduce("", (accumulator, actual) -> accumulator + actual);
 		Student student =  studentBO.selectById(Integer.parseInt(extractValue(jsonData, "studentId")));
-		response.getWriter().write(jsonStudentResponse(student));
-	}
-
-	private String jsonStudentResponse(Student student) {
-		String jsonResponse = String.format("{"
-                + "\"name\":\"%s\","
-                + "\"dateOfBirth\":\"%s\","
-                + "\"address\":\"%s\","
-                + "\"sex\":\"%s\","
-                + "\"student_id\": %d,"
-                + "\"weight\":%f,"
-                + "\"height\":%f"
-                + "}", 	student.getName(),
-                		student.getDateOfBirth().toString(),
-                		student.getAddress(),
-                		student.getSex(),
-                		student.getStudent_id(),
-                		student.getWeight(),
-                		student.getHeight());
-		return jsonResponse;
+		StudentResponse responseStudent = new StudentResponse(student.getStudent_id(), 
+															  student.getName(), 
+															  student.getDateOfBirth().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),
+															  student.getAddress(),
+															  student.getSex(), student.getBoardingClass_id(),
+															  student.getHeight(), student.getWeight());
+		response.getWriter().write(gson.toJson(responseStudent));
 	}
 
 	private String extractValue(String json, String key) {
