@@ -2,15 +2,10 @@ package controller;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-<<<<<<< HEAD
-import java.sql.Date;
-import java.time.LocalDate;
-import java.util.ArrayList;
-=======
 import java.io.UnsupportedEncodingException;
 import java.sql.Date;
 import java.time.LocalDate;
->>>>>>> 261cbd3b88b40244e642273fc26e65c9ae355727
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
@@ -20,49 +15,40 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-<<<<<<< HEAD
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import model.bean.Absence;
 import model.bean.Invoice;
 import model.bean.Student;
 import model.bean.Teacher;
+import model.bean.User;
 import model.bo.AbsenceBO;
 import model.bo.BoardingClassBO;
 import model.bo.GlobalBO;
 import model.bo.InvoiceBO;
 import model.bo.StudentBO;
 import model.bo.TeacherBO;
-import model.dao.GlobalDAO;
+import model.bo.UserBO;
 import model.dto.AbsenceResponse;
 import model.dto.BoardingFeeResponse;
-=======
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import model.bean.Student;
-import model.bean.Teacher;
-import model.bean.User;
-import model.bo.*;
 import model.dto.NameAndIdResponse;
 import model.dto.PreAddTeacherResponse;
 import model.dto.SearchResponse;
 import model.dto.TeacherResponse;
 import util.AdminUtil;
 import util.LocalDateAdapter;
->>>>>>> 261cbd3b88b40244e642273fc26e65c9ae355727
 
 @WebServlet("/teachers")
 public class TeacherController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-<<<<<<< HEAD
 	private AbsenceBO absenceBO = AbsenceBO.getInstance();
 	private InvoiceBO invoiceBO = InvoiceBO.getInstance();
-	private GlobalBO globalBO = GlobalBO.getInstance();
-=======
 	private final Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
 	private final TeacherBO teacherBO = TeacherBO.getInstance();
 	private final UserBO userBO = UserBO.getInstance();
 	private final GlobalBO globalBO = GlobalBO.getInstance();
 	private final BoardingClassBO boardingClassBO = BoardingClassBO.getInstance();
->>>>>>> 261cbd3b88b40244e642273fc26e65c9ae355727
 
     public TeacherController() {
 		super();
@@ -120,6 +106,7 @@ public class TeacherController extends HttpServlet {
 				if (request.getParameter("boardingFeeId") != null) {
 					int boardingFeeId = Integer.parseInt(request.getParameter("boardingFeeId"));
 					listBoardingFees = boardingFee(request, response, listStudents, boardingFeeId);
+					request.setAttribute("boardingFeeId", boardingFeeId);
 				} else {
 					listBoardingFees = boardingFee(request, response, listStudents, 1);
 				}
@@ -127,8 +114,6 @@ public class TeacherController extends HttpServlet {
 				destination = "/teachers/boardingFee.jsp";
 				rd = getServletContext().getRequestDispatcher(destination);
 				rd.forward(request, response);
-				break;
-			case "eatingDay":
 				break;
 			case "changeToPhysical":
 				listStudents = StudentBO.getInstance().selectByBoardingClass_id2(teacher.getBoardingClass_id());
@@ -264,7 +249,7 @@ public class TeacherController extends HttpServlet {
 			for (int invoice_id : invoices) {
 				if (listInvoices.contains(invoice_id)) {
 					Invoice invoice = invoiceBO.selectById(invoice_id);
-					BoardingFeeResponse boardingFee = new BoardingFeeResponse(std.getStudent_id(), std.getName(), invoice.getInvoice_id(), invoice.getStatusPayment());
+					BoardingFeeResponse boardingFee = new BoardingFeeResponse(std.getStudent_id(), std.getName(), invoice.getInvoice_id(), invoice.getStatusPayment(), id);
 					listBoardingFees.add(boardingFee);
 				}
 			}

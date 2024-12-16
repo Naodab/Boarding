@@ -48,4 +48,8 @@ public class EatingHistoryBO {
 	public List<Integer> selectByBoardingFee_id(int boardingFee_id) {
 		return eatingHistoryDAO.selectByBoardingFee_id(boardingFee_id);
 	}
+	
+	public List<EatingHistory> selectBetweenDays(String startDay, String endDay) {
+		return eatingHistoryDAO.selectBetweenDays(startDay, endDay);
+	}
 }

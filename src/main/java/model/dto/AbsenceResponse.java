@@ -1,6 +1,7 @@
 package model.dto;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class AbsenceResponse {
 	private int student_id;
@@ -8,7 +9,22 @@ public class AbsenceResponse {
 	private boolean isAbsent;
 	private LocalDate absenceDay;
 	private int absence_id;
+	private List<LocalDate> absenceList;
 	
+	public List<LocalDate> getAbsenceList() {
+		return absenceList;
+	}
+
+	public void setAbsenceList(List<LocalDate> absenceList) {
+		this.absenceList = absenceList;
+	}
+	
+	public AbsenceResponse(int student_id, String name, List<LocalDate> absenceList) {
+		this.student_id = student_id;
+		this.name = name;
+		this.absenceList = absenceList;
+	}
+
 	public AbsenceResponse() {}
 	
 	public AbsenceResponse(int student_id, String name, boolean isAbsent, LocalDate absenceDay, int absence_id) {

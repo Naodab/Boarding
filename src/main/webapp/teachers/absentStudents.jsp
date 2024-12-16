@@ -11,8 +11,7 @@
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <link rel="stylesheet" href="./css/base.css">
-    <!-- <link rel="stylesheet" href="./css/teacher/teacher.css">  -->
-    <link rel="stylesheet" href="./css/teacher/teacher2.css">
+    <link rel="stylesheet" href="./css/teacher/absentStudents.css">
 </head>
 <body>
     <div id="overlay"></div>
@@ -27,29 +26,32 @@
                 <div class="table-container">
                     <table class="table student-table" id="table">
                         <tr>
-                            <th class="th__first">STT</th>
-                            <th>Mã học sinh</th>
+                            <th class="th__first center">STT</th>
+                            <th class="center">Mã học sinh</th>
                             <th>Họ và tên học sinh</th>
-                            <th class="th__last">Vắng?</th>
+                            <th class="th__last center">Vắng?</th>
                         </tr>
                         <% 	List<AbsenceResponse> listAbsenceResponses = (List)request.getAttribute("listAbsences");
+                        	if (listAbsenceResponses != null) {
                             for (int i = 0; i < listAbsenceResponses.size(); i++) {
                         %>
                         <tr>
-                            <td><%= i + 1 %></td>
-                            <td><%= listAbsenceResponses.get(i).getStudent_id() %></td>
+                            <td class="center"><%= i + 1 %></td>
+                            <td class="center"><%= listAbsenceResponses.get(i).getStudent_id() %></td>
                             <td><%= listAbsenceResponses.get(i).getName() %></td>
                             <% if (listAbsenceResponses.get(i).isAbsent()) {%>
-                            	<td><input type="checkbox" class="absent-checkbox" data-student_id="<%= listAbsenceResponses.get(i).getStudent_id()%>" checked></td>
+                            	<td><input type="checkbox" class="absent-checkbox center-checkbox" data-student_id="<%= listAbsenceResponses.get(i).getStudent_id()%>" checked></td>
                         	<% } else {%>
-                        		<td><input type="checkbox" class="absent-checkbox" data-student_id="<%= listAbsenceResponses.get(i).getStudent_id()%>"></td>
+                        		<td><input type="checkbox" class="absent-checkbox center-checkbox" data-student_id="<%= listAbsenceResponses.get(i).getStudent_id()%>"></td>
                         	<% } %>
                         </tr>
-                        <% } %>
+                        <% } } %>
                     </table>
                 </div>
-                <input type="button" value="Lưu thay đổi" id="saveChanges">
-                <input type="button" value="Cập nhật thể trạng" id="changeToPhysical">
+                <div class="button-container">
+                	<input type="button" value="Cập nhật thể trạng" id="changeToPhysical" class="button">
+                	<input type="button" value="Lưu thay đổi" id="saveChanges" class="button">
+                </div>
             </div>
         </div>
     </div>
@@ -61,7 +63,7 @@
     document.getElementById("saveChanges").addEventListener("click", async function () {
         const selectedCheckboxes = document.querySelectorAll(".absent-checkbox:checked");
         const studentIds = Array.from(selectedCheckboxes).map(checkbox => checkbox.getAttribute("data-student_id"));
-        console.log(studentIds)
+        console.log(studentIds);
         if (studentIds.length > 0) {
             const update = {studentIds};
             const response = await fetch("./absences?mode=updateAbsent", {

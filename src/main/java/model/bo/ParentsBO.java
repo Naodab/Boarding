@@ -93,4 +93,8 @@ public class ParentsBO {
 		result.setPhone(t.getPhoneNumber());
 		return result;
 	}
+	
+	public Parents selectByUsername(String username) {
+		return parentsDAO.selectByUsername(username);
+	}
 }
