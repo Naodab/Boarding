@@ -1,5 +1,6 @@
 package controller;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.sql.Date;
 import java.time.LocalDate;
@@ -11,15 +12,16 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import model.bean.User;
 import model.bo.UserBO;
-import util.AdminUtil;
-import util.LocalDateAdapter;
 
 @WebServlet("/auth")
 public class UserController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private final UserBO userBO = UserBO.getInstance();
+	private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 	public UserController() {
 		super();
@@ -67,6 +69,31 @@ public class UserController extends HttpServlet {
 			response.getWriter().write("{\"result\": "+ userBO.existsByUsername(usernameCheck) + "}");
 			response.flushBuffer();
 			return;
+		case "changePassword":
+			if (request.getSession().getAttribute("position") == null) return;
+			String usernameChange = (String) request.getSession().getAttribute("username");
+			StringBuilder jsonBuilder = new StringBuilder();
+			BufferedReader reader = request.getReader();
+			String line;
+			while ((line = reader.readLine()) != null) {
+				jsonBuilder.append(line);
+			}
+			String jsonData = jsonBuilder.toString();
+			JsonObject jsonObject = JsonParser.parseString(jsonData).getAsJsonObject();
+			String oldPassword = jsonObject.get("oldPassword").getAsString();
+			String newPassword = jsonObject.get("password").getAsString();
+			String positionCheck = userBO.authenticate(usernameChange, oldPassword);
+			if (positionCheck == null) {
+				response.getWriter().write("{\"result\": " + false +"}");
+			} else {
+				userBO.updatePassword(usernameChange, newPassword);
+				response.getWriter().write("{\"result\": " + true +"}");
+			}
+			response.flushBuffer();
+			return;
+		case "logout":
+			request.getSession().removeAttribute("position");
+			request.getSession().removeAttribute("username");
 		}
 		response.sendRedirect(request.getContextPath() + destination);
 	}

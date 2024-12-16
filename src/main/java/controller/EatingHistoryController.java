@@ -108,8 +108,8 @@ public class EatingHistoryController extends HttpServlet {
 				while ((line = reader.readLine()) != null) {
 					jsonBuilder.append(line);
 				}
-				BoardingFee boardingFee = (BoardingFee) request.getSession().getAttribute("boardingFee");
 				String jsonData = jsonBuilder.toString();
+				BoardingFee boardingFee = (BoardingFee) request.getSession().getAttribute("boardingFee");
 				EatingHistoryRequest[] eatingHistories = gson.fromJson(jsonData, EatingHistoryRequest[].class);
 				eatingHistoryBO.fee(boardingFee, Arrays.stream(eatingHistories).toList());
 				response.flushBuffer();

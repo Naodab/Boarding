@@ -391,11 +391,13 @@ tr.hidden {
 
 strong {
     text-indent: 0;
+    line-height: 1.8;
     margin-left: 30px;
 }
 
 .text--description {
     margin-left: 60px;
     text-indent: 0;
+    line-height: 1.8;
     margin-bottom: 16px;
 }
