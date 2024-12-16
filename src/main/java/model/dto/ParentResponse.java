@@ -33,6 +33,17 @@ public class ParentResponse {
 		this.studentNameList = studentNameList;
 		this.teacherNameList = teacherNameList;
 	}
+	
+	public ParentResponse(String parentName, Date dateOfBirth, int parentId, boolean sex, String address,
+			String phoneNumber, String email) {
+		this.parentName = parentName;
+		this.dateOfBirth = dateOfBirth;
+		this.parentId = parentId;
+		this.sex = sex;
+		this.address = address;
+		this.phoneNumber = phoneNumber;
+		this.email = email;
+	}
 
 	public String getParentName() {
 		return parentName;

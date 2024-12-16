@@ -4,11 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -22,17 +18,12 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import model.bean.Absence;
 import model.bean.BoardingFee;
-import model.bean.EatingHistory;
-import model.bean.Food;
 import model.bean.Invoice;
-import model.bean.Menu;
 import model.bean.Parents;
 import model.bean.Student;
 import model.bean.Teacher;
 import model.bean.User;
-import model.bo.AbsenceBO;
 import model.bo.BoardingFeeBO;
 import model.bo.EatingHistoryBO;
 import model.bo.FoodBO;
@@ -43,15 +34,12 @@ import model.bo.ParentsBO;
 import model.bo.StudentBO;
 import model.bo.TeacherBO;
 import model.bo.UserBO;
-import model.dto.AbsenceResponse;
 import model.dto.BoardingFeeResponse;
 import model.dto.EatingDayResponse;
 import model.dto.NameAndIdResponse;
 import model.dto.ParentResponse;
 import model.dto.ParentsResponse;
 import model.dto.SearchResponse;
-import model.dto.StudentResponse;
-import model.dto.TeacherResponse;
 import util.AdminUtil;
 import util.LocalDateAdapter;
 
@@ -96,8 +84,8 @@ public class ParentsController extends HttpServlet {
 		switch(mode) {
 		case "parentInfo":
 			Parents parent = parentInfo(request, response);
-			String responseJson = jsonParentResponse(parent);
-			response.getWriter().write(responseJson);
+			ParentResponse responseParent = new ParentResponse(parent.getName(), parent.getDateOfBirth(), parent.getParents_id(), parent.getSex(), parent.getAddress(), parent.getPhoneNumber(), parent.getEmail());
+			response.getWriter().write(gson.toJson(responseParent));
 			break;
 		}
 	}
@@ -260,25 +248,6 @@ public class ParentsController extends HttpServlet {
 	    String jsonData = sb.toString();
 	    String parent_id = extractValue(jsonData, "parentId");
 	    return ParentsBO.getInstance().selectById(Integer.parseInt(parent_id));
-	}
-	
-	private String jsonParentResponse(Parents parent) {
-		String jsonResponse = String.format("{"
-                + "\"name\":\"%s\","
-                + "\"dateOfBirth\":\"%s\","
-                + "\"address\":\"%s\","
-                + "\"sex\":\"%s\","
-                + "\"parent_id\": %d,"
-                + "\"email\":\"%s\","
-                + "\"phoneNumber\":\"%s\""
-                + "}", 	parent.getName(),
-                		parent.getDateOfBirth().toString(),
-                		parent.getAddress(),
-                		parent.getSex(),
-                		parent.getParents_id(),
-                		parent.getEmail(),
-                		parent.getPhoneNumber());
-		return jsonResponse;
 	}
 	
 	private String extractValue(String json, String key) {
