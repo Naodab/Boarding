@@ -17,6 +17,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import model.bean.Absence;
 import model.bean.Invoice;
 import model.bean.Student;
@@ -29,8 +32,22 @@ import model.dto.SearchResponse;
 import model.dto.TeacherResponse;
 import util.AdminUtil;
 import util.LocalDateAdapter;
+import model.bean.User;
+import model.bo.AbsenceBO;
+import model.bo.BoardingClassBO;
+import model.bo.GlobalBO;
+import model.bo.InvoiceBO;
+import model.bo.StudentBO;
+import model.bo.TeacherBO;
+import model.bo.UserBO;
 import model.dto.AbsenceResponse;
 import model.dto.BoardingFeeResponse;
+import model.dto.NameAndIdResponse;
+import model.dto.PreAddTeacherResponse;
+import model.dto.SearchResponse;
+import model.dto.TeacherResponse;
+import util.AdminUtil;
+import util.LocalDateAdapter;
 
 @WebServlet("/teachers")
 public class TeacherController extends HttpServlet {
@@ -43,6 +60,13 @@ public class TeacherController extends HttpServlet {
 	private final BoardingClassBO boardingClassBO = BoardingClassBO.getInstance();
 	private final AbsenceBO absenceBO = AbsenceBO.getInstance();
 	private final InvoiceBO invoiceBO = InvoiceBO.getInstance();
+	private AbsenceBO absenceBO = AbsenceBO.getInstance();
+	private InvoiceBO invoiceBO = InvoiceBO.getInstance();
+	private final Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
+	private final TeacherBO teacherBO = TeacherBO.getInstance();
+	private final UserBO userBO = UserBO.getInstance();
+	private final GlobalBO globalBO = GlobalBO.getInstance();
+	private final BoardingClassBO boardingClassBO = BoardingClassBO.getInstance();
 
     public TeacherController() {
 		super();
@@ -102,6 +126,7 @@ public class TeacherController extends HttpServlet {
 				if (request.getParameter("boardingFeeId") != null) {
 					int boardingFeeId = Integer.parseInt(request.getParameter("boardingFeeId"));
 					listBoardingFees = boardingFee(request, response, listStudents, boardingFeeId);
+					request.setAttribute("boardingFeeId", boardingFeeId);
 				} else {
 					listBoardingFees = boardingFee(request, response, listStudents, 1);
 				}
@@ -109,8 +134,6 @@ public class TeacherController extends HttpServlet {
 				destination = "/teachers/boardingFee.jsp";
 				rd = getServletContext().getRequestDispatcher(destination);
 				rd.forward(request, response);
-				break;
-			case "eatingDay":
 				break;
 			case "changeToPhysical":
 				listStudents = StudentBO.getInstance().selectByBoardingClass_id2(teacher.getBoardingClass_id());
@@ -254,6 +277,7 @@ public class TeacherController extends HttpServlet {
 					Invoice invoice = invoiceBO.selectById(invoice_id);
 					BoardingFeeResponse boardingFee = new BoardingFeeResponse(std.getStudent_id(),
 							std.getName(), invoice.getInvoice_id(), invoice.getStatusPayment());
+					BoardingFeeResponse boardingFee = new BoardingFeeResponse(std.getStudent_id(), std.getName(), invoice.getInvoice_id(), invoice.getStatusPayment(), id);
 					listBoardingFees.add(boardingFee);
 				}
 			}

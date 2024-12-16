@@ -4,8 +4,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -14,15 +21,37 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import model.bean.Absence;
+import model.bean.BoardingFee;
+import model.bean.EatingHistory;
+import model.bean.Food;
+import model.bean.Invoice;
+import model.bean.Menu;
 import model.bean.Parents;
+import model.bean.Student;
+import model.bean.Teacher;
 import model.bean.User;
+import model.bo.AbsenceBO;
+import model.bo.BoardingFeeBO;
+import model.bo.EatingHistoryBO;
+import model.bo.FoodBO;
 import model.bo.GlobalBO;
+import model.bo.InvoiceBO;
+import model.bo.MenuBO;
 import model.bo.ParentsBO;
 import model.bo.StudentBO;
+import model.bo.TeacherBO;
 import model.bo.UserBO;
+import model.dto.AbsenceResponse;
+import model.dto.BoardingFeeResponse;
+import model.dto.EatingDayResponse;
 import model.dto.NameAndIdResponse;
+import model.dto.ParentResponse;
 import model.dto.ParentsResponse;
 import model.dto.SearchResponse;
+import model.dto.StudentResponse;
+import model.dto.TeacherResponse;
 import util.AdminUtil;
 import util.LocalDateAdapter;
 
@@ -31,6 +60,12 @@ public class ParentsController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private final ParentsBO parentsBO = ParentsBO.getInstance();
 	private final StudentBO studentBO = StudentBO.getInstance();
+	private final TeacherBO teacherBO = TeacherBO.getInstance();
+	private final InvoiceBO invoiceBO = InvoiceBO.getInstance();
+	private final MenuBO menuBO = MenuBO.getInstance();
+	private final FoodBO foodBO = FoodBO.getInstance();
+	private final EatingHistoryBO eatingHistoryBO = EatingHistoryBO.getInstance();
+	private final BoardingFeeBO boardingFeeBO = BoardingFeeBO.getInstance();
 	private final GlobalBO globalBO = GlobalBO.getInstance();
 	private final UserBO userBO = UserBO.getInstance();
     private final Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
@@ -64,7 +99,7 @@ public class ParentsController extends HttpServlet {
 			String responseJson = jsonParentResponse(parent);
 			response.getWriter().write(responseJson);
 			break;
-	}
+		}
 	}
 
 	private void adminHandler(HttpServletRequest request, HttpServletResponse response)
@@ -127,6 +162,81 @@ public class ParentsController extends HttpServlet {
 		}
 		getServletContext().getRequestDispatcher(destination).forward(request, response);
 	}
+	
+	private void parentsHandler(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		request.setCharacterEncoding("UTF-8");
+		response.setCharacterEncoding("UTF-8");
+		String mode = (String)request.getParameter("mode");
+		String username = (String)request.getSession().getAttribute("username");
+		Parents parent = parentsBO.selectByUsername(username);
+		RequestDispatcher rd = null;
+		String destination = "";
+		switch(mode) {
+			case "parentInfor":
+				List<Integer> studentIdList = parent.getStudent_id();
+				List<String> studentNameList = new ArrayList<String>();
+				List<Integer> teacherIdList = new ArrayList<Integer>();
+				List<String> teacherNameList = new ArrayList<String>();
+				for (int studentId : parent.getStudent_id()) {
+					Student student = studentBO.selectById(studentId);
+					studentNameList.add(student.getName());
+					int teacherId = teacherBO.selectByBoardingClass_id(student.getBoardingClass_id());
+					teacherIdList.add(teacherId);
+					Teacher teacher = teacherBO.selectById(teacherId);
+					teacherNameList.add(teacher.getName());
+				}
+				ParentResponse parentResponse = new ParentResponse(parent.getName(), parent.getDateOfBirth(), 
+																   parent.getParents_id(), parent.getSex(), 
+																   parent.getAddress(), parent.getPhoneNumber(), 
+																   parent.getEmail(), studentIdList, teacherIdList,
+																   studentNameList, teacherNameList);
+				request.setAttribute("parentInfor", parentResponse);
+				destination = "/parents/parentsInfor.jsp";
+				rd = getServletContext().getRequestDispatcher(destination);
+				rd.forward(request, response);
+				break;
+			case "seeBoardingFees":
+				List<BoardingFeeResponse> listBoardingFeeResponses = new ArrayList<BoardingFeeResponse>();
+				for (int i = 0; i < parent.getStudent_id().size(); i++) {
+					Student student = studentBO.selectById(parent.getStudent_id().get(i));
+					List<Integer> result = invoiceBO.selectByStudentId(student.getStudent_id());
+					for (int id : result) {
+						Invoice iv = invoiceBO.selectById(id);
+						BoardingFee bfee = boardingFeeBO.selectById(iv.getBoardingFee_id());
+						LocalDate date = bfee.getStart_day().toLocalDate();
+						String timeToSubmit = "Tháng " + date.getMonthValue() + " năm " + date.getYear();;
+						BoardingFeeResponse boardingFeeResponse = new BoardingFeeResponse(student.getStudent_id(), 
+																						  student.getName(), iv.getInvoice_id(),
+																						  (int)iv.getStatusPayment(), iv.getBoardingFee_id(),
+																						  timeToSubmit, iv.getMoney());
+						listBoardingFeeResponses.add(boardingFeeResponse);
+					}
+				}
+				request.setAttribute("listBoardingFeeResponses", listBoardingFeeResponses);
+				destination = "/parents/historyPayment.jsp";
+				rd = getServletContext().getRequestDispatcher(destination);
+				rd.forward(request, response);
+				break;
+			case "seeEatingHistory":
+				Map<Integer, String> weekMap = getListWeek();
+				weekMap.forEach((weekNumber, description) -> {
+		            System.out.println("Tuần " + weekNumber + ": " + description);
+		        });
+				request.setAttribute("weekMap", weekMap);
+				List<EatingDayResponse> listEatingDayResponses = new ArrayList<EatingDayResponse>();
+			    String timeEating = request.getParameter("timeEating");
+				if (timeEating != null) {
+					listEatingDayResponses = getEatingDay(timeEating);
+					request.setAttribute("listEatingDayResponses", listEatingDayResponses);
+				} else {
+					
+				}
+				destination = "/parents/historyEating.jsp";
+				rd = getServletContext().getRequestDispatcher(destination);
+				rd.forward(request, response);
+				break;
+		}
+	}
 
 	private Parents getParentsFromRequest(HttpServletRequest request) {
 		int parents_id = Integer.parseInt(request.getParameter("parents_id"));
@@ -139,8 +249,36 @@ public class ParentsController extends HttpServlet {
 		return new Parents(name, dateOfBirth, address, sex, parents_id, phoneNumber, email, null);
 	}
 	
-	private void parentsHandler(HttpServletRequest request, HttpServletResponse response) {
-
+	private TeacherResponse getTeacherDetails(int teacherId) {
+		Teacher teacher = teacherBO.selectById(teacherId);
+		TeacherResponse teacherResponse = new TeacherResponse(teacherId, teacher.getName(), 
+															  teacher.getDateOfBirth().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), 
+															  teacher.getAddress(), teacher.getPhoneNumber(), 
+															  teacher.getEmail(), teacher.getSex());
+		return teacherResponse;
+	}
+	
+	private StudentResponse getStudentDetail(int studentId) {
+		Student student = studentBO.selectById(studentId);
+		int numberOfAbsences = globalBO.getSizeOf("absence", "student_id=\'" + student.getStudent_id() + "\'");
+		StudentResponse studentResponse = new StudentResponse(studentId, student.getName(), 
+															  student.getDateOfBirth().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),
+															  student.getAddress(), student.getSex(), student.isSubMeal(),
+															  student.getParents_id(), student.getBoardingClass_id(), 
+															  student.getHeight(), student.getWeight(), numberOfAbsences);
+		return studentResponse;
+	}
+	
+	private AbsenceResponse getAbsenceDetail(int studentId) {
+		List<LocalDate> absenceList = new ArrayList<LocalDate>();
+		String name = globalBO.search("student", "name", "student_id=\'" + studentId + "\'", 1).get(0);
+		List<Integer> ids = AbsenceBO.getInstance().selectByStudentId(studentId);
+		for (int id : ids) {
+			Absence ab = AbsenceBO.getInstance().selectById(id);
+			absenceList.add(ab.getDayOfAbsence().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+		}
+		AbsenceResponse absenceResponse = new AbsenceResponse(studentId, name, absenceList);
+		return absenceResponse;
 	}
 	
 	private Parents parentInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -181,4 +319,51 @@ public class ParentsController extends HttpServlet {
         int endIndex = json.indexOf("\"", startIndex);
         return json.substring(startIndex, endIndex);
     }
+	
+	public Map<Integer, String> getListWeek() {
+		Map<Integer, String> result = new HashMap<Integer, String>();
+		int eH_id = globalBO.getLastIDOf("eatingHistory");
+		EatingHistory last_EH = eatingHistoryBO.selectById(eH_id);
+		EatingHistory start_EH = eatingHistoryBO.selectById(1);
+		LocalDate last_day = last_EH.getEating_day().toLocalDate();
+		LocalDate start_day = start_EH.getEating_day().toLocalDate();
+		int daysOfFirstWeek = EatingHistory.getDaysOfWeek(start_day.getDayOfWeek());
+		int daysOfLastWeek = EatingHistory.getDaysOfWeek(last_day.getDayOfWeek());
+		long daysBetween = ChronoUnit.DAYS.between(start_day, last_day) - daysOfLastWeek - (7 - daysOfFirstWeek + 1) + 1;
+		long weeks = daysBetween / 7 + 2;
+		result.put(1, "Tuần 1 (" + start_day + " - " + start_day.plusDays(5 - daysOfFirstWeek) + ")");
+		start_day = start_day.plusDays(7 - daysOfFirstWeek + 1);
+		for (int i = 2; i <= weeks - 1; i++) {
+			result.put(i, "Tuần " + i + " (" + start_day + " - " + start_day.plusDays(4) + ")");
+			start_day = start_day.plusDays(7);
+		}
+		result.put((int) weeks, "Tuần " + weeks + " (" + start_day + " - " + last_day + ")");
+		return result;
+	}
+	
+	public List<EatingDayResponse> getEatingDay(String timeEating) {
+		List<EatingDayResponse> listEatingDayResponses = new ArrayList<EatingDayResponse>();
+		int startIndex = timeEating.indexOf('(') + 1;
+	    int endIndex = timeEating.indexOf(')');
+	    String dateRange = timeEating.substring(startIndex, endIndex);
+	    String[] dates = dateRange.split(" - ");
+	    String startDate = dates[0];
+	    String endDate = dates[1];
+	    List<EatingHistory> listEatingHistoryBetweenDays = eatingHistoryBO.selectBetweenDays(startDate, endDate);
+	    for (int i = 0; i < listEatingHistoryBetweenDays.size(); i++) {
+	    	Menu menu = menuBO.selectById(listEatingHistoryBetweenDays.get(i).getMenu_id());
+	    	List<String> mainMeals = new ArrayList<String>();
+	    	List<String> subMeals = new ArrayList<String>();
+	    	for (int foodId : menu.getFood_ids()) {
+	    		Food food = foodBO.selectById(foodId);
+	    		if (food.getCategory()) 
+	    			mainMeals.add(food.getName());
+	    		else
+	    			subMeals.add(food.getName());
+	    	}
+	    	if (subMeals.size() == 0) subMeals.add("Không có");
+	    	listEatingDayResponses.add(new EatingDayResponse(listEatingHistoryBetweenDays.get(i).getEating_day(), mainMeals, subMeals));
+	    }
+	    return listEatingDayResponses;
+	}
 }
