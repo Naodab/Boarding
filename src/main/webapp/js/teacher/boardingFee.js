@@ -33,6 +33,6 @@ document.getElementById("saveChanges").addEventListener("click", async function 
             document.getElementById("ok").addEventListener("click", function () {
                 window.location.reload();
             })
-        } else {turnOnModal(renderAlertModal, "Không thể cập nhật.")}
+        } else {turnOnModal(renderAlertModal, "Vui lòng chọn đợt thu tiền.")}
     }
 });

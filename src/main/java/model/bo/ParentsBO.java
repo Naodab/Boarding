@@ -76,11 +76,7 @@ public class ParentsBO {
 	public List<ParentsResponse> getPageParents(int page, int amount, String searchField, String search,
 												String sortField, String sortType) {
 		return parentsDAO.getPageParents(page, amount, searchField, search, sortField, sortType)
-				.stream().map(parents -> {
-					ParentsResponse response = toParentsResponse(parents);
-					response.setNumberChildren(studentDAO.selectByParents_id(parents.getParents_id()).size());
-					return response;
-				}).toList();
+				.stream().map(this::toParentsResponse).toList();
 	}
 
 	public SearchResponse<ParentsResponse> searchResponse(int page, int amount, String searchField, String search,
@@ -102,6 +98,7 @@ public class ParentsBO {
 		result.setDateOfBirth(t.getDateOfBirth().toLocalDate());
 		result.setSex(t.getSex());
 		result.setPhone(t.getPhoneNumber());
+		result.setNumberChildren(studentDAO.selectByParents_id(t.getParents_id()).size());
 		return result;
 	}
 	
@@ -151,7 +148,8 @@ public class ParentsBO {
 					subMeals.add(food.getName());
 			}
 			if (subMeals.size() == 0) subMeals.add("Không có");
-			listEatingDayResponses.add(new EatingDayResponse(listEatingHistoryBetweenDays.get(i).getEating_day(), mainMeals, subMeals));
+			listEatingDayResponses.add(new EatingDayResponse(listEatingHistoryBetweenDays.get(i)
+					.getEating_day(), mainMeals, subMeals));
 		}
 		return listEatingDayResponses;
 	}

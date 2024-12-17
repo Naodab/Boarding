@@ -168,10 +168,7 @@ public class StudentController extends HttpServlet {
 	private void studentInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		String jsonData = request.getReader().lines().reduce("", (accumulator, actual) -> accumulator + actual);
 		Student student =  studentBO.selectById(Integer.parseInt(extractValue(jsonData, "studentId")));
-		StudentResponse responseStudent = new StudentResponse(student.getStudent_id(), 
-	    	student.getName(), student.getDateOfBirth().toLocalDate(),
-	    	student.getAddress(), student.getSex(),
-			student.getBoardingClass_id(), student.getHeight(), student.getWeight());
+		StudentResponse responseStudent = studentBO.toStudentResponse(student);
 		response.getWriter().write(gson.toJson(responseStudent));
 	}
 

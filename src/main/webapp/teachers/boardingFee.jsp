@@ -22,29 +22,20 @@
 		<div class="content closure">
             <div class="content-header">THU HỌC PHÍ</div>
             <div>
-            	<% 
-				    int boardingFeeId = -1;
-            		if ((Integer) request.getAttribute("boardingFeeId") != null) 
+				<%
+					int boardingFeeId = -1;
+					if (request.getAttribute("boardingFeeId") != null)
 						boardingFeeId = (Integer) request.getAttribute("boardingFeeId");
-				    int numberOfItems = (Integer) request.getAttribute("numberOfItems");
+					int numberOfItems = (Integer) request.getAttribute("numberOfItems");
+					List<Integer> monthValids = (List<Integer>) request.getAttribute("monthsValid");
 				%>
-				<select name="boardingFee" id="boardingFee" class="selection">
-				    <option>--Chọn đợt thu tiền--</option>
-				    <% 
-				        for (int i = 1; i <= numberOfItems; i++) { 
-				            String optionText;
-				            if (i < 5) {
-				                optionText = i + " - tháng " + (i + 8);
-				            } else {
-				                optionText = i + " - tháng " + (i - 4);
-				            }
-				    %>
-				    	<% if (boardingFeeId != -1) {%>
-				        	<option value="<%=i%>" <%= (i == boardingFeeId) ? "selected" : "" %>><%= optionText %></option>
-				        <% } else { %>
-				        	<option value="<%=i%>"><%= optionText %></option>
-				        <% } %>
-				    <% } %>
+				<select name="boardingFee" id="boardingFee">
+					<%
+						for (int month : monthValids) {
+							out.print("<option value='" + month + "' " + (boardingFeeId == month ? "selected" : "")
+									+">Tháng " + month +"</option>");
+						}
+					%>
 				</select>
             </div>
             <div class="content-body">

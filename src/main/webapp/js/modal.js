@@ -108,6 +108,8 @@ function renderLogin(message) {
 }
 
 function renderStudentModal(student) {
+	const parts = student.dateOfBirth.split("-");
+	student.dateOfBirth = `${parts[2]}-${parts[1]}-${parts[0]}`;
 	return html`
 		<form class="modal closure active" id="update-student" method="POST" action="students?mode=update">
 			<h1 class="modal__title">Thông tin chi tiết</h1>
@@ -163,18 +165,32 @@ function renderStudentModal(student) {
 							<label for="class">Phụ huynh:</label>
 							<span class="form-select hide">${student.parentName}</span>
 						</div>
+						<div class="admin-form-group">
+							<div class="admin-form-group">
+								<label for="sex">Cân nặng:</label>
+								<span class="form-select hide">${student.weight}</span>
+							</div>
+							<div class="admin-form-group second-column">
+								<label for="class">Chiều cao:</label>
+								<span class="form-select hide">${student.height}</span>
+							</div>
+						</div>
 					</div>
 				</div>
-				<div class="modal__function top--margin">
-					<div class="btn btn--green modal__btn hide" id="update-btn">Cập nhật</div>
-					<div class="btn btn--pink modal__btn hide" id="delete-btn">Xóa</div>
-				</div>
+				${!student.notAdmin && html`
+					<div class="modal__function top--margin">
+						<div class="btn btn--green modal__btn hide" id="update-btn">Cập nhật</div>
+						<div class="btn btn--pink modal__btn hide" id="delete-btn">Xóa</div>
+					</div>
+				`}
 			</div>
 		</form>>
 	`;
 }
 
 function renderStudentUpdateModal(student, parents, classes) {
+	const parts = student.dateOfBirth.split("-");
+	student.dateOfBirth = `${parts[2]}-${parts[1]}-${parts[0]}`;
 	return html`
 		<form class="modal closure active update" id="update-student" method="POST" action="students?mode=update">
 			<h1 class="modal__title">Thông tin chi tiết</h1>
@@ -346,6 +362,8 @@ function turnOnUpdateStudent(student, parents, classes) {
 }
 
 function renderParentsModal(parents) {
+	const parts = parents.dateOfBirth.split("-");
+	parents.dateOfBirth = `${parts[2]}-${parts[1]}-${parts[0]}`;
 	return html`
 		<form class="modal closure active" id="update-student" method="POST" action="parents?mode=update">
 			<h1 class="modal__title">Thông tin chi tiết</h1>
@@ -375,7 +393,8 @@ function renderParentsModal(parents) {
 						</div>
 						<div class="admin-form-group">
 							<label for="dateOfBirth">Ngày sinh:</label>
-							<input type="date" id="dateOfBirth" name="dateOfBirth" class="form-control" value="${parents.dateOfBirth}" readonly>
+							<input type="date" id="dateOfBirth" name="dateOfBirth" class="form-control" 
+								   value="${parents.dateOfBirth}" readonly>
 						</div>
 						<div class="admin-form-group">
 							<label for="address">Địa chỉ:</label>
@@ -396,20 +415,26 @@ function renderParentsModal(parents) {
 								<label for="">Các con:</label>
 								<span class="form-select hide">${parents.numberChildren}</span>
 							</div>
-							<span class="second-column detail" id="children-detail">Xem chi tiết</span>
+							${!parents.notAdmin 
+								&& html`<span class="second-column detail" id="children-detail">Xem chi tiết</span>`
+							}
 						</div>
 					</div>
 				</div>
-				<div class="modal__function top--margin">
-					<div class="btn btn--green modal__btn hide" id="update-btn">Cập nhật</div>
-					<div class="btn btn--pink modal__btn hide" id="delete-btn">Xóa</div>
-				</div>
+				${!parents.notAdmin && html`
+					<div class="modal__function top--margin">
+						<div class="btn btn--green modal__btn hide" id="update-btn">Cập nhật</div>
+						<div class="btn btn--pink modal__btn hide" id="delete-btn">Xóa</div>
+					</div>
+				`}
 			</div>
 		</form>>
 	`;
 }
 
 function renderUpdateParentsModal(parents) {
+	const parts = parents.dateOfBirth.split("-");
+	parents.dateOfBirth = `${parts[2]}-${parts[1]}-${parts[0]}`;
 	return html`
 		<form class="modal closure active" id="update-parents" method="POST" action="parents?mode=update">
 			<h1 class="modal__title">Cập nhật</h1>

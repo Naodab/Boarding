@@ -4,8 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import model.bean.BoardingFee;
 import model.bean.EatingHistory;
-import model.bo.EatingHistoryBO;
-import model.bo.MenuBO;
+import model.bo.*;
 import model.dto.EatingHistoryRequest;
 import model.dto.EatingHistoryResponse;
 import model.dto.SearchResponse;
@@ -28,14 +27,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import model.bean.Food;
 import model.bean.Menu;
-import model.bo.FoodBO;
-import model.bo.GlobalBO;
 import model.dto.EatingDayResponse;
 
 @WebServlet("/eatingHistories")
 public class EatingHistoryController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private final EatingHistoryBO eatingHistoryBO = EatingHistoryBO.getInstance();
+	private final BoardingFeeBO boardingFeeBO = BoardingFeeBO.getInstance();
 	private final MenuBO menuBO = MenuBO.getInstance();
 	private final static int EATING_HISTORIES_PER_PAGE = AdminUtil.ITEMS_PER_PAGE;
 	private final Gson gson = new GsonBuilder()
@@ -75,13 +73,17 @@ public class EatingHistoryController extends HttpServlet {
 		case "eatingDay":
 			int numberOfItems = globalBO.getSizeOf("boardingFee", "");
 			request.setAttribute("numberOfItems", numberOfItems);
+			List<Integer> monthsValid = eatingHistoryBO.getMonthsValid();
+			request.setAttribute("monthsValid", monthsValid);
 			List<EatingDayResponse> listEatingDayResponse = new ArrayList<EatingDayResponse>();
+
 			if (request.getParameter("boardingFeeId") != null) {
 				int boardingFeeId = Integer.parseInt(request.getParameter("boardingFeeId"));
-				listEatingDayResponse = eatingDay(request, response, boardingFeeId);
+				BoardingFee boardingFee = boardingFeeBO.selectByEndMonth(boardingFeeId);
+				listEatingDayResponse = eatingDay(request, response, boardingFee.getBoardingFee_id());
 				request.setAttribute("boardingFeeId", boardingFeeId);
 			} else {
-				listEatingDayResponse = eatingDay(request, response, 1);
+				listEatingDayResponse = eatingDay(request, response, globalBO.getFirstIDOf("boardingFee"));
 			}
 			request.setAttribute("listEatingDayResponse", listEatingDayResponse);
 			destination = "/teachers/eatingDay.jsp";

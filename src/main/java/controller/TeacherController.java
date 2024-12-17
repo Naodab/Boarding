@@ -18,24 +18,14 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import model.bean.Absence;
-import model.bean.Invoice;
-import model.bean.Student;
-import model.bean.Teacher;
-import model.bean.User;
+import model.bean.*;
+import model.bo.*;
 import model.dto.NameAndIdResponse;
 import model.dto.PreAddTeacherResponse;
 import model.dto.SearchResponse;
 import model.dto.TeacherResponse;
 import util.AdminUtil;
 import util.LocalDateAdapter;
-import model.bo.AbsenceBO;
-import model.bo.BoardingClassBO;
-import model.bo.GlobalBO;
-import model.bo.InvoiceBO;
-import model.bo.StudentBO;
-import model.bo.TeacherBO;
-import model.bo.UserBO;
 import model.dto.AbsenceResponse;
 import model.dto.BoardingFeeResponse;
 
@@ -50,6 +40,8 @@ public class TeacherController extends HttpServlet {
 	private final BoardingClassBO boardingClassBO = BoardingClassBO.getInstance();
 	private final AbsenceBO absenceBO = AbsenceBO.getInstance();
 	private final InvoiceBO invoiceBO = InvoiceBO.getInstance();
+	private final EatingHistoryBO eatingHistoryBO = EatingHistoryBO.getInstance();
+	private final BoardingFeeBO boardingFeeBO = BoardingFeeBO.getInstance();
 
     public TeacherController() {
 		super();
@@ -167,13 +159,16 @@ public class TeacherController extends HttpServlet {
 				listStudents = StudentBO.getInstance().selectByBoardingClass_id2(teacher.getBoardingClass_id());
 				int numberOfItems = globalBO.getSizeOf("boardingFee", "");
 				request.setAttribute("numberOfItems", numberOfItems);
+				List<Integer> monthsValid = eatingHistoryBO.getMonthsValid();
+				request.setAttribute("monthsValid", monthsValid);
 				ArrayList<BoardingFeeResponse> listBoardingFees;
 				if (request.getParameter("boardingFeeId") != null) {
 					int boardingFeeId = Integer.parseInt(request.getParameter("boardingFeeId"));
-					listBoardingFees = boardingFee(listStudents, boardingFeeId);
+					BoardingFee boardingFee = boardingFeeBO.selectByEndMonth(boardingFeeId);
+					listBoardingFees = boardingFee(listStudents, boardingFee.getBoardingFee_id());
 					request.setAttribute("boardingFeeId", boardingFeeId);
 				} else {
-					listBoardingFees = boardingFee(listStudents, 1);
+					listBoardingFees = boardingFee(listStudents, globalBO.getFirstIDOf("boardingFee"));
 				}
 				request.setAttribute("listBoardingFees", listBoardingFees);
 				destination = "/teachers/boardingFee.jsp";

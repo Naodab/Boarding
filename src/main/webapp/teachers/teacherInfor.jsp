@@ -84,6 +84,7 @@
 		</div>
 	</div>
 </body>
+<script type="module" src="<%=request.getContextPath()%>/js/setting.js"></script>
 <script type="text/javascript">
 	document.getElementById("btn-save-edit-infor").addEventListener("click", async function () {
 		const address = document.getElementById("address").value.trim();

@@ -80,12 +80,19 @@ public class ParentsController extends HttpServlet {
 	private void teacherHandler(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
-		String mode = (String)request.getParameter("mode");
+		String mode = request.getParameter("mode");
 		switch(mode) {
 		case "parentInfo":
 			Parents parent = parentInfo(request, response);
-			ParentResponse responseParent = new ParentResponse(parent.getName(), parent.getDateOfBirth(), parent.getParents_id(), parent.getSex(), parent.getAddress(), parent.getPhoneNumber(), parent.getEmail());
+			ParentResponse responseParent = new ParentResponse(parent.getName(), parent.getDateOfBirth(),
+					parent.getParents_id(), parent.getSex(), parent.getAddress(), parent.getPhoneNumber(),
+					parent.getEmail());
 			response.getWriter().write(gson.toJson(responseParent));
+			break;
+		case "detailParents":
+			Parents parentDetail = parentInfo(request, response);
+			ParentsResponse response1 = parentsBO.toParentsResponse(parentDetail);
+			response.getWriter().write(gson.toJson(response1));
 			break;
 		}
 	}
@@ -207,9 +214,6 @@ public class ParentsController extends HttpServlet {
 				break;
 			case "seeEatingHistory":
 				Map<Integer, String> weekMap = parentsBO.getListWeek();
-				weekMap.forEach((weekNumber, description) -> {
-		            System.out.println("Tuần " + weekNumber + ": " + description);
-		        });
 				request.setAttribute("weekMap", weekMap);
 				List<EatingDayResponse> listEatingDayResponses = new ArrayList<EatingDayResponse>();
 			    String timeEating = request.getParameter("timeEating");
@@ -248,7 +252,7 @@ public class ParentsController extends HttpServlet {
 	    }
 	    String jsonData = sb.toString();
 	    String parent_id = extractValue(jsonData, "parentId");
-	    return ParentsBO.getInstance().selectById(Integer.parseInt(parent_id));
+	    return parentsBO.selectById(Integer.parseInt(parent_id));
 	}
 	
 	private String extractValue(String json, String key) {
