@@ -1,7 +1,14 @@
 package model.bo;
 
-import java.util.ArrayList;
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import model.bean.BoardingClass;
 import model.bean.Parents;
@@ -111,4 +118,31 @@ public class StudentBO {
 			return new NameAndIdResponse(student1.getStudent_id(), student1.getName());
 		}).toList();
 	}
+	
+	public void updatePhysical(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		String json = request.getReader().lines().reduce("", (accumulator, actual) -> accumulator + actual);
+		Gson gson = new Gson();
+		Type studentListType = new TypeToken<List<Student>>() {}.getType();
+		List<Student> studentLists = gson.fromJson(json.toString(), studentListType);
+        for (Student studentList : studentLists) {
+            Student student = selectById(studentList.getStudent_id());
+            student.setHeight(studentList.getHeight());
+            student.setWeight(studentList.getWeight());
+            update(student);
+        }
+	}
+	
+	public StudentResponse studentInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		String jsonData = request.getReader().lines().reduce("", (accumulator, actual) -> accumulator + actual);
+		Student student =  selectById(Integer.parseInt(extractValue(jsonData, "studentId")));
+		StudentResponse responseStudent = toStudentResponse(student);
+		return responseStudent;
+	}
+
+	private String extractValue(String json, String key) {
+        String searchKey = "\"" + key + "\":\"";
+        int startIndex = json.indexOf(searchKey) + searchKey.length();
+        int endIndex = json.indexOf("\"", startIndex);
+        return json.substring(startIndex, endIndex);
+    }
 }

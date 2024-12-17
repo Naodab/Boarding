@@ -2,10 +2,8 @@ package controller;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Type;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -16,7 +14,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 
 import model.bean.Student;
 import model.bo.BoardingClassBO;
@@ -66,10 +63,11 @@ public class StudentController extends HttpServlet {
 		String mode = request.getParameter("mode");
 		switch (mode) {
 			case "studentInfo":
-				studentInfo(request, response);
+				StudentResponse responseStudent = studentBO.studentInfo(request, response);
+				response.getWriter().write(gson.toJson(responseStudent));
 				break;
 			case "updatePhysical":
-				updatePhysical(request, response);
+				studentBO.updatePhysical(request, response);
 				break;
 		}
 	}
@@ -154,35 +152,9 @@ public class StudentController extends HttpServlet {
 		String mode = request.getParameter("mode");
 		switch (mode) {
 			case "studentInfo":
-				studentInfo(request, response);
+				StudentResponse responseStudent = studentBO.studentInfo(request, response);
+				response.getWriter().write(gson.toJson(responseStudent));
 				break;
 		}
 	}
-
-	private void updatePhysical(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		String json = request.getReader().lines().reduce("", (accumulator, actual) -> accumulator + actual);
-		Gson gson = new Gson();
-		Type studentListType = new TypeToken<List<Student>>() {}.getType();
-		List<Student> studentLists = gson.fromJson(json.toString(), studentListType);
-        for (Student studentList : studentLists) {
-            Student student = studentBO.selectById(studentList.getStudent_id());
-            student.setHeight(studentList.getHeight());
-            student.setWeight(studentList.getWeight());
-            studentBO.update(student);
-        }
-	}
-
-	private void studentInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		String jsonData = request.getReader().lines().reduce("", (accumulator, actual) -> accumulator + actual);
-		Student student =  studentBO.selectById(Integer.parseInt(extractValue(jsonData, "studentId")));
-		StudentResponse responseStudent = studentBO.toStudentResponse(student);
-		response.getWriter().write(gson.toJson(responseStudent));
-	}
-
-	private String extractValue(String json, String key) {
-        String searchKey = "\"" + key + "\":\"";
-        int startIndex = json.indexOf(searchKey) + searchKey.length();
-        int endIndex = json.indexOf("\"", startIndex);
-        return json.substring(startIndex, endIndex);
-    }
 }

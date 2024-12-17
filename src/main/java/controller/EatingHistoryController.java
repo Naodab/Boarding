@@ -3,7 +3,6 @@ package controller;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import model.bean.BoardingFee;
-import model.bean.EatingHistory;
 import model.bo.*;
 import model.dto.EatingHistoryRequest;
 import model.dto.EatingHistoryResponse;
@@ -25,8 +24,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import model.bean.Food;
-import model.bean.Menu;
 import model.dto.EatingDayResponse;
 
 @WebServlet("/eatingHistories")
@@ -39,7 +36,6 @@ public class EatingHistoryController extends HttpServlet {
 	private final Gson gson = new GsonBuilder()
 			.registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
 
-	private final FoodBO foodBO = FoodBO.getInstance();
 	private final GlobalBO globalBO = GlobalBO.getInstance();
 
     public EatingHistoryController() {
@@ -76,14 +72,13 @@ public class EatingHistoryController extends HttpServlet {
 			List<Integer> monthsValid = eatingHistoryBO.getMonthsValid();
 			request.setAttribute("monthsValid", monthsValid);
 			List<EatingDayResponse> listEatingDayResponse = new ArrayList<EatingDayResponse>();
-
 			if (request.getParameter("boardingFeeId") != null) {
 				int boardingFeeId = Integer.parseInt(request.getParameter("boardingFeeId"));
 				BoardingFee boardingFee = boardingFeeBO.selectByEndMonth(boardingFeeId);
-				listEatingDayResponse = eatingDay(request, response, boardingFee.getBoardingFee_id());
+				listEatingDayResponse = eatingHistoryBO.eatingDay(request, response, boardingFee.getBoardingFee_id());
 				request.setAttribute("boardingFeeId", boardingFeeId);
 			} else {
-				listEatingDayResponse = eatingDay(request, response, globalBO.getFirstIDOf("boardingFee"));
+				listEatingDayResponse = eatingHistoryBO.eatingDay(request, response, globalBO.getFirstIDOf("boardingFee"));
 			}
 			request.setAttribute("listEatingDayResponse", listEatingDayResponse);
 			destination = "/teachers/eatingDay.jsp";
@@ -155,27 +150,5 @@ public class EatingHistoryController extends HttpServlet {
 	
 	private void parentsHandler(HttpServletRequest request, HttpServletResponse response) {
 
-	}
-
-	private List<EatingDayResponse> eatingDay(HttpServletRequest request, HttpServletResponse response, int boardingFeeId) {
-		List<EatingDayResponse> listEatingDayResponse = new ArrayList<EatingDayResponse>();
-		List<Integer> listEhis = eatingHistoryBO.selectByBoardingFee_id(boardingFeeId);
-		for (int id : listEhis) {
-			EatingHistory ehis = eatingHistoryBO.selectById(id);
-			Menu menu = menuBO.selectById(ehis.getMenu_id());
-			List<String> mainMeals = new ArrayList<String>();
-			List<String> subMeals = new ArrayList<String>();
-			for (int foodId : menu.getFood_ids()) {
-				Food food = foodBO.selectById(foodId);
-				if (food.getCategory()) {
-					mainMeals.add(food.getName());
-				} else {
-					subMeals.add(food.getName());
-				}
-			}
-			if (subMeals.size() == 0) subMeals.add("Không có");
-			listEatingDayResponse.add(new EatingDayResponse(ehis.getEating_day(), mainMeals, subMeals));
-		}
-		return listEatingDayResponse;
 	}
 }
