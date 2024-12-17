@@ -164,7 +164,7 @@ public class StudentController extends HttpServlet {
 		Student student =  studentBO.selectById(Integer.parseInt(extractValue(jsonData, "studentId")));
 		StudentResponse responseStudent = new StudentResponse(student.getStudent_id(), 
 															  student.getName(), 
-															  student.getDateOfBirth().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),
+															  student.getDateOfBirth().toLocalDate(),
 															  student.getAddress(),
 															  student.getSex(), student.getBoardingClass_id(),
 															  student.getHeight(), student.getWeight());

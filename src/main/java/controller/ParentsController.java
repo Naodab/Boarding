@@ -215,6 +215,7 @@ public class ParentsController extends HttpServlet {
 			    String timeEating = request.getParameter("timeEating");
 				if (timeEating != null) {
 					listEatingDayResponses = parentsBO.getEatingDay(timeEating);
+					request.setAttribute("timeEating", timeEating);
 					request.setAttribute("listEatingDayResponses", listEatingDayResponses);
 				} else {
 					
