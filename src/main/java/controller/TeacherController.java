@@ -1,6 +1,5 @@
 package controller;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.sql.Date;
@@ -23,7 +22,6 @@ import model.bo.*;
 import model.dto.NameAndIdResponse;
 import model.dto.PreAddTeacherResponse;
 import model.dto.SearchResponse;
-import model.dto.StudentResponse;
 import model.dto.TeacherResponse;
 import util.AdminUtil;
 import util.LocalDateAdapter;
@@ -40,7 +38,6 @@ public class TeacherController extends HttpServlet {
 	private final GlobalBO globalBO = GlobalBO.getInstance();
 	private final BoardingClassBO boardingClassBO = BoardingClassBO.getInstance();
 	private final AbsenceBO absenceBO = AbsenceBO.getInstance();
-	private final InvoiceBO invoiceBO = InvoiceBO.getInstance();
 	private final EatingHistoryBO eatingHistoryBO = EatingHistoryBO.getInstance();
 	private final BoardingFeeBO boardingFeeBO = BoardingFeeBO.getInstance();
 
@@ -142,19 +139,15 @@ public class TeacherController extends HttpServlet {
 				request.setAttribute("teachClass", BoardingClassBO.getInstance()
 						.selectById(teacher.getBoardingClass_id()).getName());
 				destination = "/teachers/teacherInfor.jsp";
-				rd = getServletContext().getRequestDispatcher(destination);
-				rd.forward(request, response);
 				break;
 			case "updateTeacherInfor":
-				updateTeacherInfor(request, response, teacher);
+				teacherBO.updateTeacherInfor(request, response, teacher);
 				break;
 			case "studentInfor":
 				List<Student> listStudents = StudentBO.getInstance()
 						.selectByBoardingClass_id2(teacher.getBoardingClass_id());
 				request.setAttribute("listStudents", listStudents);
 				destination = "/teachers/studentInfor.jsp";
-				rd = getServletContext().getRequestDispatcher(destination);
-				rd.forward(request, response);
 				break;
 			case "boardingFee":
 				listStudents = StudentBO.getInstance().selectByBoardingClass_id2(teacher.getBoardingClass_id());
@@ -166,48 +159,29 @@ public class TeacherController extends HttpServlet {
 				if (request.getParameter("boardingFeeId") != null) {
 					int boardingFeeId = Integer.parseInt(request.getParameter("boardingFeeId"));
 					BoardingFee boardingFee = boardingFeeBO.selectByEndMonth(boardingFeeId);
-					listBoardingFees = boardingFee(listStudents, boardingFee.getBoardingFee_id());
+					listBoardingFees = boardingFeeBO.boardingFee(listStudents, boardingFee.getBoardingFee_id());
 					request.setAttribute("boardingFeeId", boardingFeeId);
 				} else {
-					listBoardingFees = boardingFee(listStudents, globalBO.getFirstIDOf("boardingFee"));
+					listBoardingFees = boardingFeeBO.boardingFee(listStudents, globalBO.getFirstIDOf("boardingFee"));
 				}
 				request.setAttribute("listBoardingFees", listBoardingFees);
 				destination = "/teachers/boardingFee.jsp";
-				rd = getServletContext().getRequestDispatcher(destination);
-				rd.forward(request, response);
 				break;
 			case "changeToPhysical":
 				listStudents = StudentBO.getInstance().selectByBoardingClass_id2(teacher.getBoardingClass_id());
 				request.setAttribute("listStudents", listStudents);
 				destination = "/teachers/physicalStudents.jsp";
-				rd = getServletContext().getRequestDispatcher(destination);
-				rd.forward(request, response);
 				break;
 			case "changeToAbsent":
 				listStudents = StudentBO.getInstance().selectByBoardingClass_id2(teacher.getBoardingClass_id());
-				ArrayList<AbsenceResponse> listAbsences = new ArrayList<AbsenceResponse>();
-				for (int i = 0; i < listStudents.size(); i++) {
-					Absence absence = absenceBO.selectByStudentIdAndAbsenceDate(listStudents
-							.get(i).getStudent_id(), Date.valueOf(LocalDate.now()));
-					AbsenceResponse absenceInfo = new AbsenceResponse();
-					if (absence != null) {
-						absenceInfo = new AbsenceResponse(listStudents.get(i).getStudent_id(),
-								listStudents.get(i).getName(), true, absence.getDayOfAbsence()
-								.toLocalDate(), absence.getAbsence_id());
-					} else {
-						absenceInfo = new AbsenceResponse(listStudents.get(i).getStudent_id(),
-								listStudents.get(i).getName(), false, null, 0);
-					}
-					listAbsences.add(absenceInfo);
-				}
+				ArrayList<AbsenceResponse> listAbsences = absenceBO.listAbsences(listStudents);
 				request.setAttribute("listAbsences", listAbsences);
 				destination = "/teachers/absentStudents.jsp";
-				rd = getServletContext().getRequestDispatcher(destination);
-				rd.forward(request, response);
 				break;
 		}
+		rd = getServletContext().getRequestDispatcher(destination);
+		rd.forward(request, response);
 	}
-
 
 	private Teacher getTeacherFromRequest(HttpServletRequest request)
 			throws UnsupportedEncodingException {
@@ -236,47 +210,4 @@ public class TeacherController extends HttpServlet {
 				break;
 		}
 	}
-	
-	private void updateTeacherInfor(HttpServletRequest request,
-		 HttpServletResponse response, Teacher teacher) throws IOException {
-		 StringBuilder sb = new StringBuilder();
-	     String line;
-	     try (BufferedReader reader = request.getReader()) {
-	     while ((line = reader.readLine()) != null) {
-	    	 sb.append(line);
-	       	}
-	     }
-	     String jsonData = sb.toString();
-	     String address = extractValue(jsonData, "address");
-	     String email = extractValue(jsonData, "email");
-	     String phoneNumber = extractValue(jsonData, "phoneNumber");
-	     teacher.setAddress(address);
-	     teacher.setEmail(email);
-	     teacher.setPhoneNumber(phoneNumber);
-	     TeacherBO.getInstance().update(teacher);
-	}
-	
-	private ArrayList<BoardingFeeResponse> boardingFee(List<Student> listStudents, int id) {
-		ArrayList<BoardingFeeResponse> listBoardingFees = new ArrayList<>();
-		List<Integer> listInvoices = invoiceBO.selectByBoardingFeeId(id);
-		for (Student std : listStudents) {
-			List<Integer> invoices = invoiceBO.selectByStudentId(std.getStudent_id());
-			for (int invoice_id : invoices) {
-				if (listInvoices.contains(invoice_id)) {
-					Invoice invoice = invoiceBO.selectById(invoice_id);
-					BoardingFeeResponse boardingFee = new BoardingFeeResponse(std.getStudent_id(),
-							std.getName(), invoice.getInvoice_id(), invoice.getStatusPayment(), id);
-					listBoardingFees.add(boardingFee);
-				}
-			}
-		}
-		return listBoardingFees;
-	}
-
-	private String extractValue(String json, String key) {
-        String searchKey = "\"" + key + "\":\"";
-        int startIndex = json.indexOf(searchKey) + searchKey.length();
-        int endIndex = json.indexOf("\"", startIndex);
-        return json.substring(startIndex, endIndex);
-    }
 }

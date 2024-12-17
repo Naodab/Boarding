@@ -7,8 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import model.bean.*;
 import model.dao.*;
+import model.dto.EatingDayResponse;
 import model.dto.EatingHistoryRequest;
 import model.dto.EatingHistoryResponse;
 import model.dto.SearchResponse;
@@ -183,5 +187,27 @@ public class EatingHistoryBO {
 
 	public List<EatingHistory> selectBetweenDays(String startDay, String endDay) {
 		return eatingHistoryDAO.selectBetweenDays(startDay, endDay);
+	}
+	
+	public List<EatingDayResponse> eatingDay(HttpServletRequest request, HttpServletResponse response, int boardingFeeId) {
+		List<EatingDayResponse> listEatingDayResponse = new ArrayList<EatingDayResponse>();
+		List<Integer> listEhis = selectByBoardingFee_id(boardingFeeId);
+		for (int id : listEhis) {
+			EatingHistory ehis = selectById(id);
+			Menu menu = menuDAO.selectById(ehis.getMenu_id());
+			List<String> mainMeals = new ArrayList<String>();
+			List<String> subMeals = new ArrayList<String>();
+			for (int foodId : menu.getFood_ids()) {
+				Food food = foodDAO.selectById(foodId);
+				if (food.getCategory()) {
+					mainMeals.add(food.getName());
+				} else {
+					subMeals.add(food.getName());
+				}
+			}
+			if (subMeals.size() == 0) subMeals.add("Không có");
+			listEatingDayResponse.add(new EatingDayResponse(ehis.getEating_day(), mainMeals, subMeals));
+		}
+		return listEatingDayResponse;
 	}
 }

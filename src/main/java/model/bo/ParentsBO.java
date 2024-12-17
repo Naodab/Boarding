@@ -1,5 +1,7 @@
 package model.bo;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -7,10 +9,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import model.bean.EatingHistory;
 import model.bean.Food;
 import model.bean.Menu;
 import model.bean.Parents;
+import model.bean.Student;
+import model.bean.Teacher;
 import model.dao.*;
 import model.dto.EatingDayResponse;
 import model.dto.NameAndIdResponse;
@@ -29,6 +36,7 @@ public class ParentsBO {
 		return _instance;
 	}
 
+	private final TeacherDAO teacherDAO = TeacherDAO.getInstance();
 	private final ParentsDAO parentsDAO = ParentsDAO.getInstance();
 	private final StudentDAO studentDAO = StudentDAO.getInstance();
 	private final EatingHistoryDAO eatingHistoryDAO = EatingHistoryDAO.getInstance();
@@ -152,5 +160,36 @@ public class ParentsBO {
 					.getEating_day(), mainMeals, subMeals));
 		}
 		return listEatingDayResponses;
+	}
+	
+	public Parents parentInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		StringBuilder sb = new StringBuilder();
+	    String line;
+	    try (BufferedReader reader = request.getReader()) {
+	    while ((line = reader.readLine()) != null) {
+	    	sb.append(line);
+	       }
+	    }
+	    String jsonData = sb.toString();
+	    String parent_id = extractValue(jsonData, "parentId");
+	    return selectById(Integer.parseInt(parent_id));
+	}
+	
+	private String extractValue(String json, String key) {
+        String searchKey = "\"" + key + "\":\"";
+        int startIndex = json.indexOf(searchKey) + searchKey.length();
+        int endIndex = json.indexOf("\"", startIndex);
+        return json.substring(startIndex, endIndex);
+    }
+	
+	public void updateAllList(Parents parent, List<String> studentNameList, List<Integer> teacherIdList, List<String> teacherNameList) {
+		for (int studentId : parent.getStudent_id()) {
+			Student student = studentDAO.selectById(studentId);
+			studentNameList.add(student.getName());
+			int teacherId = teacherDAO.selectByBoardingClass_id(student.getBoardingClass_id());
+			teacherIdList.add(teacherId);
+			Teacher teacher = teacherDAO.selectById(teacherId);
+			teacherNameList.add(teacher.getName());
+		}
 	}
 }
