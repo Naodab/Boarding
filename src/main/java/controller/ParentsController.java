@@ -1,6 +1,5 @@
 package controller;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.sql.Date;
 import java.time.LocalDate;
@@ -18,21 +17,12 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import model.bean.BoardingFee;
-import model.bean.Invoice;
 import model.bean.Parents;
-import model.bean.Student;
-import model.bean.Teacher;
 import model.bean.User;
 import model.bo.BoardingFeeBO;
-import model.bo.EatingHistoryBO;
-import model.bo.FoodBO;
 import model.bo.GlobalBO;
-import model.bo.InvoiceBO;
-import model.bo.MenuBO;
 import model.bo.ParentsBO;
 import model.bo.StudentBO;
-import model.bo.TeacherBO;
 import model.bo.UserBO;
 import model.dto.BoardingFeeResponse;
 import model.dto.EatingDayResponse;
@@ -48,11 +38,6 @@ public class ParentsController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private final ParentsBO parentsBO = ParentsBO.getInstance();
 	private final StudentBO studentBO = StudentBO.getInstance();
-	private final TeacherBO teacherBO = TeacherBO.getInstance();
-	private final InvoiceBO invoiceBO = InvoiceBO.getInstance();
-	private final MenuBO menuBO = MenuBO.getInstance();
-	private final FoodBO foodBO = FoodBO.getInstance();
-	private final EatingHistoryBO eatingHistoryBO = EatingHistoryBO.getInstance();
 	private final BoardingFeeBO boardingFeeBO = BoardingFeeBO.getInstance();
 	private final GlobalBO globalBO = GlobalBO.getInstance();
 	private final UserBO userBO = UserBO.getInstance();
@@ -83,14 +68,14 @@ public class ParentsController extends HttpServlet {
 		String mode = request.getParameter("mode");
 		switch(mode) {
 		case "parentInfo":
-			Parents parent = parentInfo(request, response);
+			Parents parent = parentsBO.parentInfo(request, response);
 			ParentResponse responseParent = new ParentResponse(parent.getName(), parent.getDateOfBirth(),
 					parent.getParents_id(), parent.getSex(), parent.getAddress(), parent.getPhoneNumber(),
 					parent.getEmail());
 			response.getWriter().write(gson.toJson(responseParent));
 			break;
 		case "detailParents":
-			Parents parentDetail = parentInfo(request, response);
+			Parents parentDetail = parentsBO.parentInfo(request, response);
 			ParentsResponse response1 = parentsBO.toParentsResponse(parentDetail);
 			response.getWriter().write(gson.toJson(response1));
 			break;
@@ -172,14 +157,7 @@ public class ParentsController extends HttpServlet {
 				List<String> studentNameList = new ArrayList<String>();
 				List<Integer> teacherIdList = new ArrayList<Integer>();
 				List<String> teacherNameList = new ArrayList<String>();
-				for (int studentId : parent.getStudent_id()) {
-					Student student = studentBO.selectById(studentId);
-					studentNameList.add(student.getName());
-					int teacherId = teacherBO.selectByBoardingClass_id(student.getBoardingClass_id());
-					teacherIdList.add(teacherId);
-					Teacher teacher = teacherBO.selectById(teacherId);
-					teacherNameList.add(teacher.getName());
-				}
+				parentsBO.updateAllList(parent, studentNameList, teacherIdList, teacherNameList);
 				ParentResponse parentResponse = new ParentResponse(parent.getName(), parent.getDateOfBirth(), 
 					parent.getParents_id(), parent.getSex(),
 					parent.getAddress(), parent.getPhoneNumber(),
@@ -192,21 +170,7 @@ public class ParentsController extends HttpServlet {
 				break;
 			case "seeBoardingFees":
 				List<BoardingFeeResponse> listBoardingFeeResponses = new ArrayList<BoardingFeeResponse>();
-				for (int i = 0; i < parent.getStudent_id().size(); i++) {
-					Student student = studentBO.selectById(parent.getStudent_id().get(i));
-					List<Integer> result = invoiceBO.selectByStudentId(student.getStudent_id());
-					for (int id : result) {
-						Invoice iv = invoiceBO.selectById(id);
-						BoardingFee bfee = boardingFeeBO.selectById(iv.getBoardingFee_id());
-						LocalDate date = bfee.getStart_day().toLocalDate();
-						String timeToSubmit = "Tháng " + date.getMonthValue() + " năm " + date.getYear();;
-						BoardingFeeResponse boardingFeeResponse = new BoardingFeeResponse(student.getStudent_id(), 
-							student.getName(), iv.getInvoice_id(),
-							(int)iv.getStatusPayment(), iv.getBoardingFee_id(),
-							timeToSubmit, iv.getMoney());
-						listBoardingFeeResponses.add(boardingFeeResponse);
-					}
-				}
+				listBoardingFeeResponses = boardingFeeBO.timeEating(parent);
 				request.setAttribute("listBoardingFeeResponses", listBoardingFeeResponses);
 				destination = "/parents/historyPayment.jsp";
 				rd = getServletContext().getRequestDispatcher(destination);
@@ -241,24 +205,4 @@ public class ParentsController extends HttpServlet {
 		Date dateOfBirth = Date.valueOf(LocalDate.parse(request.getParameter("dateOfBirth")));
 		return new Parents(name, dateOfBirth, address, sex, parents_id, phoneNumber, email, null);
 	}
-	
-	private Parents parentInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		StringBuilder sb = new StringBuilder();
-	    String line;
-	    try (BufferedReader reader = request.getReader()) {
-	    while ((line = reader.readLine()) != null) {
-	    	sb.append(line);
-	       }
-	    }
-	    String jsonData = sb.toString();
-	    String parent_id = extractValue(jsonData, "parentId");
-	    return parentsBO.selectById(Integer.parseInt(parent_id));
-	}
-	
-	private String extractValue(String json, String key) {
-        String searchKey = "\"" + key + "\":\"";
-        int startIndex = json.indexOf(searchKey) + searchKey.length();
-        int endIndex = json.indexOf("\"", startIndex);
-        return json.substring(startIndex, endIndex);
-    }
 }

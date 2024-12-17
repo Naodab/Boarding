@@ -1,18 +1,8 @@
 package controller;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import model.bean.Absence;
 import model.bo.AbsenceBO;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.sql.Date;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -51,7 +41,7 @@ public class AbsenceController extends HttpServlet {
 		String mode = request.getParameter("mode");
 		switch(mode) {
 			case "updateAbsent":
-				updateAbsent(request, response);
+				absenceBO.updateAbsent(request, response);
 				break;
 		}
 	}
@@ -62,28 +52,5 @@ public class AbsenceController extends HttpServlet {
 	
 	private void parentsHandler(HttpServletRequest request, HttpServletResponse response) {
 
-	}
-
-	private void updateAbsent(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		BufferedReader reader = request.getReader();
-		Gson gson = new Gson();
-		JsonObject jsonObject = gson.fromJson(reader, JsonObject.class);
-		JsonArray studentIdsArray = jsonObject.getAsJsonArray("studentIds");
-		List<String> studentIdList = new ArrayList<>();
-		studentIdsArray.forEach(jsonElement -> studentIdList.add(jsonElement.getAsString()));
-		LocalDate absentDate = LocalDate.now();
-		for (int i = 0; i < studentIdList.size(); i++) {
-			System.out.println("bwts đầu vonng for!");
-			int studentId = Integer.parseInt(studentIdList.get(i));
-			Absence absence = absenceBO.selectByStudentIdAndAbsenceDate(studentId, Date.valueOf(absentDate));
-			if (absence != null) {
-				//dùng trong trường hợp giáo viên đã điểm danh rồi nhưng mà muốn điểm danh lại thì cập nhật hoặc xóa!
-			} else {
-				absence = new Absence();
-				absence.setDayOfAbsence(Date.valueOf(absentDate));
-				absence.setStudent_id(studentId);
-				absenceBO.insert(absence);
-			}
-		}
 	}
 }
