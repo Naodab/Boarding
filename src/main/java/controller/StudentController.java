@@ -33,7 +33,8 @@ import util.LocalDateAdapter;
 @WebServlet("/students")
 public class StudentController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-    private final Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
+    private final Gson gson = new GsonBuilder()
+			.registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
 	private final StudentBO studentBO = StudentBO.getInstance();
 	private final ParentsBO parentsBO = ParentsBO.getInstance();
 	private final BoardingClassBO boardingClassBO = BoardingClassBO.getInstance();
@@ -58,7 +59,8 @@ public class StudentController extends HttpServlet {
         }
 	}
 
-	private void teacherHandler(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	private void teacherHandler(HttpServletRequest request, HttpServletResponse response)
+			throws IOException {
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
 		String mode = request.getParameter("mode");
@@ -88,14 +90,16 @@ public class StudentController extends HttpServlet {
 					String sort = request.getParameter("sort");
 					String sortField = request.getParameter("sortField");
 					int page = Integer.parseInt(request.getParameter("page"));
-					SearchStudentResponse result = studentBO.searchStudent(page, STUDENT_PER_PAGE, searchField, search, sortField, sort);
+					SearchStudentResponse result = studentBO.searchStudent(page,
+							STUDENT_PER_PAGE, searchField, search, sortField, sort);
 					String json = gson.toJson(result);
 					response.getWriter().write(json);
 					return;
 				case "preUpdate":
 					List<NameAndIdResponse> parents = parentsBO.getNameAndIds();
 					List<NameAndIdResponse> classes = boardingClassBO.getNameAndIds();
-					ListParentsAndClasses preUpdate = new ListParentsAndClasses(0, parents, classes);
+					ListParentsAndClasses preUpdate = new ListParentsAndClasses(0,
+							parents, classes);
 					response.getWriter().write(gson.toJson(preUpdate));
 					return;
 				case "update":
@@ -107,7 +111,8 @@ public class StudentController extends HttpServlet {
 					int nextId = globalBO.getAuto_IncrementOf("student");
 					List<NameAndIdResponse> parentsAdd = parentsBO.getNameAndIds();
 					List<NameAndIdResponse> classesAdd = boardingClassBO.getNameAndIds();
-					ListParentsAndClasses preAdd = new ListParentsAndClasses(nextId, parentsAdd, classesAdd);
+					ListParentsAndClasses preAdd = new ListParentsAndClasses(nextId,
+							parentsAdd, classesAdd);
 					response.getWriter().write(gson.toJson(preAdd));
 					return;
 				case "add":
@@ -118,7 +123,6 @@ public class StudentController extends HttpServlet {
 					return;
 				case "delete":
 					int student_id = Integer.parseInt(request.getParameter("student_id"));
-					System.out.println(student_id);
 					if (studentBO.deleteByID(student_id))
 						System.out.println("DELETE student " + student_id);
 					response.sendRedirect(request.getContextPath() + "/students");
@@ -128,7 +132,8 @@ public class StudentController extends HttpServlet {
 		getServletContext().getRequestDispatcher(destination).forward(request, response);
 	}
 
-	private Student getStudentFromRequest(HttpServletRequest request) throws UnsupportedEncodingException {
+	private Student getStudentFromRequest(HttpServletRequest request)
+			throws UnsupportedEncodingException {
 		request.setCharacterEncoding("UTF-8");
 		int student_id = Integer.parseInt(request.getParameter("student_id"));
 		String name = request.getParameter("name");
@@ -151,23 +156,21 @@ public class StudentController extends HttpServlet {
 		Gson gson = new Gson();
 		Type studentListType = new TypeToken<List<Student>>() {}.getType();
 		List<Student> studentLists = gson.fromJson(json.toString(), studentListType);
-		for (int i = 0; i < studentLists.size(); i++) {
-			Student student = studentBO.selectById(studentLists.get(i).getStudent_id());
-			student.setHeight(studentLists.get(i).getHeight());
-			student.setWeight(studentLists.get(i).getWeight());
-			studentBO.update(student);
-		}
+        for (Student studentList : studentLists) {
+            Student student = studentBO.selectById(studentList.getStudent_id());
+            student.setHeight(studentList.getHeight());
+            student.setWeight(studentList.getWeight());
+            studentBO.update(student);
+        }
 	}
 
 	private void studentInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		String jsonData = request.getReader().lines().reduce("", (accumulator, actual) -> accumulator + actual);
 		Student student =  studentBO.selectById(Integer.parseInt(extractValue(jsonData, "studentId")));
 		StudentResponse responseStudent = new StudentResponse(student.getStudent_id(), 
-															  student.getName(), 
-															  student.getDateOfBirth().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),
-															  student.getAddress(),
-															  student.getSex(), student.getBoardingClass_id(),
-															  student.getHeight(), student.getWeight());
+	    	student.getName(), student.getDateOfBirth().toLocalDate(),
+	    	student.getAddress(), student.getSex(),
+			student.getBoardingClass_id(), student.getHeight(), student.getWeight());
 		response.getWriter().write(gson.toJson(responseStudent));
 	}
 
