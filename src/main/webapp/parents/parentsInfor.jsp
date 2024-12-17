@@ -11,6 +11,7 @@
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 <link rel="stylesheet" href="./css/base.css">
+<link rel="stylesheet" href="./css/admin/admin.css">
 <link rel="stylesheet" href="./css/parent/parentsInfor.css">
 </head>
 <body>
@@ -101,4 +102,5 @@
 	</div>
 </body>
 <script type="module" src="<%=request.getContextPath()%>/js/setting.js"></script>
+<script type="module" src="<%= request.getContextPath() %>/js/parents/parentsInfo.js"></script>
 </html>

@@ -23,6 +23,7 @@ import model.bo.*;
 import model.dto.NameAndIdResponse;
 import model.dto.PreAddTeacherResponse;
 import model.dto.SearchResponse;
+import model.dto.StudentResponse;
 import model.dto.TeacherResponse;
 import util.AdminUtil;
 import util.LocalDateAdapter;
@@ -222,8 +223,18 @@ public class TeacherController extends HttpServlet {
 				teacher_id, phoneNumber, email, boardingClass_id);
 	}
 	
-	private void parentsHandler(HttpServletRequest request, HttpServletResponse response) {
-
+	private void parentsHandler(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		request.setCharacterEncoding("UTF-8");
+		response.setCharacterEncoding("UTF-8");
+		String mode = request.getParameter("mode");
+		switch(mode) {
+			case "teacherInfo":
+				int teacherId = Integer.parseInt(request.getParameter("tcid"));
+				Teacher teacher = teacherBO.selectById(teacherId);
+				TeacherResponse teacherResponse = teacherBO.toTeacherResponse(teacher);
+				response.getWriter().write(gson.toJson(teacherResponse));
+				break;
+		}
 	}
 	
 	private void updateTeacherInfor(HttpServletRequest request,

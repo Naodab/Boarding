@@ -148,8 +148,15 @@ public class StudentController extends HttpServlet {
 				null, null);
 	}
 	
-	private void parentsHandler(HttpServletRequest request, HttpServletResponse response) {
-
+	private void parentsHandler(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		request.setCharacterEncoding("UTF-8");
+		response.setCharacterEncoding("UTF-8");
+		String mode = request.getParameter("mode");
+		switch (mode) {
+			case "studentInfo":
+				studentInfo(request, response);
+				break;
+		}
 	}
 
 	private void updatePhysical(HttpServletRequest request, HttpServletResponse response) throws IOException {
