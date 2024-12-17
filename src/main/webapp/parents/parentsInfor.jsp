@@ -20,7 +20,7 @@
 	<div id="container">
 		<%@ include file="header.jsp"%>
 		<div class="content closure">
-			<div class="content-header">Thông tin cá nhân giáo viên</div>
+			<div class="content-header">Thông tin cá nhân</div>
 			<div class="content-body">
 				<% 	ParentResponse parent  = (ParentResponse)request.getAttribute("parentInfor"); %>
 				<div class="content-avatar">
@@ -100,7 +100,5 @@
 		</div>
 	</div>
 </body>
-<script type="text/javascript">
-
-</script>
+<script type="module" src="<%=request.getContextPath()%>/js/setting.js"></script>
 </html>

@@ -13,6 +13,7 @@
 	<link rel="stylesheet"
 		href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 	<link rel="stylesheet" href="./css/base.css">
+	<link rel="stylesheet" href="./css/admin/admin.css">
 	<link rel="stylesheet" href="./css/teacher/boardingFee.css">
 </head>
 <body>
@@ -22,7 +23,7 @@
 	<div id="container">
 		<%@ include file="header.jsp"%>
 		<div class="content closure">
-            <div class="content-header">THU HỌC PHÍ</div>
+            <div class="content-header">Lịch sử ngày ăn</div>
             <div>
             	<select name="timeEating" id="timeEating">
             	<% 
@@ -72,6 +73,7 @@
         </div>
 	</div>
 </body>
+<script type="module" src="<%=request.getContextPath()%>/js/setting.js"></script>
 <script type="text/javascript">
 	document.getElementById("timeEating").addEventListener("change", function () {
 		const timeEating = this.value;
