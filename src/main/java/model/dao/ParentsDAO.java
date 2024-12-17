@@ -271,6 +271,8 @@ public class ParentsDAO implements DAOInterface<Parents> {
 			e.printStackTrace();
 		}
 		JDBCUtil.closeConnection(conn);
+		if (result != null)
+			result.setStudent_id(StudentDAO.getInstance().selectByParents_id(result.getParents_id()));
 		return result;
 	}
 

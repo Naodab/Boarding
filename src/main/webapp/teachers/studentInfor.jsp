@@ -10,7 +10,7 @@
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 <link rel="stylesheet" href="./css/base.css">
-<!-- <link rel="stylesheet" href="./css/teacher/teacher.css">  -->
+<link rel="stylesheet" href="./css/admin/admin.css">
 <link rel="stylesheet" href="./css/teacher/teacher2.css">
 </head>
 <body>
@@ -50,46 +50,7 @@
 			</div>
 		</div>
 	</div>
+
+	<script type="module" src="<%= request.getContextPath() %>/js/teacher/studentInfo.js"></script>
 </body>
-<script type="text/javascript">
-	document.querySelectorAll(".student-info").forEach(button => {
-	    button.addEventListener("click", async function () {
-	        const studentId = this.getAttribute("data");
-	        const tableData = {studentId};
-	        try {
-		        const response = await fetch('students?mode=studentInfo&stid=' + studentId, {
-		            method: 'POST',
-		            headers: {'Content-Type': 'application/json'},
-		            body: JSON.stringify(tableData)
-		        });
-		        if (response.ok) {
-					const data = await response.json();
-					console.log(data);
-					alert("turn on modal");
-					//turn on modal and set inner text
-				}
-		    } catch (err) {console.error("Lỗi khi gửi dữ liệu:", err);}
-	    });
-	});
-	
-	document.querySelectorAll(".parent-info").forEach(button => {
-	    button.addEventListener("click", async function () {
-	        const parentId = this.getAttribute("data");
-	        const tableData = {parentId};
-	        try {
-		        const response = await fetch('parents?mode=parentInfo&prid=' + parentId, {
-		            method: 'POST',
-		            headers: {'Content-Type': 'application/json'},
-		            body: JSON.stringify(tableData)
-		        });
-		        if (response.ok) {
-					const data = await response.json();
-					console.log(data);
-					alert("turn on modal");
-					//turn on modal and set inner text
-				}
-		    } catch (err) {console.error("Lỗi khi gửi dữ liệu:", err);}
-	    });
-	});
-</script>
 </html>

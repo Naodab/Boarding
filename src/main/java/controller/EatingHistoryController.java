@@ -4,8 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import model.bean.BoardingFee;
 import model.bean.EatingHistory;
-import model.bo.EatingHistoryBO;
-import model.bo.MenuBO;
+import model.bo.*;
 import model.dto.EatingHistoryRequest;
 import model.dto.EatingHistoryResponse;
 import model.dto.SearchResponse;
@@ -17,22 +16,33 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ArrayList;
+
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import model.bean.Food;
+import model.bean.Menu;
+import model.dto.EatingDayResponse;
+
 @WebServlet("/eatingHistories")
 public class EatingHistoryController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private final EatingHistoryBO eatingHistoryBO = EatingHistoryBO.getInstance();
+	private final BoardingFeeBO boardingFeeBO = BoardingFeeBO.getInstance();
 	private final MenuBO menuBO = MenuBO.getInstance();
 	private final static int EATING_HISTORIES_PER_PAGE = AdminUtil.ITEMS_PER_PAGE;
 	private final Gson gson = new GsonBuilder()
 			.registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
 
-	public EatingHistoryController() {
+	private final FoodBO foodBO = FoodBO.getInstance();
+	private final GlobalBO globalBO = GlobalBO.getInstance();
+
+    public EatingHistoryController() {
         super();
     }
 
@@ -53,8 +63,34 @@ public class EatingHistoryController extends HttpServlet {
 		}
 	}
 
-	private void teacherHandler(HttpServletRequest request, HttpServletResponse response) {
+	private void teacherHandler(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.setCharacterEncoding("UTF-8");
+		request.setCharacterEncoding("UTF-8");
+		String mode = request.getParameter("mode");
+		RequestDispatcher rd = null;
+		String destination = "";
+		switch(mode) {
+		case "eatingDay":
+			int numberOfItems = globalBO.getSizeOf("boardingFee", "");
+			request.setAttribute("numberOfItems", numberOfItems);
+			List<Integer> monthsValid = eatingHistoryBO.getMonthsValid();
+			request.setAttribute("monthsValid", monthsValid);
+			List<EatingDayResponse> listEatingDayResponse = new ArrayList<EatingDayResponse>();
 
+			if (request.getParameter("boardingFeeId") != null) {
+				int boardingFeeId = Integer.parseInt(request.getParameter("boardingFeeId"));
+				BoardingFee boardingFee = boardingFeeBO.selectByEndMonth(boardingFeeId);
+				listEatingDayResponse = eatingDay(request, response, boardingFee.getBoardingFee_id());
+				request.setAttribute("boardingFeeId", boardingFeeId);
+			} else {
+				listEatingDayResponse = eatingDay(request, response, globalBO.getFirstIDOf("boardingFee"));
+			}
+			request.setAttribute("listEatingDayResponse", listEatingDayResponse);
+			destination = "/teachers/eatingDay.jsp";
+			rd = getServletContext().getRequestDispatcher(destination);
+			rd.forward(request, response);
+			break;
+		}
 	}
 
 	private void adminHandler(HttpServletRequest request, HttpServletResponse response)
@@ -108,8 +144,8 @@ public class EatingHistoryController extends HttpServlet {
 				while ((line = reader.readLine()) != null) {
 					jsonBuilder.append(line);
 				}
-				BoardingFee boardingFee = (BoardingFee) request.getSession().getAttribute("boardingFee");
 				String jsonData = jsonBuilder.toString();
+				BoardingFee boardingFee = (BoardingFee) request.getSession().getAttribute("boardingFee");
 				EatingHistoryRequest[] eatingHistories = gson.fromJson(jsonData, EatingHistoryRequest[].class);
 				eatingHistoryBO.fee(boardingFee, Arrays.stream(eatingHistories).toList());
 				response.flushBuffer();
@@ -119,5 +155,27 @@ public class EatingHistoryController extends HttpServlet {
 	
 	private void parentsHandler(HttpServletRequest request, HttpServletResponse response) {
 
+	}
+
+	private List<EatingDayResponse> eatingDay(HttpServletRequest request, HttpServletResponse response, int boardingFeeId) {
+		List<EatingDayResponse> listEatingDayResponse = new ArrayList<EatingDayResponse>();
+		List<Integer> listEhis = eatingHistoryBO.selectByBoardingFee_id(boardingFeeId);
+		for (int id : listEhis) {
+			EatingHistory ehis = eatingHistoryBO.selectById(id);
+			Menu menu = menuBO.selectById(ehis.getMenu_id());
+			List<String> mainMeals = new ArrayList<String>();
+			List<String> subMeals = new ArrayList<String>();
+			for (int foodId : menu.getFood_ids()) {
+				Food food = foodBO.selectById(foodId);
+				if (food.getCategory()) {
+					mainMeals.add(food.getName());
+				} else {
+					subMeals.add(food.getName());
+				}
+			}
+			if (subMeals.size() == 0) subMeals.add("Không có");
+			listEatingDayResponse.add(new EatingDayResponse(ehis.getEating_day(), mainMeals, subMeals));
+		}
+		return listEatingDayResponse;
 	}
 }

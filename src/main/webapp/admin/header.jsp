@@ -13,5 +13,5 @@
 		<a href="<%= request.getContextPath() %>/foods" id="foods"><i class="fa-solid fa-bowl-food"></i>Quản lý thức ăn</a>
 		<a href="<%= request.getContextPath() %>/users" id="users"><i class="fa-solid fa-user"></i>Quản lý tài khoản</a>
 	</div>
-	<a class="settings-link" id="about-us-btn">Thông tin</a>
+	<a class="settings-link" id="setting-btn">Cài đặt</a>
 </div>

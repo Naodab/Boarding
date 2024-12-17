@@ -10,8 +10,8 @@
 	<link rel="stylesheet"
 		href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 	<link rel="stylesheet" href="./css/base.css">
-	<!-- <link rel="stylesheet" href="./css/teacher/teacher.css">  -->
-	<link rel="stylesheet" href="./css/teacher/teacher2.css">
+	<link rel="stylesheet" href="./css/admin/admin.css">
+	<link rel="stylesheet" href="./css/teacher/boardingFee.css">
 </head>
 <body>
 	<div id="overlay"></div>
@@ -22,51 +22,70 @@
 		<div class="content closure">
             <div class="content-header">THU HỌC PHÍ</div>
             <div>
-            	<select name="boardingFeeId" id="boardingFee">
-            		<option>--Chọn đợt thu tiền--</option>
-            		<% 	int numberOfItems = (Integer)request.getAttribute("numberOfItems");
-            			for (int i = 1; i <= numberOfItems; i++) {
-            				if (i < 5) {
-            		%>
-            				<option value="<%=i%>"><%= i + " - tháng " + (i + 8) %></option>
-            				<% } else { %>
-            				<option value="<%=i%>"><%= i + " - tháng " + (i - 4) %></option>
-            		<% } } %>
-            	</select>
+				<%
+					int boardingFeeId = -1;
+					if (request.getAttribute("boardingFeeId") != null)
+						boardingFeeId = (Integer) request.getAttribute("boardingFeeId");
+					int numberOfItems = (Integer) request.getAttribute("numberOfItems");
+					List<Integer> monthValids = (List<Integer>) request.getAttribute("monthsValid");
+				%>
+				<select name="boardingFee" id="boardingFee">
+					<%
+						for (int month : monthValids) {
+							out.print("<option value='" + month + "' " + (boardingFeeId == month ? "selected" : "")
+									+">Tháng " + month +"</option>");
+						}
+					%>
+				</select>
             </div>
             <div class="content-body">
                 <div class="table-container">
                     <table class="table student-table" id="table">
                         <tr>
-                            <th class="th__first">STT</th>
-                            <th>Mã học sinh</th>
+                            <th class="th__first center">STT</th>
+                            <th class="center">Mã học sinh</th>
                             <th>Họ và tên học sinh</th>
-                            <th>Mã hóa đơn</th>
+                            <th class="center">Mã hóa đơn</th>
                             <th class="th__last">Trạng thái</th>
                         </tr>
                         <% 	List<BoardingFeeResponse> listBoardingFees = (List)request.getAttribute("listBoardingFees");
                             for (int i = 0; i < listBoardingFees.size(); i++) {
                         %>
                         <tr>
-                            <td><%= i + 1 %></td>
-                            <td><%= listBoardingFees.get(i).getStudent_id() %></td>
+                            <td class="center"><%= i + 1 %></td>
+                            <td class="center"><%= listBoardingFees.get(i).getStudent_id() %></td>
                             <td><%= listBoardingFees.get(i).getStudentName() %></td>
-                            <td><%= listBoardingFees.get(i).getInvoiceId() %></td>
-                            <td><%= listBoardingFees.get(i).getStatus() %></td>
+                            <td class="invoiceId center"><%= listBoardingFees.get(i).getInvoiceId() %></td>
+                            <td>
+                            	<div>
+								    <%
+								        int status = listBoardingFees.get(i).getStatus();
+								        int studentId = listBoardingFees.get(i).getStudent_id();
+								    %>
+								    <input type="radio" id="notSubmit" name="<%= studentId %>" value="notSubmit"
+								           <%= (status == 1 || status == 0) ? "checked" : "disabled" %>>
+								    <label for="notSubmit">Chưa nộp</label>
+								
+								    <input type="radio" id="submitted" name="<%= studentId %>" value="submitted"
+								           <%= (status == 2) ? "checked" : (status == 1 || status == 0) ? "" : "disabled" %>>
+								    <label for="submitted">Đã nộp</label>
+								
+								    <input type="radio" id="printed" name="<%= studentId %>" value="printed"
+								           <%= (status == 3) ? "checked" : "disabled" %>>
+								    <label for="printed">Đã in hóa đơn</label>
+								</div>
+                            </td>
                         </tr>
                         <% } %>
                     </table>
                 </div>
             </div>
+            <div>
+            	<input type="button" class="save-button" value="Lưu thay đổi" id="saveChanges">
+            </div>
         </div>
 	</div>
+
+	<script type="module" src="<%= request.getContextPath() %>/js/teacher/boardingFee.js"></script>
 </body>
-<script type="text/javascript">
-	document.getElementById("boardingFee").addEventListener("change", function () {
-		const boardingFeeId = this.value;
-	    if (selectedValue) {
-	    	window.location.href = "teachers?mode=boardingFee&boardingFeeId=" + boardingFeeId;
-	    }
-	});
-</script>
 </html>

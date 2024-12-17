@@ -180,4 +180,8 @@ public class EatingHistoryBO {
 			eatingHistoryDAO.insert(eatingHistory);
 		}
 	}
+
+	public List<EatingHistory> selectBetweenDays(String startDay, String endDay) {
+		return eatingHistoryDAO.selectBetweenDays(startDay, endDay);
+	}
 }

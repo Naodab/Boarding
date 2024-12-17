@@ -7,7 +7,6 @@ import model.bo.InvoiceBO;
 import util.LocalDateAdapter;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;

@@ -1,6 +1,8 @@
 import {html} from "../common.js";
 
 function renderDetailTeacherModal(teacher) {
+    const parts = teacher.dateOfBirth.split("-");
+    teacher.dateOfBirth = `${parts[2]}-${parts[1]}-${parts[0]}`;
     return html`
 		<form class="modal closure active update" id="detail-teacher" 
 			  method="POST" action="teachers?mode=update">
@@ -140,6 +142,8 @@ function renderAddTeacherModal({nextId, classes}) {
 }
 
 function renderUpdateTeacherModal({teacher, classes}) {
+    const parts = teacher.dateOfBirth.split("-");
+    teacher.dateOfBirth = `${parts[2]}-${parts[1]}-${parts[0]}`;
     return html`
 		<form class="modal closure active update" id="update-teacher" 
 			  method="POST" action="teachers?mode=update">

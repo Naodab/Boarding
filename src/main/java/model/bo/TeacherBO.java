@@ -64,12 +64,7 @@ public class TeacherBO {
 												String search, String sortField,
 												String sortType) {
 		return teacherDAO.selectPage(page, amount, searchField, search, sortField, sortType)
-				.stream().map(teacher -> {
-			TeacherResponse response = toTeacherResponse(teacher);
-			response.setBoardingClass(boardingClassDAO.selectById(teacher
-					.getBoardingClass_id()).getName());
-			return response;
-		}).toList();
+				.stream().map(this::toTeacherResponse).toList();
 	}
 
 	public SearchResponse<TeacherResponse> search(int page, int amount, String searchField,
@@ -80,9 +75,11 @@ public class TeacherBO {
 	}
 
 	public TeacherResponse toTeacherResponse(Teacher t) {
-		return new TeacherResponse(t.getTeacher_id(), t.getName(),
+		TeacherResponse response =  new TeacherResponse(t.getTeacher_id(), t.getName(),
 				t.getDateOfBirth().toLocalDate(), t.getAddress(),
 				t.getPhoneNumber(), t.getEmail(), t.getSex());
+		response.setBoardingClass(boardingClassDAO.selectById(t.getBoardingClass_id()).getName());
+		return response;
 	}
 
 	public List<NameAndIdResponse> getNameAndIds() {

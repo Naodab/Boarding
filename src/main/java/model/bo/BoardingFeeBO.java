@@ -65,6 +65,10 @@ public class BoardingFeeBO {
 		);
 	}
 
+	public BoardingFee selectByEndMonth(int endMonth) {
+		return boardingFeeDAO.selectByEndMonth(endMonth);
+	}
+
 	public boolean existsByMonth(int month) {
 		return boardingFeeDAO.selectByEndMonth(month) != null;
 	}

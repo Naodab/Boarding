@@ -1,3 +1,5 @@
+import "./setting.js";
+
 function html([first, ...strings], ...values) {
 	return values.reduce(
 		(acc, cur) => acc.concat(cur, strings.shift()),
@@ -106,6 +108,8 @@ function renderLogin(message) {
 }
 
 function renderStudentModal(student) {
+	const parts = student.dateOfBirth.split("-");
+	student.dateOfBirth = `${parts[2]}-${parts[1]}-${parts[0]}`;
 	return html`
 		<form class="modal closure active" id="update-student" method="POST" action="students?mode=update">
 			<h1 class="modal__title">Thông tin chi tiết</h1>
@@ -161,18 +165,32 @@ function renderStudentModal(student) {
 							<label for="class">Phụ huynh:</label>
 							<span class="form-select hide">${student.parentName}</span>
 						</div>
+						<div class="admin-form-group">
+							<div class="admin-form-group">
+								<label for="sex">Cân nặng:</label>
+								<span class="form-select hide">${student.weight}</span>
+							</div>
+							<div class="admin-form-group second-column">
+								<label for="class">Chiều cao:</label>
+								<span class="form-select hide">${student.height}</span>
+							</div>
+						</div>
 					</div>
 				</div>
-				<div class="modal__function top--margin">
-					<div class="btn btn--green modal__btn hide" id="update-btn">Cập nhật</div>
-					<div class="btn btn--pink modal__btn hide" id="delete-btn">Xóa</div>
-				</div>
+				${!student.notAdmin && html`
+					<div class="modal__function top--margin">
+						<div class="btn btn--green modal__btn hide" id="update-btn">Cập nhật</div>
+						<div class="btn btn--pink modal__btn hide" id="delete-btn">Xóa</div>
+					</div>
+				`}
 			</div>
 		</form>>
 	`;
 }
 
 function renderStudentUpdateModal(student, parents, classes) {
+	const parts = student.dateOfBirth.split("-");
+	student.dateOfBirth = `${parts[2]}-${parts[1]}-${parts[0]}`;
 	return html`
 		<form class="modal closure active update" id="update-student" method="POST" action="students?mode=update">
 			<h1 class="modal__title">Thông tin chi tiết</h1>
@@ -344,6 +362,8 @@ function turnOnUpdateStudent(student, parents, classes) {
 }
 
 function renderParentsModal(parents) {
+	const parts = parents.dateOfBirth.split("-");
+	parents.dateOfBirth = `${parts[2]}-${parts[1]}-${parts[0]}`;
 	return html`
 		<form class="modal closure active" id="update-student" method="POST" action="parents?mode=update">
 			<h1 class="modal__title">Thông tin chi tiết</h1>
@@ -373,7 +393,8 @@ function renderParentsModal(parents) {
 						</div>
 						<div class="admin-form-group">
 							<label for="dateOfBirth">Ngày sinh:</label>
-							<input type="date" id="dateOfBirth" name="dateOfBirth" class="form-control" value="${parents.dateOfBirth}" readonly>
+							<input type="date" id="dateOfBirth" name="dateOfBirth" class="form-control" 
+								   value="${parents.dateOfBirth}" readonly>
 						</div>
 						<div class="admin-form-group">
 							<label for="address">Địa chỉ:</label>
@@ -394,20 +415,26 @@ function renderParentsModal(parents) {
 								<label for="">Các con:</label>
 								<span class="form-select hide">${parents.numberChildren}</span>
 							</div>
-							<span class="second-column detail" id="children-detail">Xem chi tiết</span>
+							${!parents.notAdmin 
+								&& html`<span class="second-column detail" id="children-detail">Xem chi tiết</span>`
+							}
 						</div>
 					</div>
 				</div>
-				<div class="modal__function top--margin">
-					<div class="btn btn--green modal__btn hide" id="update-btn">Cập nhật</div>
-					<div class="btn btn--pink modal__btn hide" id="delete-btn">Xóa</div>
-				</div>
+				${!parents.notAdmin && html`
+					<div class="modal__function top--margin">
+						<div class="btn btn--green modal__btn hide" id="update-btn">Cập nhật</div>
+						<div class="btn btn--pink modal__btn hide" id="delete-btn">Xóa</div>
+					</div>
+				`}
 			</div>
 		</form>>
 	`;
 }
 
 function renderUpdateParentsModal(parents) {
+	const parts = parents.dateOfBirth.split("-");
+	parents.dateOfBirth = `${parts[2]}-${parts[1]}-${parts[0]}`;
 	return html`
 		<form class="modal closure active" id="update-parents" method="POST" action="parents?mode=update">
 			<h1 class="modal__title">Cập nhật</h1>
@@ -627,6 +654,69 @@ function resolveConfirm(isConfirmed) {
     confirmResolve(isConfirmed);
 }
 
+function renderChangePassword() {
+	return html`
+		<form class="modal closure active" id="change-password" method="POST" action="auth?mode=changePassword">
+			<h1 class="modal__title">Thay đổi mật khẩu</h1>
+			<i class="fa-solid fa-xmark btn-icon btn-close" id="back"></i>
+			<div class="error-message"></div>
+			<div class="main-modal">
+				<div class="password-item form-group">
+					<label for="oldPassword" class="modal__label">Mật khẩu cũ</label>
+
+					<div class="password-container">
+						<input type="password" id="oldPassword" 
+							   name="oldPassword" class="password__input">
+						<i class="fa-solid fa-eye on"></i>
+						<i class="fa-solid fa-eye-slash off"></i>
+					</div>
+					<div class="form-message"></div>
+				</div>
+
+				<div class="password-item form-group">
+					<label for="oldPassword" class="modal__label">Mật khẩu mới</label>
+
+					<div class="password-container">
+						<input type="password" id="password" name="password" 
+							   class="password__input">
+						<i class="fa-solid fa-eye on"></i>
+						<i class="fa-solid fa-eye-slash off"></i>
+					</div>
+					<div class="form-message"></div>
+				</div>
+				<div class="password-item form-group">
+					<label for="oldPassword" class="modal__label">Nhập lại mật khẩu</label>
+					<div class="password-container">
+						<input type="password" id="prePassword" name="prePassword" 
+							   class="password__input">
+						<i class="fa-solid fa-eye on"></i>
+						<i class="fa-solid fa-eye-slash off"></i>
+					</div>
+					<div class="form-message"></div>
+				</div>
+				<div class="modal__function top--margin">
+					<input type="submit" class="btn btn--green modal__btn" 
+						   id="confirm-login" value="Thay đổi">
+				</div>
+			</div>
+		</form>
+	`;
+}
+
+function renderSettingModal() {
+	return html`
+		<div class="modal closure active" id="update-avatar">
+			<h1 class="modal__title">Cài đặt</h1>
+			<i class="fa-solid fa-xmark btn-icon btn-close" id="back"></i>
+			<div class="main-modal">
+				<div class="modal__btn option closure closure--green" id="change-password-btn">Thay đổi mật khẩu</div>
+				<a class="modal__btn option closure closure--pink" id="logout-btn" href="./auth?mode=logout">Đăng xuất</a>
+				<div class="modal__btn option closure closure--blue" id="cancel">Thoát</div>
+			</div>
+		</div>
+	`
+}
+
 export {
 	confirm,
 	renderLogin,
@@ -635,12 +725,15 @@ export {
 	renderLoading,
 	addEventForEye,
 	renderAlertModal,
+	renderSettingModal,
 	renderStudentModal,
 	renderConfirmModal,
 	renderParentsModal,
 	turnOnUpdateStudent,
+	renderChangePassword,
 	renderStudentAddModal,
 	renderAddParentsModal,
+	renderStudentUpdateModal,
 	renderChildrenTableModal,
 	renderUpdateParentsModal,
 }

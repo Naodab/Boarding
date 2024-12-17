@@ -1,0 +1,95 @@
+@charset "UTF-8";
+
+.content {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+}
+
+.content-header {
+	width: 100%;
+	text-align: center;
+	font-size: 30px;
+	color: var(--text-color);
+	font-weight: bold;
+	margin-bottom: 32px;
+}
+
+.table {
+    margin-top: 8px;
+    margin-right: auto;
+    margin-left: auto;
+    width: 85%;
+    color: var(--text-color);
+    border-radius: 8px;
+    overflow: hidden;
+    border-collapse: separate;
+    border-spacing: 2px 4px;
+    padding: 0;
+}
+
+.table-container {
+    width: 100%;
+    height: 520px !important;
+    overflow-y: auto !important;
+}
+
+.table tr {
+    height: 35px;
+    width: 100%;
+    cursor: pointer;
+}
+
+.table th {
+    font-size: 16px;
+    background-color: var(--text-color);
+    color: var(--closure-color);
+    cursor: default;
+}
+
+.table .th__first {
+    border-radius: 8px 0 0 0;
+}
+
+.table .th__last {
+    border-radius: 0 8px 0 0;
+}
+
+.table td {
+    font-size: 13px;
+    overflow: auto;
+    vertical-align: middle;
+    height: 30px;
+    padding-left: 4px;
+}
+
+.table td.center {
+    text-align: center;
+    font-weight: bold;
+}
+
+.table td.contain-percent {
+    padding: 2px;
+}
+
+.table td.contain-percent .percent {
+    height: 100%;
+    border-radius: 4px;
+    background-color: #FF9AA2;
+    color: var(--closure-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    font-weight: bold;
+    overflow: hidden;
+}
+
+.table tr:hover {
+    background-color: var(--overlay-color);
+    box-shadow: 0 0 4px white;
+}
+
+.table td.center, .table th.center { 
+    text-align: center;
+}

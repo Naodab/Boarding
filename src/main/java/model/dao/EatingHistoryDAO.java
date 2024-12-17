@@ -257,4 +257,27 @@ public class EatingHistoryDAO implements DAOInterface<EatingHistory> {
 		JDBCUtil.closeConnection(conn);
 		return result;
 	}
+
+	public List<EatingHistory> selectBetweenDays (String startDay, String endDay) {
+		List<EatingHistory> list = new ArrayList<EatingHistory>();
+		Connection conn = JDBCUtil.getConnection();
+		try {
+			String sql = "SELECT * FROM eatinghistory WHERE eating_day BETWEEN ? AND ?";
+			PreparedStatement pps = conn.prepareStatement(sql);
+			pps.setString(1, startDay);
+			pps.setString(2, endDay);
+			ResultSet rs = pps.executeQuery();
+			while(rs.next()) {
+				int eatingHistory_id = rs.getInt("eatingHistory_id");
+				int menu_id = rs.getInt("menu_id");
+				Date eating_day = rs.getDate("eating_day");
+				int boardingFee_id = rs.getInt("boardingFee_id");
+				list.add(new EatingHistory(eatingHistory_id, menu_id, eating_day, boardingFee_id));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		JDBCUtil.closeConnection(conn);
+		return list;
+	}
 }

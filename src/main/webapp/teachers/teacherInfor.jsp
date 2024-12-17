@@ -1,3 +1,7 @@
+<%@page import="java.util.Calendar"%>
+<%@page import="java.time.ZoneId"%>
+<%@page import="java.time.LocalDate"%>
+<%@page import="java.util.Date"%>
 <%@page import="model.bean.Teacher"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
@@ -9,8 +13,7 @@
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 <link rel="stylesheet" href="./css/base.css">
-<!-- <link rel="stylesheet" href="./css/teacher/teacher.css">  -->
-<link rel="stylesheet" href="./css/teacher/teacher2.css">
+<link rel="stylesheet" href="./css/teacher/teacherInfor.css">
 </head>
 <body>
 	<div id="overlay"></div>
@@ -31,10 +34,22 @@
 							<span class="label">Họ và tên:</span> <span class="user-info"><%= teacher.getName() %></span>
 						</div>
 						<div class="info-box dob">
-							<span class="label">Ngày sinh:</span> <span class="user-info"><%= teacher.getDateOfBirth() %></span>
+							<% 	Date date = teacher.getDateOfBirth();
+								Calendar calendar = Calendar.getInstance();
+								calendar.setTime(date);
+								int year  = calendar.get(Calendar.YEAR);
+								int month = calendar.get(Calendar.MONTH) + 1;
+								int day   = calendar.get(Calendar.DAY_OF_MONTH);
+								String dob = day + "/" + month + "/" + year; 
+							%>
+							<span class="label">Ngày sinh:</span> <span class="user-info"><%= dob %></span>
 						</div>
 						<div class="info-box gender">
-							<span class="label">Giới tính:</span> <span class="user-info"><%= teacher.getSex()%></span>
+							<% 	String sex = null;
+								if (teacher.getSex() == true) sex = "Nam";
+								else sex = "Nữ";
+							%>
+							<span class="label">Giới tính:</span> <span class="user-info"><%= sex %></span>
 						</div>
 					</div>
 					<div class="column right">
@@ -63,12 +78,13 @@
 				    </form>
 				</div>
 				<div>
-					<input type="button" class="button" id="btn-save-edit-infor" value="Lưu thông tin">				
+					<input type="button" class="save-button" id="btn-save-edit-infor" value="Lưu thông tin">				
 				</div>
 			</div>
 		</div>
 	</div>
 </body>
+<script type="module" src="<%=request.getContextPath()%>/js/setting.js"></script>
 <script type="text/javascript">
 	document.getElementById("btn-save-edit-infor").addEventListener("click", async function () {
 		const address = document.getElementById("address").value.trim();

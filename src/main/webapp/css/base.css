@@ -688,3 +688,16 @@ a {
 #about-us .modal-info {
     text-align: justify;
 }
+
+.option {
+    width: 100%;
+    text-align: center;
+    color: var(--closure-color);
+    margin: 8px;
+    padding: 12px;
+    cursor: pointer;
+}
+
+#setting-btn {
+    cursor: pointer;
+}
