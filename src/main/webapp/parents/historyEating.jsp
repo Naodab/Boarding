@@ -27,13 +27,14 @@
             	<select name="timeEating" id="timeEating">
             	<% 
 	            	Map<Integer, String> weekMap = (Map<Integer, String>) request.getAttribute("weekMap");
+            		String timeEating = (String)request.getAttribute("timeEating");
 	                if (weekMap != null) {
 	                    for (Map.Entry<Integer, String> entry : weekMap.entrySet()) {
 	                        int weekNumber = entry.getKey();
 	                        String description = entry.getValue();
 	                        String content = description;
 				%>
-				    <option value="<%= content %>"><%= content %></option>
+				    <option value="<%= content %>" <%= content.equals(timeEating) ? "selected" : "" %>><%= content %></option>
 				<% }} %>
 				</select>
             </div>

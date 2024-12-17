@@ -123,6 +123,7 @@ public class StudentController extends HttpServlet {
 					return;
 				case "delete":
 					int student_id = Integer.parseInt(request.getParameter("student_id"));
+					System.out.println(student_id);
 					if (studentBO.deleteByID(student_id))
 						System.out.println("DELETE student " + student_id);
 					response.sendRedirect(request.getContextPath() + "/students");
