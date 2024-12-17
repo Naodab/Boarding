@@ -231,7 +231,7 @@ public class TeacherController extends HttpServlet {
 			case "teacherInfo":
 				int teacherId = Integer.parseInt(request.getParameter("tcid"));
 				Teacher teacher = teacherBO.selectById(teacherId);
-				TeacherResponse teacherResponse = new TeacherResponse(teacherId, teacher.getName(), teacher.getDateOfBirth().toLocalDate(), teacher.getAddress(), teacher.getPhoneNumber(), teacher.getEmail(), teacher.getSex());
+				TeacherResponse teacherResponse = teacherBO.toTeacherResponse(teacher);
 				response.getWriter().write(gson.toJson(teacherResponse));
 				break;
 		}

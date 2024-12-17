@@ -1,4 +1,5 @@
 import {renderStudentModal, turnOnModal} from "../modal.js";
+import {renderDetailTeacherModal} from "../admin/modal/modalTeacher.js";
 
 document.getElementById("studentDetail").addEventListener("click", async function () {
 	const selectBox = document.getElementById('studentName');
@@ -13,7 +14,6 @@ document.getElementById("studentDetail").addEventListener("click", async functio
         if (response.ok) {
             const data = await response.json();
             data.notAdmin = true;
-            console.log(data);
             turnOnModal(renderStudentModal, data);
         }
     } catch (err) {console.error("Lỗi khi gửi dữ liệu:", err);}
@@ -32,8 +32,7 @@ document.getElementById("teacherDetail").addEventListener("click", async functio
         if (response.ok) {
             const data = await response.json();
             data.notAdmin = true;
-            console.log(data);
-            //turnOnModal for teacher;
+            turnOnModal(renderDetailTeacherModal, data);
         }
     } catch (err) {console.error("Lỗi khi gửi dữ liệu:", err);}
 });

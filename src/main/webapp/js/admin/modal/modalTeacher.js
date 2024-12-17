@@ -57,10 +57,12 @@ function renderDetailTeacherModal(teacher) {
 						</div>
 					</div>
 				</div>
-				<div class="modal__function top--margin">
-					<div class="btn btn--green modal__btn" id="update-btn">Cập nhật</div>
-					<div class="btn btn--pink modal__btn" id="delete-btn">Xóa</div>
-				</div>
+				${!teacher.notAdmin && html`
+                    <div class="modal__function top--margin">
+                        <div class="btn btn--green modal__btn" id="update-btn">Cập nhật</div>
+                        <div class="btn btn--pink modal__btn" id="delete-btn">Xóa</div>
+                    </div>
+                `}
 			</div>
 		</form>>
 	`;
