@@ -27,7 +27,7 @@ import model.dto.StudentResponse;
 import util.AdminUtil;
 import util.LocalDateAdapter;
 
-@WebServlet("/students")
+@WebServlet(value = "/students", asyncSupported = true)
 public class StudentController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
     private final Gson gson = new GsonBuilder()
@@ -56,8 +56,7 @@ public class StudentController extends HttpServlet {
         }
 	}
 
-	private void teacherHandler(HttpServletRequest request, HttpServletResponse response)
-			throws IOException {
+	private void teacherHandler(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
 		String mode = request.getParameter("mode");

@@ -2,7 +2,7 @@ import {html} from "../common.js";
 
 function renderDetailTeacherModal(teacher) {
     const parts = teacher.dateOfBirth.split("-");
-    teacher.dateOfBirth = `${parts[2]}-${parts[1]}-${parts[0]}`;
+    const dateOfBirth = `${parts[2]}-${parts[1]}-${parts[0]}`;
     return html`
 		<form class="modal closure active update" id="detail-teacher" 
 			  method="POST" action="teachers?mode=update">
@@ -35,7 +35,7 @@ function renderDetailTeacherModal(teacher) {
 						<div class="admin-form-group">
 							<label for="dateOfBirth">Ngày sinh:</label>
 							<input type="date" id="dateOfBirth" name="dateOfBirth" class="form-control"
-								   value="${teacher.dateOfBirth}" readonly>
+								   value="${dateOfBirth}" readonly>
 						</div>
 						<div class="admin-form-group">
 							<label for="class">Lớp:</label>
@@ -145,11 +145,11 @@ function renderAddTeacherModal({nextId, classes}) {
 
 function renderUpdateTeacherModal({teacher, classes}) {
     const parts = teacher.dateOfBirth.split("-");
-    teacher.dateOfBirth = `${parts[2]}-${parts[1]}-${parts[0]}`;
+    const dateOfBirth = `${parts[2]}-${parts[1]}-${parts[0]}`;
     return html`
 		<form class="modal closure active update" id="update-teacher" 
 			  method="POST" action="teachers?mode=update">
-			<h1 class="modal__title">Chi tiết giáo viên</h1>
+			<h1 class="modal__title">Cập nhật giáo viên</h1>
 			<i class="fa-solid fa-xmark btn-icon btn-close" id="back"></i>
 			<div class="error-message"></div>
 			<div class="main-modal">
@@ -181,7 +181,7 @@ function renderUpdateTeacherModal({teacher, classes}) {
 						<div class="admin-form-group">
 							<label for="dateOfBirth">Ngày sinh:</label>
 							<input type="date" id="dateOfBirth" name="dateOfBirth" class="form-control"
-								   value="${teacher.dateOfBirth}">
+								   value="${dateOfBirth}">
                             <span class="form-message"></span>
                         </div>
 						<div class="admin-form-group">
