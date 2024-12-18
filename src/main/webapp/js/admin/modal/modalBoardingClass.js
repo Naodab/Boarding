@@ -161,7 +161,7 @@ function renderAddBoardingClass({nextId, teachers}) {
 				</div>
 				<div class="modal__function top--margin">
                     <input type="submit" class="btn btn--green modal__btn updatable" value="Thêm">
-					<div class="btn btn--pink modal__btn" id="delete-btn">Xóa</div>
+					<div class="btn btn--pink modal__btn" id="cancel">Hủy</div>
 				</div>
 			</div>
 		</form>

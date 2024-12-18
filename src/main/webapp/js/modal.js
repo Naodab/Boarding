@@ -109,7 +109,7 @@ function renderLogin(message) {
 
 function renderStudentModal(student) {
 	const parts = student.dateOfBirth.split("-");
-	student.dateOfBirth = `${parts[2]}-${parts[1]}-${parts[0]}`;
+	const dateOfBirth = `${parts[2]}-${parts[1]}-${parts[0]}`;
 	return html`
 		<form class="modal closure active" id="update-student" method="POST" action="students?mode=update">
 			<h1 class="modal__title">Thông tin chi tiết</h1>
@@ -139,7 +139,7 @@ function renderStudentModal(student) {
 						</div>
 						<div class="admin-form-group">
 							<label for="dateOfBirth">Ngày sinh:</label>
-							<input type="date" id="dateOfBirth" name="dateOfBirth" class="form-control" value="${student.dateOfBirth}" readonly>
+							<input type="date" id="dateOfBirth" name="dateOfBirth" class="form-control" value="${dateOfBirth}" readonly>
 						</div>
 						<div class="admin-form-group">
 							<div class="admin-form-group">
@@ -190,10 +190,10 @@ function renderStudentModal(student) {
 
 function renderStudentUpdateModal(student, parents, classes) {
 	const parts = student.dateOfBirth.split("-");
-	student.dateOfBirth = `${parts[2]}-${parts[1]}-${parts[0]}`;
+	const dateOfBirth = `${parts[2]}-${parts[1]}-${parts[0]}`;
 	return html`
 		<form class="modal closure active update" id="update-student" method="POST" action="students?mode=update">
-			<h1 class="modal__title">Thông tin chi tiết</h1>
+			<h1 class="modal__title">Cập nhật học sinh</h1>
 			<i class="fa-solid fa-xmark btn-icon btn-close" id="back"></i>
 			<div class="error-message"></div>
 			<div class="main-modal">
@@ -220,7 +220,7 @@ function renderStudentUpdateModal(student, parents, classes) {
 						</div>
 						<div class="admin-form-group">
 							<label for="dateOfBirth">Ngày sinh:</label>
-							<input type="date" id="dateOfBirth" name="dateOfBirth" class="form-control" value="${student.dateOfBirth}" >
+							<input type="date" id="dateOfBirth" name="dateOfBirth" class="form-control" value="${dateOfBirth}" >
 						</div>
 						<div class="admin-form-group">
 							<div class="admin-form-group">
@@ -272,7 +272,7 @@ function renderStudentUpdateModal(student, parents, classes) {
 function renderStudentAddModal({nextId, parents, classes}) {
 	return html`
 		<form class="modal closure active update" id="update-student" method="POST" action="students?mode=add">
-			<h1 class="modal__title">Thông tin chi tiết</h1>
+			<h1 class="modal__title">Thêm học sinh</h1>
 			<i class="fa-solid fa-xmark btn-icon btn-close" id="back"></i>
 			<div class="error-message"></div>
 			<div class="main-modal">
@@ -363,7 +363,7 @@ function turnOnUpdateStudent(student, parents, classes) {
 
 function renderParentsModal(parents) {
 	const parts = parents.dateOfBirth.split("-");
-	parents.dateOfBirth = `${parts[2]}-${parts[1]}-${parts[0]}`;
+	const dateOfBirth = `${parts[2]}-${parts[1]}-${parts[0]}`;
 	return html`
 		<form class="modal closure active" id="update-student" method="POST" action="parents?mode=update">
 			<h1 class="modal__title">Thông tin chi tiết</h1>
@@ -394,7 +394,7 @@ function renderParentsModal(parents) {
 						<div class="admin-form-group">
 							<label for="dateOfBirth">Ngày sinh:</label>
 							<input type="date" id="dateOfBirth" name="dateOfBirth" class="form-control" 
-								   value="${parents.dateOfBirth}" readonly>
+								   value="${dateOfBirth}" readonly>
 						</div>
 						<div class="admin-form-group">
 							<label for="address">Địa chỉ:</label>
@@ -434,10 +434,10 @@ function renderParentsModal(parents) {
 
 function renderUpdateParentsModal(parents) {
 	const parts = parents.dateOfBirth.split("-");
-	parents.dateOfBirth = `${parts[2]}-${parts[1]}-${parts[0]}`;
+	const dateOfBirth = `${parts[2]}-${parts[1]}-${parts[0]}`;
 	return html`
 		<form class="modal closure active" id="update-parents" method="POST" action="parents?mode=update">
-			<h1 class="modal__title">Cập nhật</h1>
+			<h1 class="modal__title">Cập nhật phụ huynh</h1>
 			<i class="fa-solid fa-xmark btn-icon btn-close" id="back"></i>
 			<div class="error-message"></div>
 			<div class="main-modal">
@@ -468,8 +468,8 @@ function renderUpdateParentsModal(parents) {
 						</div>
 						<div class="admin-form-group">
 							<label for="dateOfBirth">Ngày sinh:</label>
-							<input type="date" id="dateOfBirth" name="dateOfBirth" 
-								   class="form-control" value="${parents.dateOfBirth}" required>
+							<input type="date" id="dateOfBirth" name="dateOfBirth" class="form-control"
+								   value="${dateOfBirth}" required>
 							<span class="form-message"></span>
 						</div>
 						<div class="admin-form-group">
