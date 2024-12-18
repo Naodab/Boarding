@@ -12,13 +12,14 @@ import util.LocalDateAdapter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
+import javax.servlet.AsyncContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet("/foods")
+@WebServlet(value = "/foods", asyncSupported = true)
 public class FoodController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private final FoodBO foodBO = FoodBO.getInstance();
@@ -65,12 +66,16 @@ public class FoodController extends HttpServlet {
 		}
 		switch (mode) {
 			case "see" -> {
-				String search = request.getParameter("search");
-				String searchField = request.getParameter("searchField");
-				int page = Integer.parseInt(request.getParameter("page"));
-				SearchResponse<FoodAdminResponse> foods = foodBO.getPage(page, FOODS_PER_PAGE, searchField, search);
-				response.getWriter().write(gson.toJson(foods));
-				response.flushBuffer();
+				AsyncContext async = request.startAsync();
+				async.start(() -> {
+					try {
+						String search = request.getParameter("search");
+						String searchField = request.getParameter("searchField");
+						int page = Integer.parseInt(request.getParameter("page"));
+						response.getWriter().write(gson.toJson(foodBO.getPage(page, FOODS_PER_PAGE, searchField, search)));
+					} catch (Exception e) {e.printStackTrace();}
+					finally { async.complete(); }
+				});
 			}
 			case "add" -> {
 				Food newFood = getFoodFromRequest(request);
